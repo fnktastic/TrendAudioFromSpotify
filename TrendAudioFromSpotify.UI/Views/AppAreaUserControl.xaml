@@ -28,20 +28,88 @@
 
         <Border Grid.Column="0" Grid.Row="0" 
                 Visibility="{Binding IsConnectionEsatblished, FallbackValue=visible, Converter={StaticResource BoolToVisibleOrCollapsed}}" >
-            <ListView ItemsSource="{Binding Playlists}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Border Width="100" Height="100">
-                            <Label Content="{Binding Name}" />
-                        </Border>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel /> 
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-            </ListView>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.7*" />
+                    <ColumnDefinition Width="0.3*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.5*" />
+                    <RowDefinition Height="0.5*" />
+                </Grid.RowDefinitions>
+                <GroupBox Header="Playlists" Grid.Row="0" Grid.Column="0">
+                    <ListView ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylis}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="25" />
+                                            <RowDefinition Height="1*" />
+                                        </Grid.RowDefinitions>
+                                        <CheckBox Grid.Row="0" Grid.Column="0"
+                                                  HorizontalAlignment="Right"
+                                                  IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                            <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding SimplePlaylist.Name}" ToolTip="{Binding SimplePlaylist.Name}" />
+                                            <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding SimplePlaylist.Tracks.Total, StringFormat={}0 track(s)}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                    </ListView>
+                </GroupBox>
+                <GroupBox Header="Tracks" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"  />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Button Grid.Row="0" Content="Liked Songs" Command="{Binding LikedSongsLoadCommand}" />
+                        <ListView Grid.Row="1" ItemsSource="{Binding SavedTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderThickness="1" Padding="10 5">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.9*"/>
+                                                <ColumnDefinition Width="0.1*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="1*" />
+                                            </Grid.RowDefinitions>
+                                            <CheckBox Grid.Row="0" Grid.Column="1"
+                                                  HorizontalAlignment="Left"
+                                                  IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                                <TextBlock TextAlignment="Left" FontWeight="DemiBold" FontSize="10" Text="{Binding Track.Name}" />
+                                                <TextBlock TextAlignment="Left" FontWeight="Light" FontSize="12" Text="{Binding Artist, StringFormat={}0 track(s)}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Actions" Grid.Row="1" Grid.Column="0">
+                    <Grid>
+                        <TextBlock Text="Get Trends for Selected Audios from Selected Playlists => If selected Tracks appears at least in X of Selected Playlists add Them into New Playlist" />
+
+                        <TextBlock Text="Get Trends for All Audios from Selected Playlists => If Tracks appears at least in X of Selected Playlists add Them into New Playlist" />
+                    </Grid>
+                </GroupBox>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

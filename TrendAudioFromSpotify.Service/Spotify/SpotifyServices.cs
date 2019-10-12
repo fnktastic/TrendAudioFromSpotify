@@ -11,7 +11,8 @@ namespace TrendAudioFromSpotify.Service.Spotify
     public interface ISpotifyServices
     {
         Task<IEnumerable<SimplePlaylist>> GetAllPlaylists();
-        Task<IEnumerable<SavedTrack>> GetSongs(int take = 20, int offset = 0);
+        Task<IEnumerable<SavedTrack>> GetSongs(int take = 50, int offset = 0);
+        Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         PrivateProfile PrivateProfile { get; }
     }
 
@@ -32,11 +33,15 @@ namespace TrendAudioFromSpotify.Service.Spotify
             return (await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id))?.Items;
         }
 
-        public async Task<IEnumerable<SavedTrack>> GetSongs(int take = 20, int offset = 0)
+        public async Task<IEnumerable<SavedTrack>> GetSongs(int take = 50, int offset = 0)
         {
-            var rr = await _spotifyWebAPI.GetSavedTracksAsync(take, offset);
-
             return (await _spotifyWebAPI.GetSavedTracksAsync(take, offset))?.Items;
+        }
+
+        [Obsolete]
+        public async Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId)
+        {
+            return (await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId))?.Items;
         }
     }
 }

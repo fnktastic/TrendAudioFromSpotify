@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.UI.Model
 {
-    public class Playlist : ViewModelBase
+    public class Audio : ViewModelBase
     {
-        public SimplePlaylist SimplePlaylist { get; set; }
+        public FullTrack Track { get; set; }
+
+        public string Artist => string.Join(" ", Track.Artists.Select(x => x.Name));
 
         private bool _isChecked;
         public bool IsChecked
@@ -23,9 +25,9 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
-        public Playlist(SimplePlaylist simplePlaylist)
+        public Audio(FullTrack track)
         {
-            SimplePlaylist = simplePlaylist;
+            Track = track;
         }
     }
 }
