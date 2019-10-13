@@ -14,6 +14,8 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string Artist => string.Join(" ", Track.Artists.Select(x => x.Name));
 
+        public int Hits { get; set; }
+
         private bool _isChecked;
         public bool IsChecked
         {

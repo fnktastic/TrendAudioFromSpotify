@@ -29,6 +29,54 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private ProgressDialogController progressDialogController;
 
         #region properties
+        private bool _isProcessingAreaIsBusy;
+        public bool IsProcessingAreaIsBusy
+        {
+            get { return _isProcessingAreaIsBusy; }
+            set
+            {
+                if (value == _isProcessingAreaIsBusy) return;
+                _isProcessingAreaIsBusy = value;
+                RaisePropertyChanged(nameof(IsProcessingAreaIsBusy));
+            }
+        }
+
+        private int _appearsAtLeastInX;
+        public int AppearsAtLeastInX
+        {
+            get { return _appearsAtLeastInX; }
+            set
+            {
+                if (value == _appearsAtLeastInX) return;
+                _appearsAtLeastInX = value;
+                RaisePropertyChanged(nameof(AppearsAtLeastInX));
+            }
+        }
+
+        private bool _isSongsAreaBusy;
+        public bool IsSongsAreaBusy
+        {
+            get { return _isSongsAreaBusy; }
+            set
+            {
+                if (value == _isSongsAreaBusy) return;
+                _isSongsAreaBusy = value;
+                RaisePropertyChanged(nameof(IsSongsAreaBusy));
+            }
+        }
+
+        private bool _isPlaylistsAreaBusy;
+        public bool IsPlaylistsAreaBusy
+        {
+            get { return _isPlaylistsAreaBusy; }
+            set
+            {
+                if (value == _isPlaylistsAreaBusy) return;
+                _isPlaylistsAreaBusy = value;
+                RaisePropertyChanged(nameof(IsPlaylistsAreaBusy));
+            }
+        }
+
         private bool _isConnectionEsatblished;
         public bool IsConnectionEsatblished
         {
@@ -49,6 +97,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _playlists) return;
                 _playlists = value;
                 RaisePropertyChanged(nameof(Playlists));
+            }
+        }
+
+        private ObservableCollection<Audio> _trendTracks;
+        public ObservableCollection<Audio> TrendTracks
+        {
+            get { return _trendTracks; }
+            set
+            {
+                if (value == _trendTracks) return;
+                _trendTracks = value;
+                RaisePropertyChanged(nameof(TrendTracks));
             }
         }
 
@@ -198,13 +258,19 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region private data metods
         private async Task FetchData()
         {
+            IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
+
             var playlists = (await _spotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
 
             Playlists = new ObservableCollection<Playlist>(playlists);
 
+            IsPlaylistsAreaBusy = false;
+
             likedSongs = (await _spotifyServices.GetSongs(50)).Select(x => new Audio(x.Track)).ToList();
 
             SavedTracks = new ObservableCollection<Audio>(likedSongs);
+
+            IsSongsAreaBusy = false;
         }
 
         private async void GetPlaylistsAudios()
@@ -227,9 +293,63 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand LikedSongsLoadCommand => _likedSongsLoadCommand ?? (_likedSongsLoadCommand = new RelayCommand(LikedSongsLoad));
         private void LikedSongsLoad()
         {
+            IsSongsAreaBusy = true;
+
             SavedTracks = new ObservableCollection<Audio>(likedSongs);
 
             SelectedPlaylis = null;
+
+            IsSongsAreaBusy = false;
+        }
+
+        private RelayCommand _getTrendsCommand;
+        public RelayCommand GetTrendsCommand => _getTrendsCommand ?? (_getTrendsCommand = new RelayCommand(GetTrends));
+        private void GetTrends()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    IsProcessingAreaIsBusy = true;
+
+                    var selectedAudios = SavedTracks.Where(x => x.IsChecked).ToList();
+
+                    var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id).ToList();
+
+                    var audiosOfPlaylists = new Dictionary<string, List<FullTrack>>();
+
+                    foreach (var selectedPlaylist in selectedPlaylists)
+                    {
+                        var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(selectedPlaylist)).Select(x => x.Track).ToList();
+
+                        audiosOfPlaylists.Add(selectedPlaylist, audiosOfPlaylist);
+                    }
+
+                    var trendAudios = new Dictionary<Audio, int>();
+
+                    foreach(var selectedAudio in selectedAudios)
+                    {
+                        int counter = 0;
+
+                        foreach(var audiosOfPlaylist in audiosOfPlaylists)
+                        {
+                            var targetTrack = audiosOfPlaylist.Value.FirstOrDefault(x => x.Id == selectedAudio.Track.Id);
+
+                            if (targetTrack != null)
+                                counter++;
+                        }
+
+                        if (counter >= _appearsAtLeastInX)
+                            trendAudios.Add(selectedAudio, counter);
+                    }
+
+                    TrendTracks = new ObservableCollection<Audio>(trendAudios.Select(x => new Audio(x.Key.Track) { Hits = x.Value }).ToList());
+                }
+                finally
+                {
+                    IsProcessingAreaIsBusy = false;
+                }
+            });
         }
         #endregion
     }
