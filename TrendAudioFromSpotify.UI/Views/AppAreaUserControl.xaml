@@ -22,7 +22,42 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border Grid.Column="0" Grid.Row="0" Background="Azure"
+        <Border Grid.Row="0" Grid.Column="0" Panel.ZIndex="2"
+                Background="Azure"
+                Visibility="{Binding IsSpotifyCredsEntered, Converter={StaticResource InverseBoolToVisibilityConverter}}" >
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="350">
+                <TextBlock Text="Spotify API credentials" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                <Grid Margin=" 0 15 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="0.5*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="User ID" Grid.Column="0" Grid.Row="0" />
+                    <TextBlock Text="Secret ID" Grid.Column="0" Grid.Row="1" />
+                    <TextBlock Text="Redirect URL" Grid.Column="0" Grid.Row="2" />
+                    <TextBlock Text="Server URL" Grid.Column="0" Grid.Row="3" />
+
+                    <TextBox Text="{Binding UserId}" Controls:TextBoxHelper.Watermark="user id" Grid.Column="1" Grid.Row="0"  />
+                    <TextBox Text="{Binding SecretId}" Controls:TextBoxHelper.Watermark="secret id" Grid.Column="1" Grid.Row="1" />
+                    <TextBox Text="{Binding RedirectUri}" Controls:TextBoxHelper.Watermark="redirect url" Grid.Column="1" Grid.Row="2" />
+                    <TextBox Text="{Binding ServerUri}" Controls:TextBoxHelper.Watermark="server url" Grid.Column="1" Grid.Row="3" />
+                </Grid>
+                <Button Content="Save" Command="{Binding SaveSpotifyCredentialsCommand}" 
+                        Margin="0 15 0 0"
+                        Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"  />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="0" Grid.Row="0" 
+                Panel.ZIndex="1"
+                Background="Azure"
                 Visibility="{Binding IsConnectionEsatblished, FallbackValue=Collapsed, Converter={StaticResource InverseBoolToVisibilityConverter}}">
             <Button Content="Connect to Spotify" Command="{Binding ConnectToSpotifyCommand}" Width="350" Height="100" />
         </Border>
@@ -70,7 +105,7 @@
                             </ListView.ItemTemplate>
                             <ListView.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel />
+                                    <WrapPanel MaxWidth="1000" />
                                 </ItemsPanelTemplate>
                             </ListView.ItemsPanel>
                         </ListView>
@@ -87,13 +122,13 @@
                 <GroupBox Header="Tracks" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="25"  />
+                            <RowDefinition Height="60"  />
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Row="0" Grid.Column="0" Content="Liked Songs" Command="{Binding LikedSongsLoadCommand}" />
+                        <Button Margin="15" Grid.Row="0" Grid.Column="0" Content="Liked Songs" Command="{Binding LikedSongsLoadCommand}" />
 
                         <Controls:ProgressRing 
                             Grid.Row="1" Grid.Column="0"

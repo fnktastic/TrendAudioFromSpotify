@@ -29,6 +29,67 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private ProgressDialogController progressDialogController;
 
         #region properties
+        private bool _isSpotifyCredsEntered;
+        public bool IsSpotifyCredsEntered
+        {
+            get { return _isSpotifyCredsEntered;  }
+            set
+            {
+                if (value == _isSpotifyCredsEntered) return;
+                _isSpotifyCredsEntered = value;
+                RaisePropertyChanged(nameof(IsSpotifyCredsEntered));
+            }
+        }
+
+
+        private string _userId;
+        public string UserId
+        {
+            get { return _userId; }
+            set
+            {
+                if (value == _userId) return;
+                _userId = value;
+                RaisePropertyChanged(nameof(UserId));
+            }
+        }
+
+        private string _secretId;
+        public string SecretId
+        {
+            get { return _secretId; }
+            set
+            {
+                if (value == _secretId) return;
+                _secretId = value;
+                RaisePropertyChanged(nameof(SecretId));
+            }
+        }
+
+        private string _redirectUri;
+        public string RedirectUri
+        {
+            get { return _redirectUri; }
+            set
+            {
+                if (value == _redirectUri) return;
+                _redirectUri = value;
+                RaisePropertyChanged(nameof(RedirectUri));
+            }
+        }
+
+        private string _serverUri;
+        public string ServerUri
+        {
+            get { return _serverUri; }
+            set
+            {
+                if (value == _serverUri) return;
+                _serverUri = value;
+                RaisePropertyChanged(nameof(ServerUri));
+            }
+        }
+
         private bool _isProcessingAreaIsBusy;
         public bool IsProcessingAreaIsBusy
         {
@@ -145,6 +206,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
+            IsSpotifyCredsEntered = LoadSettings();
+            if (IsSpotifyCredsEntered)
+                SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
         }
 
         #region dialogs
@@ -173,6 +237,22 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region private auth methods
+        private bool LoadSettings()
+        {
+            try
+            {
+                UserId = _settingUtility.GetByKey(nameof(UserId)).Value;
+                SecretId = _settingUtility.GetByKey(nameof(SecretId)).Value;
+                RedirectUri = _settingUtility.GetByKey(nameof(RedirectUri)).Value;
+                ServerUri = _settingUtility.GetByKey(nameof(ServerUri)).Value;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private async Task EstablishConnection()
         {
             var accessToken = _settingUtility.GetAccessToken();
@@ -266,7 +346,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             IsPlaylistsAreaBusy = false;
 
-            likedSongs = (await _spotifyServices.GetSongs(50)).Select(x => new Audio(x.Track)).ToList();
+            likedSongs = (await _spotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
 
             SavedTracks = new ObservableCollection<Audio>(likedSongs);
 
@@ -327,11 +407,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                     var trendAudios = new Dictionary<Audio, int>();
 
-                    foreach(var selectedAudio in selectedAudios)
+                    foreach (var selectedAudio in selectedAudios)
                     {
                         int counter = 0;
 
-                        foreach(var audiosOfPlaylist in audiosOfPlaylists)
+                        foreach (var audiosOfPlaylist in audiosOfPlaylists)
                         {
                             var targetTrack = audiosOfPlaylist.Value.FirstOrDefault(x => x.Id == selectedAudio.Track.Id);
 
@@ -350,6 +430,32 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     IsProcessingAreaIsBusy = false;
                 }
             });
+        }
+
+        private RelayCommand _saveSpotifyCredentialsCommand;
+        public RelayCommand SaveSpotifyCredentialsCommand => _saveSpotifyCredentialsCommand ?? (_saveSpotifyCredentialsCommand = new RelayCommand(SaveSpotifyCredentials));
+        private void SaveSpotifyCredentials()
+        {
+            try
+            {
+                string userId = _userId;
+                string secretId = _secretId;
+                string redirectUri = _redirectUri;
+                string serverUri = _serverUri;
+
+                _settingUtility.Save(new Setting(nameof(UserId), userId));
+                _settingUtility.Save(new Setting(nameof(SecretId), secretId));
+                _settingUtility.Save(new Setting(nameof(RedirectUri), redirectUri));
+                _settingUtility.Save(new Setting(nameof(ServerUri), serverUri));
+
+                SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
+
+                IsSpotifyCredsEntered = true;
+            }
+            catch
+            {
+                IsSpotifyCredsEntered = true;
+            }
         }
         #endregion
     }

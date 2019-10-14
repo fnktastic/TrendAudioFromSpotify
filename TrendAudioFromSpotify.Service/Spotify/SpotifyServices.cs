@@ -11,7 +11,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
     public interface ISpotifyServices
     {
         Task<IEnumerable<SimplePlaylist>> GetAllPlaylists();
-        Task<IEnumerable<SavedTrack>> GetSongs(int take = 50, int offset = 0);
+        Task<IEnumerable<SavedTrack>> GetSongs();
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         PrivateProfile PrivateProfile { get; }
     }
@@ -33,15 +33,45 @@ namespace TrendAudioFromSpotify.Service.Spotify
             return (await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id))?.Items;
         }
 
-        public async Task<IEnumerable<SavedTrack>> GetSongs(int take = 50, int offset = 0)
+        public async Task<IEnumerable<SavedTrack>> GetSongs()
         {
-            return (await _spotifyWebAPI.GetSavedTracksAsync(take, offset))?.Items;
+            int counter = 0;
+            int limit = 50;
+            int total = (await _spotifyWebAPI.GetSavedTracksAsync()).Total;
+
+            var songs = new List<SavedTrack>();
+
+            while (counter < total)
+            {
+                var items = (await _spotifyWebAPI.GetSavedTracksAsync(limit, counter))?.Items;
+
+                counter += items.Count;
+
+                songs.AddRange(items);
+            }
+
+            return songs;
         }
 
         [Obsolete]
         public async Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId)
         {
-            return (await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId))?.Items;
+            int counter = 0;
+            int limit = 100;
+            int total = (await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId)).Total;
+
+            var playlistsSongs = new List<PlaylistTrack>();
+
+            while (counter < total)
+            {
+                var items = (await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId: playlistId, limit: limit, offset: counter))?.Items;
+
+                counter += items.Count; ;
+
+                playlistsSongs.AddRange(items);
+            }
+
+            return playlistsSongs;
         }
     }
 }

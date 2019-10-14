@@ -12,24 +12,26 @@ namespace TrendAudioFromSpotify.Service.Spotify
 {
     public class SpotifyProvider
     {
-        private static string _clientId = "b19f2661ded749a48c0dab9e0f2a0d56";
+        public static AuthorizationCodeAuth Authorization { get; set; } = null; 
 
-        private static string _secretId = "48473a52f4754d529009cc87fb12b2ee";
-
-        private static string _redirectUri = "http://localhost:4002";
-
-        private static string _serverUri = "http://localhost:4002";
-        public static AuthorizationCodeAuth Authorization { get; set; } = new AuthorizationCodeAuth(
-            _clientId, 
-            _secretId, 
-            _redirectUri, 
-            _serverUri, 
-            Scope.PlaylistReadPrivate | 
+        public static void InitProvider(string clientId, string secretId, string redirectUri, string serverUri)
+        {
+            Authorization = new AuthorizationCodeAuth(
+            clientId,
+            secretId,
+            redirectUri,
+            serverUri,
+            Scope.PlaylistReadPrivate |
             Scope.PlaylistReadCollaborative |
             Scope.AppRemoteControl |
             Scope.UserLibraryRead);
+        }
+
         public static void Auth()
         {
+            if (Authorization == null)
+                throw new AccessViolationException();
+
             Authorization.Start();
             Authorization.OpenBrowser();
         }
