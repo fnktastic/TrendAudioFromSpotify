@@ -32,7 +32,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private bool _isSpotifyCredsEntered;
         public bool IsSpotifyCredsEntered
         {
-            get { return _isSpotifyCredsEntered;  }
+            get { return _isSpotifyCredsEntered; }
             set
             {
                 if (value == _isSpotifyCredsEntered) return;
@@ -245,6 +245,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 SecretId = _settingUtility.GetByKey(nameof(SecretId)).Value;
                 RedirectUri = _settingUtility.GetByKey(nameof(RedirectUri)).Value;
                 ServerUri = _settingUtility.GetByKey(nameof(ServerUri)).Value;
+
+                if (string.IsNullOrEmpty(UserId) || 
+                    string.IsNullOrEmpty(SecretId) || 
+                    string.IsNullOrEmpty(RedirectUri) ||
+                    string.IsNullOrEmpty(ServerUri)
+                    )
+                    return false;
+
                 return true;
             }
             catch
@@ -448,13 +456,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _settingUtility.Save(new Setting(nameof(RedirectUri), redirectUri));
                 _settingUtility.Save(new Setting(nameof(ServerUri), serverUri));
 
-                SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
+                IsSpotifyCredsEntered = LoadSettings();
 
-                IsSpotifyCredsEntered = true;
+                if (IsSpotifyCredsEntered)
+                    SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
             }
             catch
             {
-                IsSpotifyCredsEntered = true;
+                IsSpotifyCredsEntered = false;
             }
         }
         #endregion
