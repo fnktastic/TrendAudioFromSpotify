@@ -358,6 +358,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             SavedTracks = new ObservableCollection<Audio>(likedSongs);
 
+            var foreignUserPlaylists = await _spotifyServices.GetForeignUserPlaylists();
+
             IsSongsAreaBusy = false;
         }
 
