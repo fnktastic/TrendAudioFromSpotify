@@ -99,6 +99,7 @@
     <Compile Include="Model\Playlist.cs" />
     <Compile Include="Model\Setting.cs" />
     <Compile Include="Model\Track.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="Utility\SettingUtility.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />

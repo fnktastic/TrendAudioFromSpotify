@@ -29,6 +29,42 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private ProgressDialogController progressDialogController;
 
         #region properties
+        private ObservableCollection<Playlist> _explorePlaylists;
+        public ObservableCollection<Playlist> ExplorePlaylists
+        {
+            get { return _explorePlaylists; }
+            set
+            {
+                if (value == _explorePlaylists) return;
+                _explorePlaylists = value;
+                RaisePropertyChanged(nameof(ExplorePlaylists));
+            }
+        }
+
+        private string _user;
+        public string User
+        {
+            get { return _user; }
+            set
+            {
+                if (value == _user) return;
+                _user = value;
+                RaisePropertyChanged(nameof(User));
+            }
+        }
+
+        private ObservableCollection<User> _users;
+        public ObservableCollection<User> Users
+        {
+            get { return _users; }
+            set
+            {
+                if (value == _users) return;
+                _users = value;
+                RaisePropertyChanged(nameof(Users));
+            }
+        }
+
         private bool _isSpotifyCredsEntered;
         public bool IsSpotifyCredsEntered
         {
@@ -209,6 +245,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             IsSpotifyCredsEntered = LoadSettings();
             if (IsSpotifyCredsEntered)
                 SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
+
+            Users = new ObservableCollection<User>();
         }
 
         #region dialogs
@@ -372,6 +410,40 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
+        private RelayCommand _selectAllUsersCommand;
+        public RelayCommand SelectAllUsersCommand => _selectAllUsersCommand ?? (_selectAllUsersCommand = new RelayCommand(SelectAllUsers));
+        private void SelectAllUsers()
+        {
+            if (_users == null) return;
+
+            foreach (var user in _users)
+                user.IsChecked = !user.IsChecked;
+        }
+
+        private RelayCommand _getUsersPlaylistsCommand;
+        public RelayCommand GetUsersPlaylistsCommand => _getUsersPlaylistsCommand ?? (_getUsersPlaylistsCommand = new RelayCommand(GetUsersPlaylists));
+        private async void GetUsersPlaylists()
+        {
+            IsPlaylistsAreaBusy = true;
+
+            var userPlaylists = (await _spotifyServices.GetForeignUserPlaylists()).Select(x => new Playlist(x)).ToList();
+
+            ExplorePlaylists = new ObservableCollection<Playlist>(userPlaylists);
+
+            IsPlaylistsAreaBusy = false;
+        }
+
+        private RelayCommand _addUserCommand;
+        public RelayCommand AddUserCommand => _addUserCommand ?? (_addUserCommand = new RelayCommand(AddUser));
+        private void AddUser()
+        {
+            if (string.IsNullOrEmpty(_user)) return; 
+
+            _users.Add(new User(_user));
+
+            User = string.Empty;
+        }
+
         private RelayCommand _connectToSpotifyCommand;
         public RelayCommand ConnectToSpotifyCommand => _connectToSpotifyCommand ?? (_connectToSpotifyCommand = new RelayCommand(ConnectToSpotify));
         private async void ConnectToSpotify()

@@ -85,10 +85,11 @@
                                 </Style>
                             </TabControl.Resources>
                             <TabItem Header="My Playlists">
-                                <ListView 
+                                <ListBox 
+                                    Margin="5"
                                     Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                                     ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylis}">
-                                    <ListView.ItemTemplate>
+                                    <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
                                                 <Grid>
@@ -100,8 +101,8 @@
                                                         <RowDefinition Height="1*" />
                                                     </Grid.RowDefinitions>
                                                     <CheckBox Grid.Row="0" Grid.Column="0"
-                                                  HorizontalAlignment="Right"
-                                                  IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                              HorizontalAlignment="Right"
+                                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                                     <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
                                                         <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding SimplePlaylist.Name}" ToolTip="{Binding SimplePlaylist.Name}" />
                                                         <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding SimplePlaylist.Tracks.Total, StringFormat={}0 track(s)}" />
@@ -109,16 +110,87 @@
                                                 </Grid>
                                             </Border>
                                         </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                    <ListView.ItemsPanel>
+                                    </ListBox.ItemTemplate>
+                                    <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel MaxWidth="1000" />
                                         </ItemsPanelTemplate>
-                                    </ListView.ItemsPanel>
-                                </ListView>
+                                    </ListBox.ItemsPanel>
+                                </ListBox>
                             </TabItem>
                             <TabItem Header ="Explore playlists" >
-                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.2*" />
+                                        <ColumnDefinition Width="0.65*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="1*" />
+                                        <RowDefinition Height="30" />
+                                    </Grid.RowDefinitions>
+                                    <DockPanel>
+                                        <TextBox Text="{Binding User}" VerticalContentAlignment="Center" DockPanel.Dock="Left" Width="130" />
+                                        <Button Command="{Binding AddUserCommand}" HorizontalAlignment="Left" Content="Add" Width="50" Margin="5 0 0 0" />
+                                        <Button Command="{Binding SelectAllUsersCommand}" HorizontalAlignment="Left" Content="✔" Width="30" Margin="15 0 0 0" />
+                                    </DockPanel>
+                                    <ListBox Grid.Column="0" Grid.Row="1"
+                                             Margin="0 5 0 5"
+                                        ItemsSource="{Binding Users}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <DockPanel>
+                                                    <TextBlock Text="{Binding Username}" />
+                                                    <CheckBox Grid.Row="0" Grid.Column="1"
+                                                              HorizontalAlignment="Right"
+                                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <Button Grid.Column="0" Grid.Row="2" 
+                                            Content="Get Playlists"
+                                            Command="{Binding GetUsersPlaylistsCommand}" />
+
+                                    <Controls:ProgressRing  
+                                        Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                        Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+
+                                    <ListBox 
+                                        Margin="5"
+                                        Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                        Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                        ItemsSource="{Binding ExplorePlaylists}" SelectedItem="{Binding SelectedPlaylis}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="1*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="25" />
+                                                            <RowDefinition Height="1*" />
+                                                        </Grid.RowDefinitions>
+                                                        <CheckBox Grid.Row="0" Grid.Column="0"
+                                                              HorizontalAlignment="Right"
+                                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                        <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                                            <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding SimplePlaylist.Name}" ToolTip="{Binding SimplePlaylist.Name}" />
+                                                            <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding SimplePlaylist.Tracks.Total, StringFormat={}0 track(s)}" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel MaxWidth="750" />
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                    </ListBox>
+
+                                </Grid>
                             </TabItem>
                         </TabControl>
                     </Grid>
@@ -146,10 +218,10 @@
                             Grid.Row="1" Grid.Column="0"
                             Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
 
-                        <ListView Grid.Row="1" Grid.Column="0" 
+                        <ListBox Grid.Row="1" Grid.Column="0" 
                                   Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                                   ItemsSource="{Binding SavedTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <ListView.ItemTemplate>
+                            <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderThickness="1" Padding="10 5">
                                         <Grid>
@@ -170,8 +242,8 @@
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                     </Grid>
                 </GroupBox>
                 <GridSplitter 
@@ -216,9 +288,9 @@
                                         <ColumnDefinition Width="350" />
                                         <ColumnDefinition Width="350" />
                                     </Grid.ColumnDefinitions>
-                                    <ListView Grid.Column="0" Width="350" HorizontalAlignment="Right"
+                                    <ListBox Grid.Column="0" Width="350" HorizontalAlignment="Right"
                                               ItemsSource="{Binding TrendTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                        <ListView.ItemTemplate>
+                                        <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <Border BorderThickness="1" Padding="10 5">
                                                     <Grid>
@@ -239,8 +311,8 @@
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>
-                                        </ListView.ItemTemplate>
-                                    </ListView>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
                                 </Grid>
                             </Grid>
                         </GroupBox>
