@@ -24,7 +24,7 @@
 
         <Border Grid.Row="0" Grid.Column="0" Panel.ZIndex="2"
                 Background="Azure"
-                Visibility="{Binding IsSpotifyCredsEntered, Converter={StaticResource InverseBoolToVisibilityConverter}}" >
+                Visibility="{Binding IsSpotifyCredsEntered, Converter={StaticResource InverseBoolToVisibilityConverter}, FallbackValue=Collapsed}" >
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="350">
                 <TextBlock Text="Spotify API credentials" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
                 <Grid Margin=" 0 15 0 0">
@@ -78,37 +78,49 @@
                 <GroupBox Header="Playlists" Grid.Row="0" Grid.Column="0">
                     <Grid>
                         <Controls:ProgressRing  Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
-                        <ListView 
-                            Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                            ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylis}">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="1*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="25" />
-                                                <RowDefinition Height="1*" />
-                                            </Grid.RowDefinitions>
-                                            <CheckBox Grid.Row="0" Grid.Column="0"
+                        <TabControl>
+                            <TabControl.Resources>
+                                <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+                                    <Setter Property="Controls:ControlsHelper.HeaderFontSize" Value="18" />
+                                </Style>
+                            </TabControl.Resources>
+                            <TabItem Header="My Playlists">
+                                <ListView 
+                                    Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                    ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylis}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="1*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="25" />
+                                                        <RowDefinition Height="1*" />
+                                                    </Grid.RowDefinitions>
+                                                    <CheckBox Grid.Row="0" Grid.Column="0"
                                                   HorizontalAlignment="Right"
                                                   IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
-                                                <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding SimplePlaylist.Name}" ToolTip="{Binding SimplePlaylist.Name}" />
-                                                <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding SimplePlaylist.Tracks.Total, StringFormat={}0 track(s)}" />
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel MaxWidth="1000" />
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                        </ListView>
+                                                    <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
+                                                        <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding SimplePlaylist.Name}" ToolTip="{Binding SimplePlaylist.Name}" />
+                                                        <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding SimplePlaylist.Tracks.Total, StringFormat={}0 track(s)}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel MaxWidth="1000" />
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                </ListView>
+                            </TabItem>
+                            <TabItem Header ="Explore playlists" >
+                                
+                            </TabItem>
+                        </TabControl>
                     </Grid>
                 </GroupBox>
                 <GridSplitter 
