@@ -14,6 +14,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<SavedTrack>> GetSongs();
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(string username = "_annalasnier_");
+        Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
         PrivateProfile PrivateProfile { get; }
     }
 
@@ -90,6 +91,33 @@ namespace TrendAudioFromSpotify.Service.Spotify
                 counter += items.Count; ;
 
                 usersPlaylists.AddRange(items);
+            }
+
+            return usersPlaylists;
+        }
+
+        public async Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames)
+        {
+            var usersPlaylists = new List<SimplePlaylist>();
+
+            if (usernames == null) return usersPlaylists;
+
+            if (usernames.Count() == 0) return usersPlaylists;
+
+            foreach (var username in usernames)
+            {
+                int counter = 0;
+                int limit = 20;
+                int total = (await _spotifyWebAPI.GetUserPlaylistsAsync(username, 20, 0)).Total;
+
+                while (counter < total)
+                {
+                    var items = (await _spotifyWebAPI.GetUserPlaylistsAsync(username, limit: limit, offset: counter))?.Items;
+
+                    counter += items.Count;
+
+                    usersPlaylists.AddRange(items);
+                }
             }
 
             return usersPlaylists;

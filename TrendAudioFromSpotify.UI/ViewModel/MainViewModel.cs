@@ -232,7 +232,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RaisePropertyChanged(nameof(SelectedPlaylis));
 
                 if (_selectedPlaylist != null)
+                {
+                    _selectedPlaylist.IsChecked = true;
                     GetPlaylistsAudios();
+                }
             }
         }
 
@@ -284,8 +287,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RedirectUri = _settingUtility.GetByKey(nameof(RedirectUri)).Value;
                 ServerUri = _settingUtility.GetByKey(nameof(ServerUri)).Value;
 
-                if (string.IsNullOrEmpty(UserId) || 
-                    string.IsNullOrEmpty(SecretId) || 
+                if (string.IsNullOrEmpty(UserId) ||
+                    string.IsNullOrEmpty(SecretId) ||
                     string.IsNullOrEmpty(RedirectUri) ||
                     string.IsNullOrEmpty(ServerUri)
                     )
@@ -410,6 +413,32 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
+        private bool checkExplorePlaylists = true;
+        private RelayCommand _selectExplorePlaylistsCommand;
+        public RelayCommand SelectExplorePlaylistsCommand => _selectExplorePlaylistsCommand ?? (_selectExplorePlaylistsCommand = new RelayCommand(SelectExplorePlaylists));
+        private void SelectExplorePlaylists()
+        {
+            if (_explorePlaylists == null) return;
+
+            foreach (var exploreplaylist in _explorePlaylists)
+                exploreplaylist.IsChecked = checkExplorePlaylists;
+
+            checkExplorePlaylists = !checkExplorePlaylists;
+        }
+
+        private bool checkAllPlaylists = true;
+        private RelayCommand _selectAllMyPlaylistsCommand;
+        public RelayCommand SelectAllMyPlaylistsCommand => _selectAllMyPlaylistsCommand ?? (_selectAllMyPlaylistsCommand = new RelayCommand(SelectAllMyPlaylists));
+        private void SelectAllMyPlaylists()
+        {
+            if (_playlists == null) return;
+
+            foreach (var playlist in _playlists)
+                playlist.IsChecked = checkAllPlaylists;
+
+            checkAllPlaylists = !checkAllPlaylists;
+        }
+
         private RelayCommand _selectAllUsersCommand;
         public RelayCommand SelectAllUsersCommand => _selectAllUsersCommand ?? (_selectAllUsersCommand = new RelayCommand(SelectAllUsers));
         private void SelectAllUsers()
@@ -426,7 +455,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsPlaylistsAreaBusy = true;
 
-            var userPlaylists = (await _spotifyServices.GetForeignUserPlaylists()).Select(x => new Playlist(x)).ToList();
+            var userPlaylists = (await _spotifyServices
+                .GetForeignUserPlaylists(_users
+                .Where(x => x.IsChecked)
+                .Select(x => x.Username)
+                .ToList()))
+                .Select(x => new Playlist(x))
+                .ToList();
 
             ExplorePlaylists = new ObservableCollection<Playlist>(userPlaylists);
 
@@ -437,7 +472,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand AddUserCommand => _addUserCommand ?? (_addUserCommand = new RelayCommand(AddUser));
         private void AddUser()
         {
-            if (string.IsNullOrEmpty(_user)) return; 
+            if (string.IsNullOrEmpty(_user)) return;
 
             _users.Add(new User(_user));
 
@@ -478,34 +513,41 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                     var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id).ToList();
 
+                    selectedPlaylists.AddRange(ExplorePlaylists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id));
+
                     var audiosOfPlaylists = new Dictionary<string, List<FullTrack>>();
 
                     foreach (var selectedPlaylist in selectedPlaylists)
                     {
                         var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(selectedPlaylist)).Select(x => x.Track).ToList();
 
+                        if (audiosOfPlaylists.ContainsKey(selectedPlaylist))
+                            continue;
+
                         audiosOfPlaylists.Add(selectedPlaylist, audiosOfPlaylist);
                     }
 
                     var trendAudios = new Dictionary<Audio, int>();
 
-                    foreach (var selectedAudio in selectedAudios)
+                    if (selectedAudios.Count == 0)
+                        selectedAudios = new List<Audio>(audiosOfPlaylists.Values.SelectMany(x => x).Select(x => new Audio(x)));
+
+                    var groupedAudios = selectedAudios.GroupBy(x => x.Track?.Id).Select(y =>
                     {
-                        int counter = 0;
+                        var audio = selectedAudios.First(z => z.Track?.Id == y.Key);
 
-                        foreach (var audiosOfPlaylist in audiosOfPlaylists)
-                        {
-                            var targetTrack = audiosOfPlaylist.Value.FirstOrDefault(x => x.Id == selectedAudio.Track.Id);
+                        if (audio == null) return null;
 
-                            if (targetTrack != null)
-                                counter++;
-                        }
+                        audio.Hits = y.Count();
 
-                        if (counter >= _appearsAtLeastInX)
-                            trendAudios.Add(selectedAudio, counter);
-                    }
+                        return audio;
+                    })
+                    .Where(x => x != null)
+                    .Where(x => x.Hits >= _appearsAtLeastInX)
+                    .OrderByDescending(x => x.Hits)
+                    .ToList();
 
-                    TrendTracks = new ObservableCollection<Audio>(trendAudios.Select(x => new Audio(x.Key.Track) { Hits = x.Value }).ToList());
+                    TrendTracks = new ObservableCollection<Audio>(groupedAudios);
                 }
                 finally
                 {
