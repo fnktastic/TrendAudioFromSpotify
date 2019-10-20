@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Utility;
@@ -28,7 +29,24 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private ProgressDialogController progressDialogController;
 
+        private readonly MediaPlayer _mediaPlayer;
+
         #region properties
+        private Audio _selectedAudio;
+        public Audio SelectedAudio
+        {
+            get { return _selectedAudio; }
+            set
+            {
+                if (value == _selectedAudio) return;
+                _selectedAudio = value;
+                RaisePropertyChanged(nameof(SelectedAudio));
+
+                if (_selectedAudio != null)
+                    PlaySongCommand.Execute(null);
+            }
+        }
+
         private ObservableCollection<Playlist> _explorePlaylists;
         public ObservableCollection<Playlist> ExplorePlaylists
         {
@@ -245,6 +263,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
+            _mediaPlayer = new MediaPlayer();
             IsSpotifyCredsEntered = LoadSettings();
             if (IsSpotifyCredsEntered)
                 SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
@@ -413,6 +432,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
+        private RelayCommand _playSongCommand;
+        public RelayCommand PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand(PlaySong));
+        private async void PlaySong()
+        {
+            await _spotifyServices.PlayTrack(_selectedAudio.Track.Uri);
+        }
+
         private bool checkExplorePlaylists = true;
         private RelayCommand _selectExplorePlaylistsCommand;
         public RelayCommand SelectExplorePlaylistsCommand => _selectExplorePlaylistsCommand ?? (_selectExplorePlaylistsCommand = new RelayCommand(SelectExplorePlaylists));
@@ -513,7 +539,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                     var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id).ToList();
 
-                    selectedPlaylists.AddRange(ExplorePlaylists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id));
+                    if (_explorePlaylists != null)
+                        selectedPlaylists.AddRange(_explorePlaylists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id));
 
                     var audiosOfPlaylists = new Dictionary<string, List<FullTrack>>();
 

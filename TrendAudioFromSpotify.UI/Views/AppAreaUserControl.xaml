@@ -233,8 +233,9 @@
                             Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
 
                         <ListBox Grid.Row="1" Grid.Column="0" 
-                                  Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                  ItemsSource="{Binding SavedTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                 SelectedItem="{Binding SelectedAudio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                 ItemsSource="{Binding SavedTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border BorderThickness="1" Padding="10 5">
