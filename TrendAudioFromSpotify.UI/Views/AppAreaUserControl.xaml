@@ -23,7 +23,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" Grid.Column="0" Panel.ZIndex="2"
-                Background="Azure"
+                Background="Black"
                 Visibility="{Binding IsSpotifyCredsEntered, Converter={StaticResource InverseBoolToVisibilityConverter}, FallbackValue=Collapsed}" >
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="350">
                 <TextBlock Text="Spotify API credentials" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
@@ -39,10 +39,10 @@
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="User ID" Grid.Column="0" Grid.Row="0" />
-                    <TextBlock Text="Secret ID" Grid.Column="0" Grid.Row="1" />
-                    <TextBlock Text="Redirect URL" Grid.Column="0" Grid.Row="2" />
-                    <TextBlock Text="Server URL" Grid.Column="0" Grid.Row="3" />
+                    <TextBlock Text="User ID" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
+                    <TextBlock Text="Secret ID" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
+                    <TextBlock Text="Redirect URL" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
+                    <TextBlock Text="Server URL" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" />
 
                     <TextBox Text="{Binding UserId}" Controls:TextBoxHelper.Watermark="user id" Grid.Column="1" Grid.Row="0"  />
                     <TextBox Text="{Binding SecretId}" Controls:TextBoxHelper.Watermark="secret id" Grid.Column="1" Grid.Row="1" />
@@ -57,7 +57,7 @@
 
         <Border Grid.Column="0" Grid.Row="0" 
                 Panel.ZIndex="1"
-                Background="Azure"
+                Background="Black"
                 Visibility="{Binding IsConnectionEsatblished, FallbackValue=Collapsed, Converter={StaticResource InverseBoolToVisibilityConverter}}">
             <Button Content="Connect to Spotify" Command="{Binding ConnectToSpotifyCommand}" Width="350" Height="100" />
         </Border>
@@ -75,7 +75,7 @@
                     <RowDefinition Height="15" />
                     <RowDefinition Height="0.5*" />
                 </Grid.RowDefinitions>
-                <GroupBox Header="Playlists" Grid.Row="0" Grid.Column="0">
+                <GroupBox Header="Playlists" Grid.Row="0" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
                     <Grid>
                         <Controls:ProgressRing  Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
                         <TabControl>
@@ -215,9 +215,10 @@
                     Width="3"
                     Margin="5,0"
                     VerticalAlignment="Stretch"
+                    Opacity="0.2"
                     ResizeBehavior="PreviousAndNext"
                     />
-                <GroupBox Header="Tracks" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2">
+                <GroupBox Header="Tracks" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Background="Black" BorderBrush="#FF585656">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="60"  />
@@ -265,6 +266,7 @@
                     ResizeDirection="Rows" Grid.Row="1" Grid.Column="0"
                     Height="3"
                     Margin="5,0"
+                    Opacity="0.2"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch"
                     ResizeBehavior="PreviousAndNext"
@@ -275,7 +277,7 @@
                             <ColumnDefinition Width="200" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <GroupBox Header="Settings" Grid.Column="0">
+                        <GroupBox Header="Settings" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
                             <Grid  HorizontalAlignment="Center">
                                 <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <Controls:ProgressRing />
@@ -291,7 +293,7 @@
                                 </StackPanel>
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="Trends" Grid.Column="1">
+                        <GroupBox Header="Trends" Grid.Column="1" Background="Black" BorderBrush="#FF585656">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <Controls:ProgressRing />
