@@ -13,6 +13,7 @@
     <UserControl.Resources>
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
         <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+        <converter:AudiosContextNameConverter x:Key="AudiosContextNameConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -95,7 +96,7 @@
                                         Grid.Row="1"
                                         Margin="5"
                                         Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                        ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylis}">
+                                        ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylist}">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
@@ -174,7 +175,7 @@
                                             Grid.Row="1"
                                             Margin="5"
                                             Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                            ItemsSource="{Binding ExplorePlaylists}" SelectedItem="{Binding SelectedPlaylis}">
+                                            ItemsSource="{Binding ExplorePlaylists}" SelectedItem="{Binding SelectedPlaylist}">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
@@ -221,14 +222,18 @@
                 <GroupBox Header="Tracks" Grid.Row="0" Grid.RowSpan="3" Grid.Column="2" Background="Black" BorderBrush="#FF585656">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="60"  />
+                            <RowDefinition Height="22"  />
                             <RowDefinition />
+                            <RowDefinition Height="60"  />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Button Margin="15" Grid.Row="0" Grid.Column="0" Content="Liked Songs" Command="{Binding LikedSongsLoadCommand}" />
-
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   HorizontalAlignment="Center"
+                                   FontSize="16"
+                                   FontWeight="Thin"
+                                   Text="{Binding SelectedPlaylist, Converter={StaticResource AudiosContextNameConverter}}" /> 
                         <Controls:ProgressRing 
                             Grid.Row="1" Grid.Column="0"
                             Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
@@ -260,6 +265,8 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
+
+                        <Button Margin="15" Grid.Row="2" Grid.Column="0" Content="Load My Library" Command="{Binding LikedSongsLoadCommand}" />
                     </Grid>
                 </GroupBox>
                 <GridSplitter 

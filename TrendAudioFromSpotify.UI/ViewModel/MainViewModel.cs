@@ -240,17 +240,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
 
         private Playlist _selectedPlaylist;
-        public Playlist SelectedPlaylis
+        public Playlist SelectedPlaylist
         {
             get { return _selectedPlaylist; }
             set
             {
                 if (value == _selectedPlaylist) return;
                 _selectedPlaylist = value;
-                RaisePropertyChanged(nameof(SelectedPlaylis));
+                RaisePropertyChanged(nameof(SelectedPlaylist));
 
                 if (_selectedPlaylist != null)
-                {
+                { 
                     _selectedPlaylist.IsChecked = true;
                     GetPlaylistsAudios();
                 }
@@ -425,9 +425,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private async void GetPlaylistsAudios()
         {
-            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.SimplePlaylist.Id);
+            IsSongsAreaBusy = true;
 
+            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.SimplePlaylist.Id);
             SavedTracks = new ObservableCollection<Audio>(audios.Select(x => new Audio(x.Track)));
+
+            IsSongsAreaBusy = false;
         }
         #endregion
 
@@ -436,7 +439,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand(PlaySong));
         private async void PlaySong()
         {
-            await _spotifyServices.PlayTrack(_selectedAudio.Track.Uri);
+            var playback = await _spotifyServices.PlayTrack(_selectedAudio.Track.Uri);
+
+            if(playback.HasError())
+                await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
         }
 
         private bool checkExplorePlaylists = true;
@@ -520,7 +526,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             SavedTracks = new ObservableCollection<Audio>(likedSongs);
 
-            SelectedPlaylis = null;
+            SelectedPlaylist = null;
 
             IsSongsAreaBusy = false;
         }
