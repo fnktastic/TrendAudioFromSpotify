@@ -78,7 +78,7 @@
                 </Grid.RowDefinitions>
                 <GroupBox Header="Playlists" Grid.Row="0" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
                     <Grid>
-                        <Controls:ProgressRing  Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+                        <Controls:ProgressRing Panel.ZIndex="999" Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Visible}" />
                         <TabControl>
                             <TabControl.Resources>
                                 <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
