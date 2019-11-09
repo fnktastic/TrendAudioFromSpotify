@@ -94,6 +94,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AudioView.xaml.cs">
+      <DependentUpon>AudioView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
     <Compile Include="Converter\InverseBoolToVisibilityConverter.cs" />
@@ -107,6 +110,10 @@
     <Compile Include="Views\AppAreaUserControl.xaml.cs">
       <DependentUpon>AppAreaUserControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\AudioView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

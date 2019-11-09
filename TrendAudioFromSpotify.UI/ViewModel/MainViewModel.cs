@@ -41,9 +41,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _selectedAudio) return;
                 _selectedAudio = value;
                 RaisePropertyChanged(nameof(SelectedAudio));
-
-                if (_selectedAudio != null)
-                    PlaySongCommand.Execute(null);
             }
         }
 
@@ -435,14 +432,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
-        private RelayCommand _playSongCommand;
-        public RelayCommand PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand(PlaySong));
-        private async void PlaySong()
+        private RelayCommand<Audio> _playSongCommand;
+        public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
+        private async void PlaySong(Audio audio)
         {
-            var playback = await _spotifyServices.PlayTrack(_selectedAudio.Track.Uri);
+            if (audio != null)
+            {
+                var playback = await _spotifyServices.PlayTrack(audio.Track.Uri);
 
-            if(playback.HasError())
-                await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
+                if (playback.HasError())
+                    await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
+            }
         }
 
         private bool checkExplorePlaylists = true;
