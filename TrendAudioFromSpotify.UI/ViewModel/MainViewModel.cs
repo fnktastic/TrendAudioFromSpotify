@@ -11,14 +11,17 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Utility;
+using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
     public class MainViewModel : ViewModelBase
     {
+        #region fields
         private List<Audio> likedSongs;
 
         private ISpotifyServices _spotifyServices;
@@ -29,7 +32,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private ProgressDialogController progressDialogController;
 
-        private readonly MediaPlayer _mediaPlayer;
+
+        private readonly DbContext _context;
+
+        private readonly IAudioRepository _audioRepository;
+        #endregion
 
         #region properties
         private Audio _selectedAudio;
@@ -260,12 +267,15 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
-            _mediaPlayer = new MediaPlayer();
             IsSpotifyCredsEntered = LoadSettings();
             if (IsSpotifyCredsEntered)
                 SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
 
             Users = new ObservableCollection<User>();
+
+            _context = new DbContext();
+            _audioRepository = new AudioRepository(_context);
+            FetchDbData();
         }
 
         #region dialogs
@@ -331,7 +341,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 await AuthByToken(accessToken);
 
                 if (IsConnectionEsatblished)
-                    await FetchData();
+                    await FetchSpotifyData();
             }
             else
             {
@@ -386,7 +396,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 await HideConnectingMessage();
                 await ShowMessage("Notification", "Succesfully authorized in Spotify!");
 
-                await FetchData();
+                await FetchSpotifyData();
             }
             else
             {
@@ -401,7 +411,24 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region private data metods
-        private async Task FetchData()
+        private async void FetchDbData()
+        {
+            //await _audioRepository.InsertAsync(new Data.Model.Audio()
+            //{
+            //    Id = Guid.NewGuid().ToString(),
+            //    Artist = "Madeline Juno",
+            //    Title = "Less than heartbreake",
+            //    Href = "bing.com"
+            //});
+
+            var audios = await _audioRepository.GetAllAsync();
+
+            await _audioRepository.RemoveAsync(audios.FirstOrDefault());
+
+            var audio2 = await _audioRepository.GetAllAsync();
+        }
+
+        private async Task FetchSpotifyData()
         {
             IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
 

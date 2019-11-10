@@ -12,10 +12,32 @@ namespace TrendAudioFromSpotify.Data.DataAccess
     {
         public Context() : base("TrendifyDb")
         {
-                
+
         }
 
-        public DbSet<Playlist> Playlists { get; set; }
+        public DbSet<Audio> Audios { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Audio>().HasKey(a => a.Id);
+
+            modelBuilder.Entity<Playlist>().HasKey(p => p.Id);
+
+            modelBuilder.Entity<PlaylistAudio>()
+                .HasKey(pa => new { pa.PlaylistId, pa.AudioId });
+
+            modelBuilder.Entity<PlaylistAudio>()
+                .HasRequired(pa => pa.Audio)
+                .WithMany(p => p.PlaylistAudios)
+                .HasForeignKey(pc => pc.AudioId);
+
+            modelBuilder.Entity<PlaylistAudio>()
+                .HasRequired(pc => pc.Playlist)
+                .WithMany(c => c.PlaylistAudios)
+                .HasForeignKey(pc => pc.PlaylistId);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 
     public class DataInitializer : DropCreateDatabaseIfModelChanges<Context>
