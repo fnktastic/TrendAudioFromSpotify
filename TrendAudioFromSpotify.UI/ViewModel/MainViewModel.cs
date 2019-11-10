@@ -445,7 +445,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsSongsAreaBusy = true;
 
-            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.SimplePlaylist.Id);
+            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
             SavedTracks = new ObservableCollection<Audio>(audios.Select(x => new Audio(x.Track)));
 
             IsSongsAreaBusy = false;
@@ -572,10 +572,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                     var selectedAudios = SavedTracks.Where(x => x.IsChecked).ToList();
 
-                    var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id).ToList();
+                    var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.Id).ToList();
 
                     if (_explorePlaylists != null)
-                        selectedPlaylists.AddRange(_explorePlaylists.Where(x => x.IsChecked).Select(x => x.SimplePlaylist.Id));
+                        selectedPlaylists.AddRange(_explorePlaylists.Where(x => x.IsChecked).Select(x => x.Id));
 
                     var audiosOfPlaylists = new Dictionary<string, List<FullTrack>>();
 

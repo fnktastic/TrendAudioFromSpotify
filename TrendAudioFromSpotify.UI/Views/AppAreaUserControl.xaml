@@ -79,7 +79,6 @@
                 </Grid.RowDefinitions>
                 <GroupBox Header="Playlists" Grid.Row="0" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
                     <Grid>
-                        <Controls:ProgressRing Panel.ZIndex="999" Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Visible}" />
                         <TabControl>
                             <TabControl.Resources>
                                 <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
@@ -92,6 +91,7 @@
                                         <RowDefinition Height="40" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
+                                    <Controls:ProgressRing Grid.Row="1" Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Visible}" />
                                     <Button Grid.Row="0" Command="{Binding SelectAllMyPlaylistsCommand}" Width="100" Content="Select All" />
                                     <ListBox 
                                         Grid.Row="1"
@@ -100,24 +100,7 @@
                                         ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylist}">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="1*" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="25" />
-                                                            <RowDefinition Height="1*" />
-                                                        </Grid.RowDefinitions>
-                                                        <CheckBox Grid.Row="0" Grid.Column="0"
-                                                              HorizontalAlignment="Right"
-                                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                        <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
-                                                            <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding SimplePlaylist.Name}" ToolTip="{Binding SimplePlaylist.Name}" />
-                                                            <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding SimplePlaylist.Tracks.Total, StringFormat={}0 track(s)}" />
-                                                        </StackPanel>
-                                                    </Grid>
-                                                </Border>
+                                                <customSontrols:PlaylistControl />
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                         <ListBox.ItemsPanel>
@@ -179,24 +162,7 @@
                                             ItemsSource="{Binding ExplorePlaylists}" SelectedItem="{Binding SelectedPlaylist}">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="1*" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="25" />
-                                                                <RowDefinition Height="1*" />
-                                                            </Grid.RowDefinitions>
-                                                            <CheckBox Grid.Row="0" Grid.Column="0"
-                                                              HorizontalAlignment="Right"
-                                                              IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
-                                                                <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding SimplePlaylist.Name}" ToolTip="{Binding SimplePlaylist.Name}" />
-                                                                <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding SimplePlaylist.Tracks.Total, StringFormat={}0 track(s)}" />
-                                                            </StackPanel>
-                                                        </Grid>
-                                                    </Border>
+                                                    <customSontrols:PlaylistControl />
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
                                             <ListBox.ItemsPanel>
@@ -245,7 +211,7 @@
                                  ItemsSource="{Binding SavedTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <customSontrols:AudioView />
+                                    <customSontrols:AudioControl />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>

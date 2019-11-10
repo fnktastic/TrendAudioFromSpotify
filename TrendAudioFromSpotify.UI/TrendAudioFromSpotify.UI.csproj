@@ -113,8 +113,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Controls\AudioView.xaml.cs">
-      <DependentUpon>AudioView.xaml</DependentUpon>
+    <Compile Include="Controls\AudioControl.xaml.cs">
+      <DependentUpon>AudioControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PlaylistControl.xaml.cs">
+      <DependentUpon>PlaylistControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
@@ -129,7 +132,11 @@
     <Compile Include="Views\AppAreaUserControl.xaml.cs">
       <DependentUpon>AppAreaUserControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="Controls\AudioView.xaml">
+    <Page Include="Controls\AudioControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\PlaylistControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,6 +155,10 @@
     <Page Include="Resources\Dictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\AppAreaUserControl.xaml">
       <SubType>Designer</SubType>

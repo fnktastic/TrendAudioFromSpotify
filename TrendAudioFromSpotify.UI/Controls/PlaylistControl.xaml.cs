@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace TrendAudioFromSpotify.UI.Controls
 {
     /// <summary>
-    /// Interaction logic for AudioView.xaml
+    /// Interaction logic for PlaylistControl.xaml
     /// </summary>
-    public partial class AudioView : UserControl
+    public partial class PlaylistControl : UserControl
     {
-        public AudioView()
+        public PlaylistControl()
         {
             InitializeComponent();
         }

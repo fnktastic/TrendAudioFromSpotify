@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfSetting xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Setting>
+    <Key>UserId</Key>
+    <Value>58c7525c8fc1463b8df4f904994f7c0c</Value>
+  </Setting>
+  <Setting>
+    <Key>SecretId</Key>
+    <Value>8542fd107ff84c89b8742da7a81f1c90</Value>
+  </Setting>
+  <Setting>
+    <Key>RedirectUri</Key>
+    <Value>http://localhost:4002</Value>
+  </Setting>
+  <Setting>
+    <Key>ServerUri</Key>
+    <Value>http://localhost:4002</Value>
+  </Setting>
+  <Setting>
+    <Key>accessToken</Key>
+    <Value>BQDeifwMFQyXV2U96H6-kN8cmTA5T0shoSYDbs9KXkd0UvbxCVvHFDDbMxiFESovJPSikl62477STHehB0IoO7w3MKUTtbANXu1RFw-iG_JN7suB4BxS3-GdwLbXqBvXPZ1tVKMqd8X7ZK3-Zbr2XBKHEJZjJ7V1No5hzwj1-AEmXPDd7aBFs-iD5y3vF4okdGzA5KEJvJVhytwLr-l8_HSFpFAHBlE</Value>
+  </Setting>
+</ArrayOfSetting>

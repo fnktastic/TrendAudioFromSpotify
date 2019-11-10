@@ -1,12 +1,10 @@
-﻿<UserControl x:Class="TrendAudioFromSpotify.UI.Controls.AudioView"
+﻿<UserControl x:Class="TrendAudioFromSpotify.UI.Controls.AudioControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:viewModels="clr-namespace:TrendAudioFromSpotify.UI.ViewModel"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:views="clr-namespace:TrendAudioFromSpotify.UI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Border BorderThickness="1" Padding="10 5" 

@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="TrendAudioFromSpotify.UI.Controls.PlaylistControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             mc:Ignorable="d" >
+    <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+        <CheckBox Grid.Row="0" Grid.Column="0"
+                      HorizontalAlignment="Right"
+                      IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
+            <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding Name}" ToolTip="{Binding Name}" />
+            <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding Total, StringFormat={}0 track(s)}" />
+        </StackPanel>
+    </Grid>
+    </Border>
+</UserControl>

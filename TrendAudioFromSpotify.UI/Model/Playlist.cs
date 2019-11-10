@@ -10,7 +10,13 @@ namespace TrendAudioFromSpotify.UI.Model
 {
     public class Playlist : ViewModelBase
     {
-        public SimplePlaylist SimplePlaylist { get; set; }
+        private SimplePlaylist _simplePlaylist { get; set; }
+
+        public string Id => _simplePlaylist.Id;
+
+        public string Name => _simplePlaylist.Name;
+
+        public int Total => _simplePlaylist.Tracks.Total;
 
         private bool _isChecked;
         public bool IsChecked
@@ -25,7 +31,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public Playlist(SimplePlaylist simplePlaylist)
         {
-            SimplePlaylist = simplePlaylist;
+            _simplePlaylist = simplePlaylist;
         }
     }
 }

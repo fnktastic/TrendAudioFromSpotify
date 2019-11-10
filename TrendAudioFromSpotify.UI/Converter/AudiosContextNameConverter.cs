@@ -14,7 +14,7 @@ namespace TrendAudioFromSpotify.UI.Converter
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if(value is Playlist playlist)
-                return playlist.SimplePlaylist.Name;
+                return playlist.Name;
 
             return "My Library";
         }
