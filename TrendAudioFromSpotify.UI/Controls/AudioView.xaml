@@ -5,9 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModels="clr-namespace:TrendAudioFromSpotify.UI.ViewModel"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:views="clr-namespace:TrendAudioFromSpotify.UI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border BorderThickness="1" Padding="10 5">
+    <Border BorderThickness="1" Padding="10 5" 
+            Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:MetroWindow}}}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MaxWidth="325" Width="0.9*"/>
@@ -18,7 +21,7 @@
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
-                <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="DemiBold" FontSize="10" Text="{Binding Track.Name}" />
+                <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="DemiBold" FontSize="10" Text="{Binding Title}" />
                 <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="Light" FontSize="12" Text="{Binding Artist}" />
             </StackPanel>
             <CheckBox Grid.Row="0" Grid.Column="1"
@@ -33,7 +36,9 @@
         </Grid>
         <Border.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Save" />
+                <MenuItem Header="Save" 
+                          CommandParameter="{Binding}" 
+                          Command="{Binding PlacementTarget.Tag.DataContext.SaveAudioToDbCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" />
             </ContextMenu>
         </Border.ContextMenu>
     </Border>

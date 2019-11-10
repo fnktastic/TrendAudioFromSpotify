@@ -1,3 +1,4 @@
+using AutoMapper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Model;
@@ -36,6 +38,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly DbContext _context;
 
         private readonly IAudioRepository _audioRepository;
+
+        private readonly Mapper _mapper;
         #endregion
 
         #region properties
@@ -275,7 +279,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             _context = new DbContext();
             _audioRepository = new AudioRepository(_context);
-            FetchDbData();
+
+            var configuration = new MapperConfiguration(cfg => 
+            {
+                cfg.CreateMap<Audio, AudioDto>();
+                cfg.CreateMap<Playlist, PlaylistDto>();
+            });
+
+            _mapper = new Mapper(configuration);
         }
 
         #region dialogs
@@ -411,23 +422,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region private data metods
-        private async void FetchDbData()
-        {
-            //await _audioRepository.InsertAsync(new Data.Model.Audio()
-            //{
-            //    Id = Guid.NewGuid().ToString(),
-            //    Artist = "Madeline Juno",
-            //    Title = "Less than heartbreake",
-            //    Href = "bing.com"
-            //});
-
-            var audios = await _audioRepository.GetAllAsync();
-
-            await _audioRepository.RemoveAsync(audios.FirstOrDefault());
-
-            var audio2 = await _audioRepository.GetAllAsync();
-        }
-
         private async Task FetchSpotifyData()
         {
             IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
@@ -459,13 +453,21 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
+        private RelayCommand<Audio> _saveAudioToDbCommand;
+        public RelayCommand<Audio> SaveAudioToDbCommand => _saveAudioToDbCommand ?? (_saveAudioToDbCommand = new RelayCommand<Audio>(SaveAudioToDb));
+        private async void SaveAudioToDb(Audio audio)
+        {
+            await _audioRepository.InsertAsync(_mapper.Map<AudioDto>(audio));
+        }
+
+
         private RelayCommand<Audio> _playSongCommand;
         public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
         private async void PlaySong(Audio audio)
         {
             if (audio != null)
             {
-                var playback = await _spotifyServices.PlayTrack(audio.Track.Uri);
+                var playback = await _spotifyServices.PlayTrack(audio.Uri);
 
                 if (playback.HasError())
                     await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
@@ -592,9 +594,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     if (selectedAudios.Count == 0)
                         selectedAudios = new List<Audio>(audiosOfPlaylists.Values.SelectMany(x => x).Select(x => new Audio(x)));
 
-                    var groupedAudios = selectedAudios.GroupBy(x => x.Track?.Id).Select(y =>
+                    var groupedAudios = selectedAudios.GroupBy(x => x.Id).Select(y =>
                     {
-                        var audio = selectedAudios.First(z => z.Track?.Id == y.Key);
+                        var audio = selectedAudios.First(z => z.Id == y.Key);
 
                         if (audio == null) return null;
 

@@ -11,12 +11,12 @@ namespace TrendAudioFromSpotify.Data.Repository
 {
     public interface IAudioRepository
     {
-        Task<List<Audio>> GetAllAsync();
+        Task<List<AudioDto>> GetAllAsync();
 
-        Task InsertAsync(Audio audio);
+        Task InsertAsync(AudioDto audio);
 
         Task RemoveAsync(string audioId);
-        Task RemoveAsync(Audio audio);
+        Task RemoveAsync(AudioDto audio);
     }
 
     public class AudioRepository : IAudioRepository
@@ -27,7 +27,7 @@ namespace TrendAudioFromSpotify.Data.Repository
             _context = context;
         }
 
-        public Task<List<Audio>> GetAllAsync()
+        public Task<List<AudioDto>> GetAllAsync()
         {
             return _context.Audios.ToListAsync();
         }
@@ -38,18 +38,18 @@ namespace TrendAudioFromSpotify.Data.Repository
 
             if (dbEntry != null)
             {
-                _context.Entry<Audio>(dbEntry).State = EntityState.Deleted;
+                _context.Entry<AudioDto>(dbEntry).State = EntityState.Deleted;
 
                 await _context.SaveChangesAsync();
             }
         }
 
-        public async Task RemoveAsync(Audio audio)
+        public async Task RemoveAsync(AudioDto audio)
         {
             await RemoveAsync(audio.Id);
         }
 
-        public async Task InsertAsync(Audio audio)
+        public async Task InsertAsync(AudioDto audio)
         {
             if (string.IsNullOrEmpty(audio.Id) == false)
             {
@@ -66,7 +66,6 @@ namespace TrendAudioFromSpotify.Data.Repository
                     dbEntry.Title = audio.Title;
                     dbEntry.Artist = audio.Artist;
                     dbEntry.Href = audio.Href;
-                    dbEntry.CreatedAt = audio.CreatedAt;
                     dbEntry.UpdatedAt = DateTime.UtcNow;
                 }
 

@@ -10,9 +10,17 @@ namespace TrendAudioFromSpotify.UI.Model
 {
     public class Audio : ViewModelBase
     {
-        public FullTrack Track { get; set; }
+        private FullTrack _track { get; set; }
 
-        public string Artist => string.Join(" ", Track.Artists.Select(x => x.Name));
+        public string Id => _track.Id;
+
+        public string Artist => string.Join(" ", _track.Artists.Select(x => x.Name));
+
+        public string Title => _track.Name;
+
+        public string Href => _track.Href;
+
+        public string Uri => _track.Uri;
 
         public int Hits { get; set; }
 
@@ -29,7 +37,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public Audio(FullTrack track)
         {
-            Track = track;
+            _track = track;
         }
     }
 }

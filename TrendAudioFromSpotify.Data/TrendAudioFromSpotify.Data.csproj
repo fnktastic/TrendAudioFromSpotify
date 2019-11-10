@@ -58,9 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccess\Context.cs" />
-    <Compile Include="Model\Audio.cs" />
-    <Compile Include="Model\Playlist.cs" />
-    <Compile Include="Model\PlaylistAudio.cs" />
+    <Compile Include="Model\AudioDto.cs" />
+    <Compile Include="Model\PlaylistDto.cs" />
+    <Compile Include="Model\PlaylistAudioDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\AudioRepository.cs" />
   </ItemGroup>

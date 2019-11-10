@@ -15,23 +15,23 @@ namespace TrendAudioFromSpotify.Data.DataAccess
 
         }
 
-        public DbSet<Audio> Audios { get; set; }
+        public DbSet<AudioDto> Audios { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Audio>().HasKey(a => a.Id);
+            modelBuilder.Entity<AudioDto>().HasKey(a => a.Id);
 
-            modelBuilder.Entity<Playlist>().HasKey(p => p.Id);
+            modelBuilder.Entity<PlaylistDto>().HasKey(p => p.Id);
 
-            modelBuilder.Entity<PlaylistAudio>()
+            modelBuilder.Entity<PlaylistAudioDto>()
                 .HasKey(pa => new { pa.PlaylistId, pa.AudioId });
 
-            modelBuilder.Entity<PlaylistAudio>()
+            modelBuilder.Entity<PlaylistAudioDto>()
                 .HasRequired(pa => pa.Audio)
                 .WithMany(p => p.PlaylistAudios)
                 .HasForeignKey(pc => pc.AudioId);
 
-            modelBuilder.Entity<PlaylistAudio>()
+            modelBuilder.Entity<PlaylistAudioDto>()
                 .HasRequired(pc => pc.Playlist)
                 .WithMany(c => c.PlaylistAudios)
                 .HasForeignKey(pc => pc.PlaylistId);

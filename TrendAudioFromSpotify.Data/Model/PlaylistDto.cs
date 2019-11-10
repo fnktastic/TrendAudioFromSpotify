@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.Data.Model
 {
-    public class Playlist
+    [Table("Playlist")]
+    public class PlaylistDto
     {
         public string Id { get; set; }
         public string Href { get; set; }
@@ -14,6 +16,6 @@ namespace TrendAudioFromSpotify.Data.Model
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public virtual ICollection<PlaylistAudio> PlaylistAudios { get; set; }
+        public virtual ICollection<PlaylistAudioDto> PlaylistAudios { get; set; }
     }
 }
