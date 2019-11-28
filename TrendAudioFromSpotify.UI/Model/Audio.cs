@@ -35,6 +35,17 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private int _no;
+        public int No
+        {
+            get { return _no; }
+            set
+            {
+                _no = value;
+                RaisePropertyChanged(nameof(No));
+            }
+        }
+
         public Audio(FullTrack track)
         {
             _track = track;

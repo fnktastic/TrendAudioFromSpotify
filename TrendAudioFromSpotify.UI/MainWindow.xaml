@@ -9,8 +9,15 @@
         mc:Ignorable="d"
         WindowTitleBrush="Black"
         DataContext="{Binding Main, Source={StaticResource Locator}}"
-        Title="Trendify | 0.84" Height="750" Width="1200">
+        Title="Trendify | 0.94.201" Height="750" Width="1200">
     <Grid>
-        <views:AppAreaUserControl  />
+        <TabControl>
+            <TabItem Header="Spotify">
+                <views:AppAreaUserControl  />
+            </TabItem>
+            <TabItem Header="Monitoring">
+                <views:MonitoringUserControl />
+            </TabItem>
+        </TabControl>
     </Grid>
 </Controls:MetroWindow>

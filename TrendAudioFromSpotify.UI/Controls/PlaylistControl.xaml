@@ -3,24 +3,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:viewModels="clr-namespace:TrendAudioFromSpotify.UI.ViewModel"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              mc:Ignorable="d" >
-    <Border Width="120" Height="80" BorderThickness="1" BorderBrush="LightGray" Margin="3">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="25" />
-            <RowDefinition Height="1*" />
-        </Grid.RowDefinitions>
-        <CheckBox Grid.Row="0" Grid.Column="0"
-                      HorizontalAlignment="Right"
-                      IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-        <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Center">
-            <TextBlock TextAlignment="Center" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" MaxHeight="30" FontSize="10" Text="{Binding Name}" ToolTip="{Binding Name}" />
-            <TextBlock TextAlignment="Center" FontWeight="Light" FontSize="12" Text="{Binding Total, StringFormat={}0 track(s)}" />
-        </StackPanel>
-    </Grid>
+    <Border BorderThickness="1"
+            CornerRadius="5"
+            Padding="10 5" 
+            Background="Black">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.7*"></ColumnDefinition>
+                <ColumnDefinition Width="0.3*"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="50"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0"
+                   TextAlignment="Left" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" 
+                   FontSize="12" 
+                   Text="{Binding Name}" ToolTip="{Binding Name}" />
+            <TextBlock Grid.Column="1"
+                   TextAlignment="Left" FontWeight="Light" 
+                   FontSize="12" 
+                   Text="{Binding Total, StringFormat={}0 track(s)}" />
+            <TextBlock Grid.Column="2"
+                   TextAlignment="Left" FontWeight="Light" 
+                   FontSize="12" 
+                   Text="{Binding Owner}" ToolTip="{Binding Owner}" />
+            <CheckBox  Grid.Column="3"
+                   HorizontalAlignment="Center"
+                   IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <cmd:EventToCommand Command="{Binding Path=DataContext.PlaylistSelectedCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                                    CommandParameter="{Binding}"
+                                    PassEventArgsToCommand="True" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </CheckBox>
+        </Grid>
     </Border>
 </UserControl>

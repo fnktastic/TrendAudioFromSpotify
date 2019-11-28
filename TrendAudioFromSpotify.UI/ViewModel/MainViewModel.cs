@@ -15,6 +15,7 @@ using System.Windows.Media;
 using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.Service.Spotify;
+using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Utility;
 using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
@@ -40,6 +41,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IAudioRepository _audioRepository;
 
         private readonly Mapper _mapper;
+
+        private readonly MonitoringViewModel _monitoringViewModel;
         #endregion
 
         #region properties
@@ -55,8 +58,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private ObservableCollection<Playlist> _explorePlaylists;
-        public ObservableCollection<Playlist> ExplorePlaylists
+        private PlaylistCollection _explorePlaylists;
+        public PlaylistCollection ExplorePlaylists
         {
             get { return _explorePlaylists; }
             set
@@ -164,15 +167,15 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private int _appearsAtLeastInX;
-        public int AppearsAtLeastInX
+        private string _appearsTimesInX;
+        public string AppearsTimesInX
         {
-            get { return _appearsAtLeastInX; }
+            get { return _appearsTimesInX; }
             set
             {
-                if (value == _appearsAtLeastInX) return;
-                _appearsAtLeastInX = value;
-                RaisePropertyChanged(nameof(AppearsAtLeastInX));
+                if (value == _appearsTimesInX) return;
+                _appearsTimesInX = value;
+                RaisePropertyChanged(nameof(AppearsTimesInX));
             }
         }
 
@@ -211,8 +214,20 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private ObservableCollection<Playlist> _playlists;
-        public ObservableCollection<Playlist> Playlists
+        private PlaylistCollection _targetPlaylists;
+        public PlaylistCollection TargetPlaylists
+        {
+            get { return _targetPlaylists; }
+            set
+            {
+                if (value == _targetPlaylists) return;
+                _targetPlaylists = value;
+                RaisePropertyChanged(nameof(TargetPlaylists));
+            }
+        }
+
+        private PlaylistCollection _playlists;
+        public PlaylistCollection Playlists
         {
             get { return _playlists; }
             set
@@ -223,20 +238,20 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private ObservableCollection<Audio> _trendTracks;
-        public ObservableCollection<Audio> TrendTracks
+        private AudioCollection _targetAudios;
+        public AudioCollection TargetAudios
         {
-            get { return _trendTracks; }
+            get { return _targetAudios; }
             set
             {
-                if (value == _trendTracks) return;
-                _trendTracks = value;
-                RaisePropertyChanged(nameof(TrendTracks));
+                if (value == _targetAudios) return;
+                _targetAudios = value;
+                RaisePropertyChanged(nameof(TargetAudios));
             }
         }
 
-        private ObservableCollection<Audio> _savedTracks;
-        public ObservableCollection<Audio> SavedTracks
+        private AudioCollection _savedTracks;
+        public AudioCollection SavedTracks
         {
             get { return _savedTracks; }
             set
@@ -258,17 +273,33 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RaisePropertyChanged(nameof(SelectedPlaylist));
 
                 if (_selectedPlaylist != null)
-                { 
+                {
                     _selectedPlaylist.IsChecked = true;
+
+                    PlaylistSelectedCommand.Execute(_selectedPlaylist);
+
                     GetPlaylistsAudios();
                 }
             }
         }
 
+
+        private Group _targetGroup;
+        public Group TargetGroup
+        {
+            get { return _targetGroup; }
+            set
+            {
+                if (value == _targetGroup) return;
+                _targetGroup = value;
+                RaisePropertyChanged(nameof(TargetGroup));
+            }
+        }
         #endregion
 
-        public MainViewModel()
+        public MainViewModel(MonitoringViewModel monitoringViewModel)
         {
+            _monitoringViewModel = monitoringViewModel;
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
             IsSpotifyCredsEntered = LoadSettings();
@@ -276,11 +307,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
 
             Users = new ObservableCollection<User>();
+            TargetPlaylists = new PlaylistCollection();
+            TargetAudios = new AudioCollection();
+            TargetGroup = new Group();
 
             _context = new DbContext();
             _audioRepository = new AudioRepository(_context);
 
-            var configuration = new MapperConfiguration(cfg => 
+            var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Audio, AudioDto>();
                 cfg.CreateMap<Playlist, PlaylistDto>();
@@ -377,6 +411,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 await ShowMessage("Notification", "Succesfully authorized in Spotify!");
 
                 await HideConnectingMessage();
+
+                var myPublicProfile = await _spotifyServices.GetMyProfile();
             }
             else
             {
@@ -428,13 +464,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             var playlists = (await _spotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
 
-            Playlists = new ObservableCollection<Playlist>(playlists);
+            Playlists = new PlaylistCollection(playlists);
 
             IsPlaylistsAreaBusy = false;
 
             likedSongs = (await _spotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
 
-            SavedTracks = new ObservableCollection<Audio>(likedSongs);
+            SavedTracks = new AudioCollection(likedSongs);
 
             var foreignUserPlaylists = await _spotifyServices.GetForeignUserPlaylists();
 
@@ -446,13 +482,31 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             IsSongsAreaBusy = true;
 
             var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
-            SavedTracks = new ObservableCollection<Audio>(audios.Select(x => new Audio(x.Track)));
+            SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
 
             IsSongsAreaBusy = false;
         }
         #endregion
 
         #region commands
+        private RelayCommand<Playlist> _playlistSelectedCommand;
+        public RelayCommand<Playlist> PlaylistSelectedCommand => _playlistSelectedCommand ?? (_playlistSelectedCommand = new RelayCommand<Playlist>(PlaylistSelected));
+        private void PlaylistSelected(Playlist playlist)
+        {
+            if (playlist.IsChecked)
+                _targetPlaylists.Add(playlist);
+            else
+                _targetPlaylists.Remove(playlist);
+        }
+
+        private RelayCommand<Audio> _addAudioToTargetCommand;
+        public RelayCommand<Audio> AddAudioToTargetCommand => _addAudioToTargetCommand ?? (_addAudioToTargetCommand = new RelayCommand<Audio>(AddAudioToTarget));
+        private void AddAudioToTarget(Audio audio)
+        {
+            if (_targetAudios.Contains(audio) == false)
+                _targetAudios.Add(audio);
+        }
+
         private RelayCommand<Audio> _saveAudioToDbCommand;
         public RelayCommand<Audio> SaveAudioToDbCommand => _saveAudioToDbCommand ?? (_saveAudioToDbCommand = new RelayCommand<Audio>(SaveAudioToDb));
         private async void SaveAudioToDb(Audio audio)
@@ -524,7 +578,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 .Select(x => new Playlist(x))
                 .ToList();
 
-            ExplorePlaylists = new ObservableCollection<Playlist>(userPlaylists);
+            ExplorePlaylists = new PlaylistCollection(userPlaylists);
 
             IsPlaylistsAreaBusy = false;
         }
@@ -553,69 +607,73 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsSongsAreaBusy = true;
 
-            SavedTracks = new ObservableCollection<Audio>(likedSongs);
+            SavedTracks = new AudioCollection(likedSongs);
 
             SelectedPlaylist = null;
 
             IsSongsAreaBusy = false;
         }
 
-        private RelayCommand _getTrendsCommand;
-        public RelayCommand GetTrendsCommand => _getTrendsCommand ?? (_getTrendsCommand = new RelayCommand(GetTrends));
+        private RelayCommand _createProcessGroupCommand;
+        public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
         private void GetTrends()
         {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    IsProcessingAreaIsBusy = true;
+            var group = new Group(_targetGroup, _targetAudios, _targetPlaylists);
 
-                    var selectedAudios = SavedTracks.Where(x => x.IsChecked).ToList();
+            group.Process();
 
-                    var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.Id).ToList();
+            //Task.Run(async () =>
+            //{
+            //    try
+            //    {
+            //        IsProcessingAreaIsBusy = true;
 
-                    if (_explorePlaylists != null)
-                        selectedPlaylists.AddRange(_explorePlaylists.Where(x => x.IsChecked).Select(x => x.Id));
+            //        var selectedAudios = SavedTracks.Where(x => x.IsChecked).ToList();
 
-                    var audiosOfPlaylists = new Dictionary<string, List<FullTrack>>();
+            //        var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.Id).ToList();
 
-                    foreach (var selectedPlaylist in selectedPlaylists)
-                    {
-                        var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(selectedPlaylist)).Select(x => x.Track).ToList();
+            //        if (_explorePlaylists != null)
+            //            selectedPlaylists.AddRange(_explorePlaylists.Where(x => x.IsChecked).Select(x => x.Id));
 
-                        if (audiosOfPlaylists.ContainsKey(selectedPlaylist))
-                            continue;
+            //        var audiosOfPlaylists = new Dictionary<string, List<FullTrack>>();
 
-                        audiosOfPlaylists.Add(selectedPlaylist, audiosOfPlaylist);
-                    }
+            //        foreach (var selectedPlaylist in selectedPlaylists)
+            //        {
+            //            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(selectedPlaylist)).Select(x => x.Track).ToList();
 
-                    var trendAudios = new Dictionary<Audio, int>();
+            //            if (audiosOfPlaylists.ContainsKey(selectedPlaylist))
+            //                continue;
 
-                    if (selectedAudios.Count == 0)
-                        selectedAudios = new List<Audio>(audiosOfPlaylists.Values.SelectMany(x => x).Select(x => new Audio(x)));
+            //            audiosOfPlaylists.Add(selectedPlaylist, audiosOfPlaylist);
+            //        }
 
-                    var groupedAudios = selectedAudios.GroupBy(x => x.Id).Select(y =>
-                    {
-                        var audio = selectedAudios.First(z => z.Id == y.Key);
+            //        var trendAudios = new Dictionary<Audio, int>();
 
-                        if (audio == null) return null;
+            //        if (selectedAudios.Count == 0)
+            //            selectedAudios = new List<Audio>(audiosOfPlaylists.Values.SelectMany(x => x).Select(x => new Audio(x)));
 
-                        audio.Hits = y.Count();
+            //        var groupedAudios = selectedAudios.GroupBy(x => x.Id).Select(y =>
+            //        {
+            //            var audio = selectedAudios.First(z => z.Id == y.Key);
 
-                        return audio;
-                    })
-                    .Where(x => x != null)
-                    .Where(x => x.Hits >= _appearsAtLeastInX)
-                    .OrderByDescending(x => x.Hits)
-                    .ToList();
+            //            if (audio == null) return null;
 
-                    TrendTracks = new ObservableCollection<Audio>(groupedAudios);
-                }
-                finally
-                {
-                    IsProcessingAreaIsBusy = false;
-                }
-            });
+            //            audio.Hits = y.Count();
+
+            //            return audio;
+            //        })
+            //        .Where(x => x != null)
+            //        .Where(x => x.Hits >= int.Parse(_appearsTimesInX))
+            //        .OrderByDescending(x => x.Hits)
+            //        .ToList();
+
+            //        TargetAudios = new AudioCollection(groupedAudios);
+            //    }
+            //    finally
+            //    {
+            //        IsProcessingAreaIsBusy = false;
+            //    }
+            //});
         }
 
         private RelayCommand _saveSpotifyCredentialsCommand;

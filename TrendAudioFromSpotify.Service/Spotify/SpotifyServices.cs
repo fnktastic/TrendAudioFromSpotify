@@ -15,6 +15,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(string username = "_annalasnier_");
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
+        Task<PublicProfile> GetMyProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
         PrivateProfile PrivateProfile { get; }
     }
@@ -127,6 +128,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
         public Task<ErrorResponse> PlayTrack(string trackUri)
         {
             return _spotifyWebAPI.ResumePlaybackAsync("", "", new List<string> { trackUri }, "", 0);
+        }
+
+        public Task<PublicProfile> GetMyProfile()
+        {
+            return _spotifyWebAPI.GetPublicProfileAsync(PrivateProfile.Id);
         }
     }
 }

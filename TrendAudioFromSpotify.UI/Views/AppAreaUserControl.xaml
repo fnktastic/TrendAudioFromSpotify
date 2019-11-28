@@ -6,15 +6,29 @@
              xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             xmlns:customSontrols="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             xmlns:customControls="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              Dialog:DialogParticipation.Register="{Binding}"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Views"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:enums="clr-namespace:TrendAudioFromSpotify.UI.Enum"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="900">
     <UserControl.Resources>
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
         <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
         <converter:AudiosContextNameConverter x:Key="AudiosContextNameConverter" />
+        <ObjectDataProvider x:Key="comparisonEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:ComparisonEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="playlistTypeEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:PlaylistTypeEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -85,32 +99,6 @@
                                     <Setter Property="Controls:ControlsHelper.HeaderFontSize" Value="18" />
                                 </Style>
                             </TabControl.Resources>
-                            <TabItem Header="My Playlists">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="40" />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Controls:ProgressRing Grid.Row="1" Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Visible}" />
-                                    <Button Grid.Row="0" Command="{Binding SelectAllMyPlaylistsCommand}" Width="100" Content="Select All" />
-                                    <ListBox 
-                                        Grid.Row="1"
-                                        Margin="5"
-                                        Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                        ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylist}">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <customSontrols:PlaylistControl />
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                        <ListBox.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel MaxWidth="1000" />
-                                            </ItemsPanelTemplate>
-                                        </ListBox.ItemsPanel>
-                                    </ListBox>
-                                </Grid>
-                            </TabItem>
                             <TabItem Header ="Explore Playlists" >
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -122,14 +110,19 @@
                                         <RowDefinition Height="1*" />
                                         <RowDefinition Height="30" />
                                     </Grid.RowDefinitions>
-                                    <DockPanel>
-                                        <TextBox Text="{Binding User}" Controls:TextBoxHelper.Watermark="add username" VerticalContentAlignment="Center" DockPanel.Dock="Left" Width="130" />
-                                        <Button Command="{Binding AddUserCommand}" HorizontalAlignment="Left" Content="Add" Width="50" Margin="5 0 0 0" />
-                                        <Button Command="{Binding SelectAllUsersCommand}" HorizontalAlignment="Left" Content="✔" Width="30" Margin="15 0 0 0" />
-                                    </DockPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="55" />
+                                            <ColumnDefinition Width="40" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBox Grid.Column="0" Text="{Binding User}" Controls:TextBoxHelper.Watermark="add username" VerticalContentAlignment="Center" />
+                                        <Button Grid.Column="1" Command="{Binding AddUserCommand}" HorizontalAlignment="Left" Content="Add" Width="50" Margin="5 0 0 0" />
+                                        <Button Grid.Column="2" Command="{Binding SelectAllUsersCommand}" HorizontalAlignment="Left" Content="✔" Width="30" Margin="5 0 0 0" />
+                                    </Grid>
                                     <ListBox Grid.Column="0" Grid.Row="1"
                                              Margin="0 5 0 5"
-                                        ItemsSource="{Binding Users}">
+                                             ItemsSource="{Binding Users}">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <DockPanel>
@@ -151,27 +144,37 @@
 
                                     <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="40" />
-                                            <RowDefinition />
+                                            <RowDefinition Height="0" />
+                                            <RowDefinition  />
                                         </Grid.RowDefinitions>
-                                        <Button Grid.Row="0" Command="{Binding SelectExplorePlaylistsCommand}" Width="100" Content="Select All" />
-                                        <ListBox 
+                                        <Button Grid.Row="0"
+                                                Visibility="Collapsed"
+                                                Command="{Binding SelectExplorePlaylistsCommand}" Width="100" Content="Select All" />
+
+                                        <customControls:PlaylistsCollectionControl
                                             Grid.Row="1"
                                             Margin="5"
-                                            Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                            ItemsSource="{Binding ExplorePlaylists}" SelectedItem="{Binding SelectedPlaylist}">
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <customSontrols:PlaylistControl />
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                            <ListBox.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <WrapPanel MaxWidth="750" />
-                                                </ItemsPanelTemplate>
-                                            </ListBox.ItemsPanel>
-                                        </ListBox>
+                                            ItemsSource="{Binding ExplorePlaylists}" SelectedItem="{Binding SelectedPlaylist}"
+                                            Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
                                     </Grid>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="My Playlists">
+                                <Grid Height="Auto">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="0" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Controls:ProgressRing Grid.Row="1" Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Visible}" />
+                                    <Button Grid.Row="0"
+                                            Visibility="Collapsed"
+                                            Command="{Binding SelectAllMyPlaylistsCommand}" Width="100" Content="Select All" />
+                                    <customControls:PlaylistsCollectionControl 
+                                        Grid.Row="1"
+                                        Margin="5"
+                                        Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                        ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylist}">
+                                    </customControls:PlaylistsCollectionControl>
                                 </Grid>
                             </TabItem>
                         </TabControl>
@@ -200,21 +203,17 @@
                                    HorizontalAlignment="Center"
                                    FontSize="16"
                                    FontWeight="Thin"
-                                   Text="{Binding SelectedPlaylist, Converter={StaticResource AudiosContextNameConverter}}" /> 
+                                   Text="{Binding SelectedPlaylist, Converter={StaticResource AudiosContextNameConverter}}" />
                         <Controls:ProgressRing 
                             Grid.Row="1" Grid.Column="0"
                             Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
 
-                        <ListBox Grid.Row="1" Grid.Column="0" 
+                        <customControls:AudioCollectionControl
+                                 Grid.Row="1" Grid.Column="0" 
                                  SelectedItem="{Binding SelectedAudio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                                  ItemsSource="{Binding SavedTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <customSontrols:AudioControl />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        </customControls:AudioCollectionControl>
 
                         <Button Margin="15" Grid.Row="2" Grid.Column="0" Content="Load My Library" Command="{Binding LikedSongsLoadCommand}" />
                     </Grid>
@@ -231,66 +230,80 @@
                 <Border Grid.Row="2" Grid.Column="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="210" />
+                            <ColumnDefinition Width="0.65*" />
+                            <ColumnDefinition Width="0.35*" />
                         </Grid.ColumnDefinitions>
-                        <GroupBox Header="Settings" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
+                        <GroupBox Header="Group setting" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
                             <Grid  HorizontalAlignment="Center">
                                 <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <Controls:ProgressRing />
                                     <TextBlock Text="Please wait..." FontSize="14" Margin="0 15 0 0" FontWeight="SemiBold" HorizontalAlignment="Center" />
                                 </StackPanel>
-                                <StackPanel Visibility="{Binding IsProcessingAreaIsBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock VerticalAlignment="Center" TextAlignment="Center" Text="Each of the selected track should appears at least in " TextWrapping="Wrap"/>
-                                        <TextBox VerticalAlignment="Center" HorizontalContentAlignment="Center" Text="{Binding AppearsAtLeastInX}" Width="55" Controls:TextBoxHelper.Watermark="integer" />
-                                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text=" of selected playlist(s) " />
-                                    </StackPanel>
-                                    <Button Margin="0 15 0 0" Content="Process" Command="{Binding GetTrendsCommand}" Width="100" />
+                                <StackPanel Width="200" Visibility="{Binding IsProcessingAreaIsBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                    <TextBox 
+                                        Text="{Binding TargetGroup.Name}"
+                                        Controls:TextBoxHelper.Watermark="group name" HorizontalContentAlignment="Center" />
+                                    
+                                    <DockPanel Margin="0 10 0 0">
+                                        <TextBlock Text="Hit threshold: " 
+                                                   VerticalAlignment="Center" />
+                                        <ComboBox ItemsSource="{Binding Source={StaticResource comparisonEnum}}"
+                                              Controls:TextBoxHelper.Watermark="-"
+                                              HorizontalContentAlignment="Center"
+                                              HorizontalAlignment="Stretch"
+                                              SelectedItem="{Binding TargetGroup.Comparison}" />
+                                        <TextBox VerticalAlignment="Center" 
+                                                 HorizontalAlignment="Stretch"
+                                                 HorizontalContentAlignment="Center" Text="{Binding TargetGroup.HitTreshold}" Controls:TextBoxHelper.Watermark="time(s)" />
+                                    </DockPanel>
+
+                                    <DockPanel Margin="0 10 0 0">
+                                        <TextBlock Text="Top trends: " VerticalAlignment="Center" />
+                                        <TextBox 
+                                            Text="{Binding TargetGroup.Top}"
+                                            Controls:TextBoxHelper.Watermark="top X trends" HorizontalContentAlignment="Center" />
+                                    </DockPanel>
+
+                                    <DockPanel Margin="0 10 0 0">
+                                        <TextBlock Text="Playlist type: " VerticalAlignment="Center" />
+                                        <ComboBox ItemsSource="{Binding Source={StaticResource playlistTypeEnum}}"
+                                              Controls:TextBoxHelper.Watermark="target playlist type"
+                                              HorizontalContentAlignment="Center"
+                                              HorizontalAlignment="Stretch"
+                                              SelectedItem="{Binding TargetGroup.PlaylistType}" />
+                                    </DockPanel>
+                                    <Button Margin="0 15 0 0" Content="Create and process" Command="{Binding CreateProcessGroupCommand}" Width="150" />
                                 </StackPanel>
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="Trends" Grid.Column="1" Background="Black" BorderBrush="#FF585656">
+                        <GroupBox Header="Target Playlists" Grid.Column="1" Background="Black" BorderBrush="#FF585656">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <Controls:ProgressRing />
                                     <TextBlock Text="Please wait..." FontSize="14" Margin="0 15 0 0" FontWeight="SemiBold" HorizontalAlignment="Center" />
                                 </StackPanel>
 
-                                <Grid  Visibility="{Binding IsProcessingAreaIsBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="350" />
-                                        <ColumnDefinition Width="350" />
-                                    </Grid.ColumnDefinitions>
-                                    <ListBox Grid.Column="0" Width="350" HorizontalAlignment="Right"
-                                              ItemsSource="{Binding TrendTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border BorderThickness="1" Padding="10 5">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition MaxWidth="350" Width="0.9*"/>
-                                                            <ColumnDefinition Width="0.1*" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="1*" />
-                                                        </Grid.RowDefinitions>
-                                                        <TextBlock Grid.Row="0" Grid.Column="1" 
-                                                               Text="{Binding Hits, StringFormat={}0 hit(s)}"
-                                                               HorizontalAlignment="Right" />
-                                                        <StackPanel Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                                            <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" 
-                                                                       MaxWidth="250"
-                                                                       FontWeight="DemiBold" FontSize="10" Text="{Binding Track.Name}" />
-                                                            <TextBlock TextAlignment="Left" 
-                                                                       MaxWidth="250"
-                                                                       TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="Light" FontSize="12" Text="{Binding Artist}" />
-                                                        </StackPanel>
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
+                                <Grid>
+                                    <customControls:PlaylistsCollectionControl 
+                                        Margin="5"
+                                        HorizontalAlignment="Stretch"
+                                        ItemsSource="{Binding TargetPlaylists}" SelectedItem="{Binding SelectedPlaylist}">
+                                    </customControls:PlaylistsCollectionControl>
+                                </Grid>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Target Audios" Grid.Column="2" Background="Black" BorderBrush="#FF585656">
+                            <Grid>
+                                <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">
+                                    <Controls:ProgressRing />
+                                    <TextBlock Text="Please wait..." FontSize="14" Margin="0 15 0 0" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                </StackPanel>
+
+                                <Grid Visibility="{Binding IsProcessingAreaIsBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                    <customControls:AudioCollectionControl
+                                        HorizontalAlignment="Stretch"
+                                        ItemsSource="{Binding TargetAudios}" ScrollViewer.VerticalScrollBarVisibility="Auto" />
                                 </Grid>
                             </Grid>
                         </GroupBox>

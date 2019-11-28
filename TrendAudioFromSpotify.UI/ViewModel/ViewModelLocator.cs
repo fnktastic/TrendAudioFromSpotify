@@ -10,6 +10,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
             SimpleIoc.Default.Register<MainViewModel>();
+
+            SimpleIoc.Default.Register<MonitoringViewModel>();
         }
 
         public MainViewModel Main
@@ -20,6 +22,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
         
+        public MonitoringViewModel Monitoring
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<MonitoringViewModel>();
+            }
+        }
+
         public static void Cleanup()
         {
             // TODO Clear the ViewModels
