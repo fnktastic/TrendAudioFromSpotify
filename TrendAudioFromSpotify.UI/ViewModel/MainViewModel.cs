@@ -647,7 +647,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
             SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
-    
+
             IsSongsAreaBusy = false;
         }
         #endregion
@@ -804,6 +804,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             TargetAudios = new AudioCollection();
 
             TargetPlaylists = new PlaylistCollection();
+
+            if (ExplorePlaylists != null)
+                foreach (var playlist in ExplorePlaylists)
+                    playlist.IsChecked = false;
+
+            if (Playlists != null)
+                foreach (var playlist in Playlists)
+                    playlist.IsChecked = false;
         }
 
         private RelayCommand _saveSpotifyCredentialsCommand;
