@@ -7,13 +7,12 @@
         xmlns:local="clr-namespace:TrendAudioFromSpotify.UI"
         xmlns:views="clr-namespace:TrendAudioFromSpotify.UI.Views"
         mc:Ignorable="d"
-        WindowTitleBrush="Black"
-        DataContext="{Binding Main, Source={StaticResource Locator}}"
+        WindowTitleBrush="Black"        
         Title="Trendify | 0.94.201" Height="750" Width="1200">
     <Grid>
         <TabControl>
             <TabItem Header="Spotify">
-                <views:AppAreaUserControl  />
+                <views:AppAreaUserControl />
             </TabItem>
             <TabItem Header="Monitoring">
                 <views:MonitoringUserControl />

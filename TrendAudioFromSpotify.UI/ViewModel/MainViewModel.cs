@@ -11,6 +11,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
@@ -46,6 +49,55 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region properties
+        public CollectionViewSource FilteredAudioCollection { get; set; }
+        public CollectionViewSource FilteredExplorePlaylistsCollection { get; set; }
+        public CollectionViewSource FilteredMyPlaylistsCollection { get; set; }
+
+        private string _myPlaylistsSearchText;
+        public string MyPlaylistsSearchText
+        {
+            get { return _myPlaylistsSearchText; }
+            set
+            {
+                if (value == _myPlaylistsSearchText) return;
+                _myPlaylistsSearchText = value;
+
+                FilteredMyPlaylistsCollection.View.Refresh();
+
+                RaisePropertyChanged(nameof(MyPlaylistsSearchText));
+            }
+        }
+
+        private string _explorePlaylistsSearchText;
+        public string ExplorePlaylistsSearchText
+        {
+            get { return _explorePlaylistsSearchText; }
+            set
+            {
+                if (value == _explorePlaylistsSearchText) return;
+                _explorePlaylistsSearchText = value;
+
+                FilteredExplorePlaylistsCollection.View.Refresh();
+
+                RaisePropertyChanged(nameof(ExplorePlaylistsSearchText));
+            }
+        }
+
+        private string _audiosSearchText;
+        public string AudiosSearchText
+        {
+            get { return _audiosSearchText; }
+            set
+            {
+                if (value == _audiosSearchText) return;
+                _audiosSearchText = value;
+
+                FilteredAudioCollection.View.Refresh();
+
+                RaisePropertyChanged(nameof(AudiosSearchText));
+            }
+        }
+
         private Audio _selectedAudio;
         public Audio SelectedAudio
         {
@@ -67,6 +119,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _explorePlaylists) return;
                 _explorePlaylists = value;
                 RaisePropertyChanged(nameof(ExplorePlaylists));
+
+                if (_explorePlaylists != null)
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        FilteredExplorePlaylistsCollection.Source = _explorePlaylists;
+                    });
             }
         }
 
@@ -235,6 +293,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _playlists) return;
                 _playlists = value;
                 RaisePropertyChanged(nameof(Playlists));
+
+                if (_playlists != null)
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        FilteredMyPlaylistsCollection.Source = _playlists;
+                    });
             }
         }
 
@@ -258,6 +322,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             {
                 if (value == _savedTracks) return;
                 _savedTracks = value;
+
+                if (_savedTracks != null)
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        FilteredAudioCollection.Source = _savedTracks;
+                    });
+
                 RaisePropertyChanged(nameof(SavedTracks));
             }
         }
@@ -310,6 +381,15 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             TargetPlaylists = new PlaylistCollection();
             TargetAudios = new AudioCollection();
             TargetGroup = new Group();
+
+            FilteredAudioCollection = new CollectionViewSource();
+            FilteredAudioCollection.Filter += FilteredAudioCollection_Filter;
+
+            FilteredExplorePlaylistsCollection = new CollectionViewSource();
+            FilteredExplorePlaylistsCollection.Filter += FilteredExplorePlaylistsCollection_Filter;
+
+            FilteredMyPlaylistsCollection = new CollectionViewSource();
+            FilteredMyPlaylistsCollection.Filter += FilteredMyPlaylistsCollection_Filter;
 
             _context = new DbContext();
             _audioRepository = new AudioRepository(_context);
@@ -458,6 +538,87 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region private data metods
+        void FilteredMyPlaylistsCollection_Filter(object sender, FilterEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_myPlaylistsSearchText))
+            {
+                e.Accepted = true;
+                return;
+            }
+
+            if (e.Item != null)
+            {
+                if (e.Item is Playlist playlist)
+                {
+                    if (playlist.Name.ToUpper().Contains(_myPlaylistsSearchText.ToUpper()) ||
+                        playlist.Owner.ToUpper().Contains(_myPlaylistsSearchText.ToUpper()))
+                    {
+                        e.Accepted = true;
+                        return;
+                    }
+                }
+            }
+
+            e.Accepted = false;
+        }
+
+        void FilteredExplorePlaylistsCollection_Filter(object sender, FilterEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_explorePlaylistsSearchText))
+            {
+                e.Accepted = true;
+                return;
+            }
+
+            if (e.Item != null)
+            {
+                if (e.Item is Playlist playlist)
+                {
+                    if (playlist.Name.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()) ||
+                        playlist.Owner.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()))
+                    {
+                        e.Accepted = true;
+                        return;
+                    }
+                }
+            }
+
+            e.Accepted = false;
+        }
+
+        void FilteredAudioCollection_Filter(object sender, FilterEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_audiosSearchText))
+            {
+                e.Accepted = true;
+                return;
+            }
+
+            if (e.Item != null)
+            {
+                if (e.Item is Audio audio)
+                {
+                    if (audio.Title.ToUpper().Contains(_audiosSearchText.ToUpper()) ||
+                        audio.Artist.ToUpper().Contains(_audiosSearchText.ToUpper()))
+                    {
+                        e.Accepted = true;
+                        return;
+                    }
+                }
+            }
+
+            e.Accepted = false;
+        }
+
+        private void AddSpotifyUser()
+        {
+            if (string.IsNullOrEmpty(_user)) return;
+
+            _users.Add(new User(_user));
+
+            User = string.Empty;
+        }
+
         private async Task FetchSpotifyData()
         {
             IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
@@ -489,12 +650,27 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
+        private RelayCommand<KeyEventArgs> _addSpotifyUsernameCommand;
+        public RelayCommand<KeyEventArgs> AddSpotifyUsernameCommand => _addSpotifyUsernameCommand ?? (_addSpotifyUsernameCommand = new RelayCommand<KeyEventArgs>(AddSpotifyUsername));
+        private void AddSpotifyUsername(KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Return)
+            {
+                AddSpotifyUser();
+            }
+        }
+
         private RelayCommand<Playlist> _playlistSelectedCommand;
         public RelayCommand<Playlist> PlaylistSelectedCommand => _playlistSelectedCommand ?? (_playlistSelectedCommand = new RelayCommand<Playlist>(PlaylistSelected));
         private void PlaylistSelected(Playlist playlist)
         {
             if (playlist.IsChecked)
+            {
+                if (_targetPlaylists.Contains(playlist))
+                    return;
+
                 _targetPlaylists.Add(playlist);
+            }
             else
                 _targetPlaylists.Remove(playlist);
         }
@@ -587,11 +763,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand AddUserCommand => _addUserCommand ?? (_addUserCommand = new RelayCommand(AddUser));
         private void AddUser()
         {
-            if (string.IsNullOrEmpty(_user)) return;
-
-            _users.Add(new User(_user));
-
-            User = string.Empty;
+            AddSpotifyUser();
         }
 
         private RelayCommand _connectToSpotifyCommand;
@@ -621,6 +793,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             var group = new Group(_targetGroup, _targetAudios, _targetPlaylists);
 
             group.Process();
+
+            _monitoringViewModel.Groups.Add(group);
+
+            TargetGroup = new Group();
+
+            TargetAudios = new AudioCollection();
+
+            TargetPlaylists = new PlaylistCollection();
 
             //Task.Run(async () =>
             //{

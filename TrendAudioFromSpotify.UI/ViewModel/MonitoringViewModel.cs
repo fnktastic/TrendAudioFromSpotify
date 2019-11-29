@@ -11,6 +11,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 {
     public class MonitoringViewModel : ViewModelBase
     {
+        #region properties
         private ObservableCollection<Group> _groups;
         public ObservableCollection<Group> Groups
         {
@@ -21,6 +22,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _groups = value;
                 RaisePropertyChanged(nameof(Groups));
             }
+        }
+        #endregion
+
+        public MonitoringViewModel()
+        {
+            Groups = new ObservableCollection<Group>();
         }
     }
 }

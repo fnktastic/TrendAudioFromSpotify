@@ -10,8 +10,11 @@
              Dialog:DialogParticipation.Register="{Binding}"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Views"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:enums="clr-namespace:TrendAudioFromSpotify.UI.Enum"
              mc:Ignorable="d" 
+             DataContext="{Binding Main, Source={StaticResource Locator}}"
              d:DesignHeight="450" d:DesignWidth="900">
     <UserControl.Resources>
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
@@ -99,81 +102,135 @@
                                     <Setter Property="Controls:ControlsHelper.HeaderFontSize" Value="18" />
                                 </Style>
                             </TabControl.Resources>
-                            <TabItem Header ="Explore Playlists" >
-                                <Grid>
+                            <TabItem Header ="Explore Playlists">
+                                <Grid Height="Auto" Margin="0 5">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="0.2*" />
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="0.65*" />
                                     </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="1*" />
-                                        <RowDefinition Height="30" />
-                                    </Grid.RowDefinitions>
+
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="55" />
-                                            <ColumnDefinition Width="40" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBox Grid.Column="0" Text="{Binding User}" Controls:TextBoxHelper.Watermark="add username" VerticalContentAlignment="Center" />
-                                        <Button Grid.Column="1" Command="{Binding AddUserCommand}" HorizontalAlignment="Left" Content="Add" Width="50" Margin="5 0 0 0" />
-                                        <Button Grid.Column="2" Command="{Binding SelectAllUsersCommand}" HorizontalAlignment="Left" Content="✔" Width="30" Margin="5 0 0 0" />
-                                    </Grid>
-                                    <ListBox Grid.Column="0" Grid.Row="1"
-                                             Margin="0 5 0 5"
-                                             ItemsSource="{Binding Users}">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <DockPanel>
-                                                    <TextBlock Text="{Binding Username}" />
-                                                    <CheckBox Grid.Row="0" Grid.Column="1"
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30" />
+                                            <RowDefinition Height="1*" />
+                                            <RowDefinition Height="30" />
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="35" />
+                                                <ColumnDefinition Width="0" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Grid.Column="0" Text="{Binding User, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         Controls:TextBoxHelper.Watermark="spotify username" VerticalContentAlignment="Center">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="KeyUp">
+                                                        <cmd:EventToCommand Command="{Binding AddSpotifyUsernameCommand, Mode=OneWay}"
+                                                                            PassEventArgsToCommand="True"/>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </TextBox>
+
+                                            <Button Grid.Column="1" Command="{Binding AddUserCommand}" 
+                                                        Height="30"
+                                                        HorizontalAlignment="Left" Padding="0" VerticalAlignment="Center" VerticalContentAlignment="Center" Width="30" Margin="5 0 0 0">
+                                                <TextBlock Text="+" Height="30" VerticalAlignment="Center"
+                                                       TextAlignment="Center"
+                                                       FontSize="20" FontWeight="SemiBold">
+                                                </TextBlock>
+                                            </Button>
+                                            <Button Grid.Column="2" Visibility="Collapsed" Command="{Binding SelectAllUsersCommand}" HorizontalAlignment="Left" Content="✔" Width="30" Margin="5 0 0 0" />
+                                        </Grid>
+
+                                        <Border  Grid.Column="0" Grid.Row="1"
+                                            BorderThickness="1"
+                                            BorderBrush="#FF585656"
+                                            Height="Auto" Margin="0 5">
+                                            <ListBox  
+                                                ItemsSource="{Binding Users}">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <DockPanel>
+                                                            <TextBlock Text="{Binding Username}" />
+                                                            <CheckBox Grid.Row="0" Grid.Column="1"
                                                               HorizontalAlignment="Right"
                                                               IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                                </DockPanel>
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
-                                    <Button Grid.Column="0" Grid.Row="2" 
+                                                        </DockPanel>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </Border>
+                                        <Button Grid.Column="0" Grid.Row="2" 
                                             Content="Get Playlists"
                                             Command="{Binding GetUsersPlaylistsCommand}" />
+                                    </Grid>
 
-                                    <Controls:ProgressRing  
-                                        Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
-                                        Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+                                    <GridSplitter 
+                                        Width="3"
+                                        Margin="15 0"
+                                        VerticalAlignment="Stretch"
+                                        Opacity="0.2"
+                                        ResizeBehavior="PreviousAndNext"
+                                        Grid.Column="1" />
 
-                                    <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
+                                    <Grid Grid.Column="2">
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="0" />
+                                            <RowDefinition Height="46" />
                                             <RowDefinition  />
                                         </Grid.RowDefinitions>
+                                        <Controls:ProgressRing  
+                                            Grid.RowSpan="2"
+                                            Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+
                                         <Button Grid.Row="0"
                                                 Visibility="Collapsed"
                                                 Command="{Binding SelectExplorePlaylistsCommand}" Width="100" Content="Select All" />
 
+
+                                        <TextBox Text="{Binding ExplorePlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Grid.Row="0" Margin="10"
+                                                 Grid.Column="0"
+                                                 Style="{DynamicResource SearchMetroTextBox}"
+                                                 Controls:TextBoxHelper.Watermark="filter playlists" />
+
                                         <customControls:PlaylistsCollectionControl
                                             Grid.Row="1"
                                             Margin="5"
-                                            ItemsSource="{Binding ExplorePlaylists}" SelectedItem="{Binding SelectedPlaylist}"
-                                            Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"/>
+                                            IsSynchronizedWithCurrentItem="False"
+                                            ItemsSource="{Binding FilteredExplorePlaylistsCollection.View}"
+                                            Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                                            SelectedItem="{Binding SelectedPlaylist}"/>
                                     </Grid>
                                 </Grid>
                             </TabItem>
                             <TabItem Header="My Playlists">
-                                <Grid Height="Auto">
+                                <Grid Height="Auto" Margin="0 5">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="0" />
+                                        <RowDefinition Height="46" />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
                                     <Controls:ProgressRing Grid.Row="1" Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}, FallbackValue=Visible}" />
                                     <Button Grid.Row="0"
                                             Visibility="Collapsed"
                                             Command="{Binding SelectAllMyPlaylistsCommand}" Width="100" Content="Select All" />
+
+                                    <TextBox Text="{Binding MyPlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                                 Grid.Row="0" Margin="10"
+                                                 Grid.Column="0"
+                                                 Style="{DynamicResource SearchMetroTextBox}"
+                                                 Controls:TextBoxHelper.Watermark="filter playlists" />
+
                                     <customControls:PlaylistsCollectionControl 
                                         Grid.Row="1"
                                         Margin="5"
+                                        IsSynchronizedWithCurrentItem="False"
                                         Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                        ItemsSource="{Binding Playlists}" SelectedItem="{Binding SelectedPlaylist}">
+                                        ItemsSource="{Binding FilteredMyPlaylistsCollection.View}" 
+                                        SelectedItem="{Binding SelectedPlaylist}">
                                     </customControls:PlaylistsCollectionControl>
                                 </Grid>
                             </TabItem>
@@ -193,6 +250,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="22"  />
+                            <RowDefinition Height="46"  />
                             <RowDefinition />
                             <RowDefinition Height="60"  />
                         </Grid.RowDefinitions>
@@ -204,18 +262,25 @@
                                    FontSize="16"
                                    FontWeight="Thin"
                                    Text="{Binding SelectedPlaylist, Converter={StaticResource AudiosContextNameConverter}}" />
+
+                        <TextBox Text="{Binding AudiosSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="10"
+                                 Grid.Row="1" Grid.Column="0"
+                                 Style="{DynamicResource SearchMetroTextBox}"
+                                 Controls:TextBoxHelper.Watermark="filter audios" />
+
                         <Controls:ProgressRing 
-                            Grid.Row="1" Grid.Column="0"
+                            Grid.Row="2" Grid.Column="0"
                             Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"/>
 
                         <customControls:AudioCollectionControl
-                                 Grid.Row="1" Grid.Column="0" 
+                                 Grid.Row="2" Grid.Column="0" 
                                  SelectedItem="{Binding SelectedAudio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Visibility="{Binding IsSongsAreaBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}"
-                                 ItemsSource="{Binding SavedTracks}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                 ItemsSource="{Binding FilteredAudioCollection.View}" ScrollViewer.VerticalScrollBarVisibility="Auto">
                         </customControls:AudioCollectionControl>
 
-                        <Button Margin="15" Grid.Row="2" Grid.Column="0" Content="Load My Library" Command="{Binding LikedSongsLoadCommand}" />
+                        <Button Margin="15" Grid.Row="3" Grid.Column="0" Content="Load My Library" Command="{Binding LikedSongsLoadCommand}" />
                     </Grid>
                 </GroupBox>
                 <GridSplitter 
@@ -230,12 +295,12 @@
                 <Border Grid.Row="2" Grid.Column="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="210" />
+                            <ColumnDefinition Width="230" />
                             <ColumnDefinition Width="0.65*" />
                             <ColumnDefinition Width="0.35*" />
                         </Grid.ColumnDefinitions>
                         <GroupBox Header="Group setting" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
-                            <Grid  HorizontalAlignment="Center">
+                            <Grid  HorizontalAlignment="Center" Margin="0 5 0 0">
                                 <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <Controls:ProgressRing />
                                     <TextBlock Text="Please wait..." FontSize="14" Margin="0 15 0 0" FontWeight="SemiBold" HorizontalAlignment="Center" />
@@ -244,7 +309,7 @@
                                     <TextBox 
                                         Text="{Binding TargetGroup.Name}"
                                         Controls:TextBoxHelper.Watermark="group name" HorizontalContentAlignment="Center" />
-                                    
+
                                     <DockPanel Margin="0 10 0 0">
                                         <TextBlock Text="Hit threshold: " 
                                                    VerticalAlignment="Center" />
@@ -287,8 +352,10 @@
                                 <Grid>
                                     <customControls:PlaylistsCollectionControl 
                                         Margin="5"
+                                        IsSynchronizedWithCurrentItem="False"
                                         HorizontalAlignment="Stretch"
-                                        ItemsSource="{Binding TargetPlaylists}" SelectedItem="{Binding SelectedPlaylist}">
+                                        ItemsSource="{Binding TargetPlaylists}" 
+                                        SelectedItem="{Binding SelectedPlaylist}">
                                     </customControls:PlaylistsCollectionControl>
                                 </Grid>
                             </Grid>

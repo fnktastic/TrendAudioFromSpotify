@@ -26,5 +26,4 @@
             <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
         </Style.Resources>
     </Style>
-
 </ResourceDictionary>
