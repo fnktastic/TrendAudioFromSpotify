@@ -11,8 +11,6 @@ namespace TrendAudioFromSpotify.UI.Model
 {
     public class Playlist : ViewModelBase
     {
-        private readonly MainViewModel _mainViewModel;
-
         private SimplePlaylist _simplePlaylist { get; set; }
 
         public string Id => _simplePlaylist.Id;

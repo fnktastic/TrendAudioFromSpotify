@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
 
@@ -11,8 +13,9 @@ namespace TrendAudioFromSpotify.UI.Model
 {
     public class Group : ViewModelBase
     {
+        private readonly ISpotifyServices _spotifyServices;
+
         private bool readyToProcessing = false;
-        private bool processingFinished = false;
         private bool processingSpecificAudios = false;
 
         private string _name;
@@ -75,6 +78,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private bool _processingInProgress;
+        public bool ProcessingInProgress
+        {
+            get { return _processingInProgress; }
+            set
+            {
+                if (value == _processingInProgress) return;
+                _processingInProgress = value;
+                RaisePropertyChanged(nameof(ProcessingInProgress));
+            }
+        }
+
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public TimeSpan RefreshPeriod { get; set; }
@@ -89,8 +104,10 @@ namespace TrendAudioFromSpotify.UI.Model
             CreatedAt = DateTime.UtcNow;
         }
 
-        public Group(Group group, AudioCollection audios, PlaylistCollection playlists)
+        public Group(Group group, AudioCollection audios, PlaylistCollection playlists, ISpotifyServices spotifyServices)
         {
+            _spotifyServices = spotifyServices;
+
             this.Name = group.Name;
             this.Top = group.Top;
             this.HitTreshold = group.HitTreshold;
@@ -104,15 +121,98 @@ namespace TrendAudioFromSpotify.UI.Model
                 processingSpecificAudios = true;
 
             CreatedAt = DateTime.UtcNow;
+            UpdatedAt = DateTime.UtcNow;
 
             readyToProcessing = true;
         }
 
         public void Process()
         {
-            if(readyToProcessing)
+            if (readyToProcessing)
             {
+                Task.Run(async () =>
+                {
+                    try
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ProcessingInProgress = true;
+                        });
 
+                        var audiosOfPlaylists = new Dictionary<string, List<Audio>>();
+
+                        foreach (var playlist in Playlists)
+                        {
+                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id)).Select(x => new Audio(x.Track)).ToList();
+
+                            if (audiosOfPlaylists.ContainsKey(playlist.Id))
+                                continue;
+
+                            audiosOfPlaylists.Add(playlist.Id, audiosOfPlaylist);
+                        }
+
+                        var trendAudios = new Dictionary<Audio, int>();
+
+                        var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).ToList();
+
+                        if (processingSpecificAudios == false)
+                            Audios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).ToList());
+
+                        var groupedAudios = audioBunch
+                        .GroupBy(x => x.Id)
+                        .Select(y =>
+                        {
+                            var audio = Audios.FirstOrDefault(z => z.Id == y.Key);
+
+                            if (audio == null) return null;
+
+                            audio.Hits = y.Count();
+
+                            return audio;
+                        })
+                        .Where(x => x != null)
+                        .ToList();
+
+                        if (Comparison == ComparisonEnum.Equals)
+                        {
+                            groupedAudios = groupedAudios
+                            .Where(x => x.Hits == int.Parse(_hitTreshold))
+                            .OrderByDescending(x => x.Hits)
+                            .Take(int.Parse(_top))
+                            .ToList();
+                        }
+
+                        if (Comparison == ComparisonEnum.More)
+                        {
+                            groupedAudios = groupedAudios
+                            .Where(x => x.Hits >= int.Parse(_hitTreshold))
+                            .OrderByDescending(x => x.Hits)
+                            .Take(int.Parse(_top))
+                            .ToList();
+                        }
+
+                        if (Comparison == ComparisonEnum.Less)
+                        {
+                            groupedAudios = groupedAudios
+                            .Where(x => x.Hits <= int.Parse(_hitTreshold))
+                            .OrderByDescending(x => x.Hits)
+                            .Take(int.Parse(_top))
+                            .ToList();
+                        }
+
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            Trends = new AudioCollection(groupedAudios);
+                        });
+                    }
+                    finally
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            ProcessingInProgress = false;
+                        });  
+                    }
+                });
             }
         }
     }

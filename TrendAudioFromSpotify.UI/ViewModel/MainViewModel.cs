@@ -62,7 +62,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _myPlaylistsSearchText) return;
                 _myPlaylistsSearchText = value;
 
-                FilteredMyPlaylistsCollection.View.Refresh();
+                if (FilteredMyPlaylistsCollection.View != null)
+                    FilteredMyPlaylistsCollection.View.Refresh();
 
                 RaisePropertyChanged(nameof(MyPlaylistsSearchText));
             }
@@ -77,7 +78,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _explorePlaylistsSearchText) return;
                 _explorePlaylistsSearchText = value;
 
-                FilteredExplorePlaylistsCollection.View.Refresh();
+                if (FilteredExplorePlaylistsCollection.View != null)
+                    FilteredExplorePlaylistsCollection.View.Refresh();
 
                 RaisePropertyChanged(nameof(ExplorePlaylistsSearchText));
             }
@@ -92,7 +94,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _audiosSearchText) return;
                 _audiosSearchText = value;
 
-                FilteredAudioCollection.View.Refresh();
+                if (FilteredAudioCollection.View != null)
+                    FilteredAudioCollection.View.Refresh();
 
                 RaisePropertyChanged(nameof(AudiosSearchText));
             }
@@ -612,7 +615,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private void AddSpotifyUser()
         {
-            if (string.IsNullOrEmpty(_user)) return;
+            if (string.IsNullOrWhiteSpace(_user)) return;
 
             _users.Add(new User(_user));
 
@@ -644,7 +647,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
             SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
-
+    
             IsSongsAreaBusy = false;
         }
         #endregion
@@ -790,7 +793,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
         private void GetTrends()
         {
-            var group = new Group(_targetGroup, _targetAudios, _targetPlaylists);
+            var group = new Group(_targetGroup, _targetAudios, _targetPlaylists, _spotifyServices);
 
             group.Process();
 
@@ -801,59 +804,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             TargetAudios = new AudioCollection();
 
             TargetPlaylists = new PlaylistCollection();
-
-            //Task.Run(async () =>
-            //{
-            //    try
-            //    {
-            //        IsProcessingAreaIsBusy = true;
-
-            //        var selectedAudios = SavedTracks.Where(x => x.IsChecked).ToList();
-
-            //        var selectedPlaylists = Playlists.Where(x => x.IsChecked).Select(x => x.Id).ToList();
-
-            //        if (_explorePlaylists != null)
-            //            selectedPlaylists.AddRange(_explorePlaylists.Where(x => x.IsChecked).Select(x => x.Id));
-
-            //        var audiosOfPlaylists = new Dictionary<string, List<FullTrack>>();
-
-            //        foreach (var selectedPlaylist in selectedPlaylists)
-            //        {
-            //            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(selectedPlaylist)).Select(x => x.Track).ToList();
-
-            //            if (audiosOfPlaylists.ContainsKey(selectedPlaylist))
-            //                continue;
-
-            //            audiosOfPlaylists.Add(selectedPlaylist, audiosOfPlaylist);
-            //        }
-
-            //        var trendAudios = new Dictionary<Audio, int>();
-
-            //        if (selectedAudios.Count == 0)
-            //            selectedAudios = new List<Audio>(audiosOfPlaylists.Values.SelectMany(x => x).Select(x => new Audio(x)));
-
-            //        var groupedAudios = selectedAudios.GroupBy(x => x.Id).Select(y =>
-            //        {
-            //            var audio = selectedAudios.First(z => z.Id == y.Key);
-
-            //            if (audio == null) return null;
-
-            //            audio.Hits = y.Count();
-
-            //            return audio;
-            //        })
-            //        .Where(x => x != null)
-            //        .Where(x => x.Hits >= int.Parse(_appearsTimesInX))
-            //        .OrderByDescending(x => x.Hits)
-            //        .ToList();
-
-            //        TargetAudios = new AudioCollection(groupedAudios);
-            //    }
-            //    finally
-            //    {
-            //        IsProcessingAreaIsBusy = false;
-            //    }
-            //});
         }
 
         private RelayCommand _saveSpotifyCredentialsCommand;

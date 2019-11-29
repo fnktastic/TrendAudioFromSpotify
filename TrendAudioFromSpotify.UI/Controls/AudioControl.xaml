@@ -15,10 +15,11 @@
             Padding="10 5" 
             Background="Black"
             Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type views:AppAreaUserControl}}}">
-        <Grid>
+        <Grid Background="Black" x:Name="audioControl">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="30"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="25"></ColumnDefinition>
                 <ColumnDefinition Width="50"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -29,14 +30,37 @@
                 <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="DemiBold" FontSize="10" Text="{Binding Title}" />
                 <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="Light" FontSize="12" Text="{Binding Artist}" />
             </StackPanel>
-            <CheckBox Grid.Row="0" Grid.Column="2"
+            <Button Grid.Row="0" Grid.Column="2" 
+                    FontWeight="Bold"
+                    ToolTip="Add to target list"
+                    CommandParameter="{Binding}" 
+                    Command="{Binding Path=DataContext.AddAudioToTargetCommand, RelativeSource={RelativeSource AncestorType={x:Type views:AppAreaUserControl}}}"
+                    VerticalAlignment="Center"
+                    Background="Transparent">
+                <TextBlock Text="+" FontSize="24"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                           />
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource CustomButtonControl}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=audioControl, Path=IsMouseOver}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=audioControl, Path=IsMouseOver}" Value="False">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <CheckBox Grid.Row="0" Grid.Column="3"
                       Visibility="Collapsed"
                       HorizontalAlignment="Right"
                       IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <Button Grid.Row="0" Grid.Column="2"
+            <Button Grid.Row="0" Grid.Column="3"
                     Content="Play"
                     HorizontalAlignment="Right"
-                    Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.PlaySongCommand}"
+                    Command="{Binding Path=DataContext.PlaySongCommand, RelativeSource={RelativeSource AncestorType={x:Type views:AppAreaUserControl}}}"
                     CommandParameter="{Binding}" />
         </Grid>
         <Border.ContextMenu>

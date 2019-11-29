@@ -298,8 +298,9 @@
                 <Border Grid.Row="2" Grid.Column="0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="230" />
+                            <ColumnDefinition Width="220" />
                             <ColumnDefinition Width="0.65*" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="0.35*" />
                         </Grid.ColumnDefinitions>
                         <GroupBox Header="Group setting" Grid.Column="0" Background="Black" BorderBrush="#FF585656">
@@ -363,7 +364,15 @@
                                 </Grid>
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="Target Audios" Grid.Column="2" Background="Black" BorderBrush="#FF585656">
+                        <GridSplitter 
+                            ResizeDirection="Columns" Grid.Column="2"
+                            Width="3"
+                            Margin="5,0"
+                            Opacity="0.2"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            ResizeBehavior="PreviousAndNext"/>
+                        <GroupBox Header="Target Audios" Grid.Column="3" Background="Black" BorderBrush="#FF585656">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                                     <Controls:ProgressRing />

@@ -10,6 +10,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.3*" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="0.7*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -23,5 +24,17 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <GridSplitter 
+                    ResizeDirection="Columns" Grid.Column="1" Grid.Row="0"
+                    Height="3"
+                    Margin="5,0"
+                    Opacity="0.2"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    ResizeBehavior="PreviousAndNext"
+                    />
+        <Grid Grid.Column="2" Grid.Row="0">
+
+        </Grid>
     </Grid>
 </UserControl>

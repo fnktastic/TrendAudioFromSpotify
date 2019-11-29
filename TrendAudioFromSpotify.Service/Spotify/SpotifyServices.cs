@@ -41,7 +41,10 @@ namespace TrendAudioFromSpotify.Service.Spotify
         {
             int counter = 0;
             int limit = 50;
-            int total = (await _spotifyWebAPI.GetSavedTracksAsync()).Total;
+
+            var tracks = await _spotifyWebAPI.GetSavedTracksAsync(limit: 1, offset: 0);
+
+            int total = tracks.Total;
 
             var songs = new List<SavedTrack>();
 
@@ -62,7 +65,10 @@ namespace TrendAudioFromSpotify.Service.Spotify
         {
             int counter = 0;
             int limit = 100;
-            int total = (await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId)).Total;
+
+            var tracks = await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId: playlistId, limit: 1, offset: 0);
+
+            int total = tracks.Total;
 
             var playlistsSongs = new List<PlaylistTrack>();
 
@@ -82,7 +88,10 @@ namespace TrendAudioFromSpotify.Service.Spotify
         {
             int counter = 0;
             int limit = 100;
-            int total = (await _spotifyWebAPI.GetUserPlaylistsAsync(username, 20, 0)).Total;
+
+            var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(username, limit: 1, offset: 0);
+
+            int total = playlists.Total;
 
             var usersPlaylists = new List<SimplePlaylist>();
 
@@ -110,7 +119,10 @@ namespace TrendAudioFromSpotify.Service.Spotify
             {
                 int counter = 0;
                 int limit = 20;
-                int total = (await _spotifyWebAPI.GetUserPlaylistsAsync(username, 20, 0)).Total;
+
+                var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(username, limit: 1, offset: 0);
+
+                int total = playlists.Total;
 
                 while (counter < total)
                 {

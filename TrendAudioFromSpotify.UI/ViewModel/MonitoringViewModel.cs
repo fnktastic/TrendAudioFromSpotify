@@ -13,7 +13,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     public class MonitoringViewModel : ViewModelBase
     {
         #region fields
-        private readonly MainViewModel _mainViewModel = null;
         private readonly DbContext _dbContext;
         #endregion
 
