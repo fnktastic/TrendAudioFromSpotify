@@ -194,6 +194,7 @@
                                         <TextBox Text="{Binding ExplorePlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
                                                  Grid.Row="0" Margin="10"
                                                  Grid.Column="0"
+                                                 VerticalContentAlignment="Center"
                                                  Style="{DynamicResource SearchMetroTextBox}"
                                                  Controls:TextBoxHelper.Watermark="filter playlists" />
 
@@ -221,6 +222,7 @@
                                     <TextBox Text="{Binding MyPlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
                                                  Grid.Row="0" Margin="10"
                                                  Grid.Column="0"
+                                                 VerticalContentAlignment="Center"
                                                  Style="{DynamicResource SearchMetroTextBox}"
                                                  Controls:TextBoxHelper.Watermark="filter playlists" />
 
@@ -265,6 +267,7 @@
 
                         <TextBox Text="{Binding AudiosSearchText, UpdateSourceTrigger=PropertyChanged}" 
                                  Margin="10"
+                                 VerticalContentAlignment="Center"
                                  Grid.Row="1" Grid.Column="0"
                                  Style="{DynamicResource SearchMetroTextBox}"
                                  Controls:TextBoxHelper.Watermark="filter audios" />
