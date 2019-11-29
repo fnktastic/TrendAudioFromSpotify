@@ -1,5 +1,6 @@
 using CommonServiceLocator;
 using GalaSoft.MvvmLight.Ioc;
+using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
@@ -12,6 +13,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<MainViewModel>();
 
             SimpleIoc.Default.Register<MonitoringViewModel>();
+
+            SimpleIoc.Default.Register<DbContext>();
         }
 
         public MainViewModel Main
@@ -27,6 +30,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<MonitoringViewModel>();
+            }
+        }
+
+        public DbContext DbContext
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<DbContext>();
             }
         }
 

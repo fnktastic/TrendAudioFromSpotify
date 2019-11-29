@@ -368,9 +368,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MainViewModel(MonitoringViewModel monitoringViewModel)
+        public MainViewModel(MonitoringViewModel monitoringViewModel, DbContext dbContext)
         {
             _monitoringViewModel = monitoringViewModel;
+            _context = dbContext;
+            _audioRepository = new AudioRepository(_context);
+
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
             IsSpotifyCredsEntered = LoadSettings();
@@ -390,9 +393,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             FilteredMyPlaylistsCollection = new CollectionViewSource();
             FilteredMyPlaylistsCollection.Filter += FilteredMyPlaylistsCollection_Filter;
-
-            _context = new DbContext();
-            _audioRepository = new AudioRepository(_context);
 
             var configuration = new MapperConfiguration(cfg =>
             {

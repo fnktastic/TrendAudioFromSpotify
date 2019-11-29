@@ -6,11 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.UI.Model;
+using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
     public class MonitoringViewModel : ViewModelBase
     {
+        #region fields
+        private readonly MainViewModel _mainViewModel = null;
+        private readonly DbContext _dbContext;
+        #endregion
+
         #region properties
         private ObservableCollection<Group> _groups;
         public ObservableCollection<Group> Groups
@@ -25,8 +31,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel()
+        public MonitoringViewModel(DbContext dbContext)
         {
+            _dbContext = dbContext;
+
             Groups = new ObservableCollection<Group>();
         }
     }
