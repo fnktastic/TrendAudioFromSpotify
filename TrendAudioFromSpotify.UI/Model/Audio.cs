@@ -25,6 +25,8 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public int Hits { get; set; }
 
+        public bool IsFilled => _track != null ? true : false;
+
         public virtual PlaylistCollection Playlists { get; set; }
 
         private bool _isChecked;

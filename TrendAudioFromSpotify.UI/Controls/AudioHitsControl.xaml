@@ -29,15 +29,15 @@
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding No, Mode=OneTime}" VerticalAlignment="Center" />
             
             <StackPanel MaxWidth="200" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="DemiBold" FontSize="10" Text="{Binding Title}" />
-                <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="Light" FontSize="12" Text="{Binding Artist}" />
+                <TextBlock TextAlignment="Left" TextTrimming="CharacterEllipsis" FontWeight="DemiBold" FontSize="10" Text="{Binding Title}" />
+                <TextBlock TextAlignment="Left" TextTrimming="CharacterEllipsis" FontWeight="Light" FontSize="12" Text="{Binding Artist}" />
             </StackPanel>
 
-            <ListBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" ItemsSource="{Binding Playlists}">
+            <ListBox Grid.Row="0" Grid.Column="2" Margin="10 0" HorizontalAlignment="Left" ItemsSource="{Binding Playlists}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="10 0">
-                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock FontSize="8" Text="{Binding Name}" />
                         </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -48,7 +48,8 @@
                 </ListBox.ItemsPanel>
             </ListBox>
 
-            <TextBlock Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding Hits}" />
+            <TextBlock Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" 
+                       HorizontalAlignment="Center" Text="{Binding Hits}" />
 
             <CheckBox Grid.Row="0" Grid.Column="2"
                       Visibility="Collapsed"

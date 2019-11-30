@@ -28,18 +28,22 @@
         </ListBox>
         <GridSplitter 
                     ResizeDirection="Columns" Grid.Column="1" Grid.Row="0"
-                    Height="3"
-                    Margin="5,0"
+                    Margin="10,0"
                     Opacity="0.2"
+                    Width="3"
+                    Background="Black"
                     VerticalAlignment="Stretch"
                     HorizontalAlignment="Stretch"
                     ResizeBehavior="PreviousAndNext"
                     />
-        <Grid Grid.Column="2" Grid.Row="0">
-            <customControls:AudioHitsCollectionControl
+        <GroupBox Header="Trends" Background="Black" BorderBrush="Black"
+                  Grid.Column="2" Grid.Row="0">
+            <Grid>
+                <customControls:AudioHitsCollectionControl
                 ItemsSource="{Binding SelectedGroup.Trends}" 
                 ScrollViewer.VerticalScrollBarVisibility="Auto">
-            </customControls:AudioHitsCollectionControl>
-        </Grid>
+                </customControls:AudioHitsCollectionControl>
+            </Grid>
+        </GroupBox>
     </Grid>
 </UserControl>

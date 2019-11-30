@@ -94,6 +94,8 @@ namespace TrendAudioFromSpotify.UI.Model
         public DateTime UpdatedAt { get; set; }
         public TimeSpan RefreshPeriod { get; set; }
 
+        public bool IsReady => readyToProcessing;
+
 
         public virtual AudioCollection Audios { get; set; }
         public virtual PlaylistCollection Playlists { get; set; }
@@ -117,24 +119,32 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public Group(Group group, AudioCollection audios, PlaylistCollection playlists, ISpotifyServices spotifyServices)
         {
-            _spotifyServices = spotifyServices;
+            try
+            {
+                _spotifyServices = spotifyServices;
 
-            this.Name = group.Name;
-            this.Top = group.Top;
-            this.HitTreshold = group.HitTreshold;
-            this.Comparison = group.Comparison;
-            this.PlaylistType = group.PlaylistType;
+                this.Name = group.Name;
+                this.Top = group.Top;
+                this.HitTreshold = group.HitTreshold;
+                this.Comparison = group.Comparison;
+                this.PlaylistType = group.PlaylistType;
 
-            Audios = new AudioCollection(audios);
-            Playlists = new PlaylistCollection(playlists);
+                Audios = new AudioCollection(audios);
+                Playlists = new PlaylistCollection(playlists);
 
-            if (audios.Count > 0)
-                processingSpecificAudios = true;
+                if (audios.Count > 0)
+                    processingSpecificAudios = true;
 
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
+                CreatedAt = DateTime.UtcNow;
+                UpdatedAt = DateTime.UtcNow;
 
-            readyToProcessing = true;
+                if (playlists.Count > 0 && int.Parse(HitTreshold) > 0 && int.Parse(Top) > 0)
+                    readyToProcessing = true;
+            }
+            catch
+            {
+                readyToProcessing = false;
+            }
         }
 
         public void Process()
@@ -154,7 +164,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
                         foreach (var playlist in Playlists)
                         {
-                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id)).Select(x => new Audio(x.Track)).ToList();
+                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id)).Select(x => new Audio(x.Track)).Where(x => x.IsFilled).ToList();
 
                             playlist.Audios = new AudioCollection(audiosOfPlaylist);
 
@@ -166,10 +176,10 @@ namespace TrendAudioFromSpotify.UI.Model
 
                         var trendAudios = new Dictionary<Audio, int>();
 
-                        var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).ToList();
+                        var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList();
 
                         if (processingSpecificAudios == false)
-                            Audios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).ToList());
+                            Audios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList());
 
                         var groupedAudios = audioBunch
                         .GroupBy(x => x.Id)

@@ -715,7 +715,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             if (_explorePlaylists == null) return;
 
             foreach (var exploreplaylist in _explorePlaylists)
+            {
                 exploreplaylist.IsChecked = checkExplorePlaylists;
+                PlaylistSelectedCommand.Execute(exploreplaylist);
+            }
 
             checkExplorePlaylists = !checkExplorePlaylists;
         }
@@ -728,7 +731,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             if (_playlists == null) return;
 
             foreach (var playlist in _playlists)
+            {
                 playlist.IsChecked = checkAllPlaylists;
+                PlaylistSelectedCommand.Execute(playlist);
+            }
 
             checkAllPlaylists = !checkAllPlaylists;
         }
@@ -795,23 +801,26 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             var group = new Group(_targetGroup, _targetAudios, _targetPlaylists, _spotifyServices);
 
-            group.Process();
+            if (group.IsReady)
+            {
+                group.Process();
 
-            _monitoringViewModel.Groups.Add(group);
+                _monitoringViewModel.Groups.Add(group);
 
-            TargetGroup = new Group();
+                TargetGroup = new Group();
 
-            TargetAudios = new AudioCollection();
+                TargetAudios = new AudioCollection();
 
-            TargetPlaylists = new PlaylistCollection();
+                TargetPlaylists = new PlaylistCollection();
 
-            if (ExplorePlaylists != null)
-                foreach (var playlist in ExplorePlaylists)
-                    playlist.IsChecked = false;
+                if (ExplorePlaylists != null)
+                    foreach (var playlist in ExplorePlaylists)
+                        playlist.IsChecked = false;
 
-            if (Playlists != null)
-                foreach (var playlist in Playlists)
-                    playlist.IsChecked = false;
+                if (Playlists != null)
+                    foreach (var playlist in Playlists)
+                        playlist.IsChecked = false;
+            }
         }
 
         private RelayCommand _saveSpotifyCredentialsCommand;

@@ -34,7 +34,26 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
         public async Task<IEnumerable<SimplePlaylist>> GetAllPlaylists()
         {
-            return (await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id))?.Items;
+            int counter = 0;
+
+            int limit = 20;
+
+            var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id, limit: 1, offset: 0);
+
+            int total = playlists.Total;
+
+            var usersPlaylists = new List<SimplePlaylist>();
+
+            while (counter < total)
+            {
+                var items = (await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id, limit: limit, offset: counter))?.Items;
+
+                counter += items.Count;
+
+                usersPlaylists.AddRange(items);
+            }
+
+            return usersPlaylists;
         }
 
         public async Task<IEnumerable<SavedTrack>> GetSongs()
@@ -67,6 +86,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
             int limit = 100;
 
             var tracks = await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId: playlistId, limit: 1, offset: 0);
+
+            if(tracks.Error != null)
+            {
+
+            }
 
             int total = tracks.Total;
 
