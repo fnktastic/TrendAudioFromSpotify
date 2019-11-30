@@ -1,10 +1,12 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Model;
 using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
@@ -48,5 +50,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Groups = new ObservableCollection<Group>();
         }
+
+        #region commands
+        private RelayCommand<Audio> _playSongCommand;
+        public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
+        private async void PlaySong(Audio audio)
+        {
+
+        }
+        #endregion
     }
 }
