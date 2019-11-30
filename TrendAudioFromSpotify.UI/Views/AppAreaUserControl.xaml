@@ -147,7 +147,8 @@
                                                 <ColumnDefinition Width="0" />
                                             </Grid.ColumnDefinitions>
                                             <TextBox Grid.Column="0" Text="{Binding User, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                         Controls:TextBoxHelper.Watermark="spotify username" VerticalContentAlignment="Center">
+                                                     Height="29"
+                                                     Controls:TextBoxHelper.Watermark="spotify username" VerticalContentAlignment="Center">
                                                 <i:Interaction.Triggers>
                                                     <i:EventTrigger EventName="KeyUp">
                                                         <cmd:EventToCommand Command="{Binding AddSpotifyUsernameCommand, Mode=OneWay}"
@@ -389,6 +390,15 @@
                                     </DockPanel>
 
                                     <DockPanel Margin="0 10 0 0">
+                                        <TextBlock Text="Playlist name: " VerticalAlignment="Center" />
+                                        <TextBox 
+                                            Text="{Binding TargetGroup.TargetPlaylistName}"
+                                            Controls:TextBoxHelper.Watermark="target playlist name"
+                                             HorizontalContentAlignment="Center"
+                                             HorizontalAlignment="Stretch" />
+                                    </DockPanel>
+                                    
+                                    <DockPanel Margin="0 10 0 0">
                                         <TextBlock Text="Playlist type: " VerticalAlignment="Center" />
                                         <ComboBox ItemsSource="{Binding Source={StaticResource playlistTypeEnum}}"
                                               Controls:TextBoxHelper.Watermark="target playlist type"
@@ -396,6 +406,15 @@
                                               HorizontalAlignment="Stretch"
                                               SelectedItem="{Binding TargetGroup.PlaylistType}" />
                                     </DockPanel>
+
+                                    <DockPanel Margin="0 10 0 0">
+                                        <TextBlock Text="Refresh period: " VerticalAlignment="Center" />
+                                        <Controls:TimePicker SelectedTimeFormat="Long"
+                                                             VerticalAlignment="Center"
+                                                             Culture="ru-UA" 
+                                                             SelectedTime="{Binding TargetGroup.RefreshPeriod}" />
+                                    </DockPanel>
+                                    
                                     <Button Margin="0 15 0 0" Content="Create and process" Command="{Binding CreateProcessGroupCommand}" Width="150" />
                                 </StackPanel>
                             </Grid>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using TrendAudioFromSpotify.Service.Spotify;
@@ -14,10 +15,10 @@ namespace TrendAudioFromSpotify.UI.Model
     public class Group : ViewModelBase
     {
         private readonly ISpotifyServices _spotifyServices;
-
-        private bool readyToProcessing = false;
         private bool processingSpecificAudios = false;
+        private Timer timer;
 
+        #region properties
         private string _name;
         public string Name
         {
@@ -90,12 +91,35 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private TimeSpan _refreshPeriod;
+        public TimeSpan RefreshPeriod
+        {
+            get { return _refreshPeriod; }
+            set
+            {
+                if (value == _refreshPeriod) return;
+                _refreshPeriod = value;
+                RaisePropertyChanged(nameof(RefreshPeriod));
+            }
+        }
+
+        private string _targetPlaylistName;
+        public string TargetPlaylistName
+        {
+            get { return _targetPlaylistName; }
+            set
+            {
+                if (value == _targetPlaylistName) return;
+                _targetPlaylistName = value;
+                RaisePropertyChanged(nameof(TargetPlaylistName));
+            }
+        }
+
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public TimeSpan RefreshPeriod { get; set; }
 
-        public bool IsReady => readyToProcessing;
 
+        public bool IsReady { get; } = false;
 
         public virtual AudioCollection Audios { get; set; }
         public virtual PlaylistCollection Playlists { get; set; }
@@ -111,6 +135,7 @@ namespace TrendAudioFromSpotify.UI.Model
                 RaisePropertyChanged(nameof(Trends));
             }
         }
+        #endregion
 
         public Group()
         {
@@ -128,6 +153,8 @@ namespace TrendAudioFromSpotify.UI.Model
                 this.HitTreshold = group.HitTreshold;
                 this.Comparison = group.Comparison;
                 this.PlaylistType = group.PlaylistType;
+                this.RefreshPeriod = group.RefreshPeriod;
+                this.TargetPlaylistName = group.TargetPlaylistName;
 
                 Audios = new AudioCollection(audios);
                 Playlists = new PlaylistCollection(playlists);
@@ -139,19 +166,30 @@ namespace TrendAudioFromSpotify.UI.Model
                 UpdatedAt = DateTime.UtcNow;
 
                 if (playlists.Count > 0 && int.Parse(HitTreshold) > 0 && int.Parse(Top) > 0)
-                    readyToProcessing = true;
+                    IsReady = true;
             }
             catch
             {
-                readyToProcessing = false;
+                IsReady = false;
             }
         }
 
-        public void Process()
+        public async Task Process()
         {
-            if (readyToProcessing)
+            if (IsReady)
             {
-                Task.Run(async () =>
+                await GetTrends();
+
+                if (RefreshPeriod > TimeSpan.Zero)
+                    RunTimer();
+            }
+        }
+
+        private async Task GetTrends()
+        {
+            if (IsReady)
+            {
+                await Task.Run(async () =>
                 {
                     try
                     {
@@ -245,6 +283,11 @@ namespace TrendAudioFromSpotify.UI.Model
                     }
                 });
             }
+        }
+
+        private void RunTimer()
+        {
+            timer = new Timer(async x => await GetTrends(), null, RefreshPeriod, RefreshPeriod);
         }
     }
 }

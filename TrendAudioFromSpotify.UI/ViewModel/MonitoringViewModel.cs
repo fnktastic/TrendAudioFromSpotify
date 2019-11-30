@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Model;
+using TrendAudioFromSpotify.UI.Utility;
 using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
@@ -16,6 +18,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     {
         #region fields
         private readonly DbContext _dbContext;
+        public ISpotifyServices SpotifyServices = null;
+        private readonly IDialogCoordinator _dialogCoordinator;
+        private readonly SerialQueue _serialQueue;
         #endregion
 
         #region properties
@@ -44,19 +49,36 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel(DbContext dbContext)
+        public MonitoringViewModel(DbContext dbContext, SerialQueue serialQueue)
         {
+            _dialogCoordinator = DialogCoordinator.Instance;
+
             _dbContext = dbContext;
+
+            _serialQueue = serialQueue;
 
             Groups = new ObservableCollection<Group>();
         }
+
+        #region dialogs
+        private async Task ShowMessage(string header, string message)
+        {
+            await _dialogCoordinator.ShowMessageAsync(this, header, message);
+        }
+        #endregion
 
         #region commands
         private RelayCommand<Audio> _playSongCommand;
         public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
         private async void PlaySong(Audio audio)
         {
+            if (audio != null)
+            {
+                var playback = await SpotifyServices.PlayTrack(audio.Uri);
 
+                if (playback.HasError())
+                    await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
+            }
         }
         #endregion
     }

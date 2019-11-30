@@ -17,15 +17,18 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ListBox Grid.Column="0" Grid.Row="0"
-                 SelectedItem="{Binding SelectedGroup}"
-                 ItemsSource="{Binding Groups}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <local:GroupControl />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+
+        <GroupBox Header="Group Tasks" Background="Black" BorderBrush="Black"
+                  Grid.Column="0" Grid.Row="0">
+            <ListBox   SelectedItem="{Binding SelectedGroup}"
+                       ItemsSource="{Binding Groups}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:GroupControl />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
         <GridSplitter 
                     ResizeDirection="Columns" Grid.Column="1" Grid.Row="0"
                     Margin="10,0"

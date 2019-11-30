@@ -38,6 +38,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private ProgressDialogController progressDialogController;
 
+        private readonly SerialQueue _serialQueue;
+
 
         private readonly DbContext _context;
 
@@ -371,11 +373,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MainViewModel(MonitoringViewModel monitoringViewModel, DbContext dbContext)
+        public MainViewModel(MonitoringViewModel monitoringViewModel, DbContext dbContext, SerialQueue serialQueue)
         {
             _monitoringViewModel = monitoringViewModel;
             _context = dbContext;
             _audioRepository = new AudioRepository(_context);
+            _serialQueue = serialQueue;
 
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
@@ -487,8 +490,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             _spotifyServices = new SpotifyServices(api);
 
+
             if (_spotifyServices.PrivateProfile.StatusCode() == HttpStatusCode.OK)
             {
+                _monitoringViewModel.SpotifyServices = _spotifyServices;
+
                 IsConnectionEsatblished = true;
 
                 await ShowMessage("Notification", "Succesfully authorized in Spotify!");
@@ -519,6 +525,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 _spotifyServices = new SpotifyServices(api);
 
+                _monitoringViewModel.SpotifyServices = _spotifyServices;
+
                 _settingUtility.SaveAccessToken(api.AccessToken);
 
                 IsConnectionEsatblished = true;
@@ -531,7 +539,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             else
             {
                 await HideConnectingMessage();
-                await ShowMessage("Notification", "Cant authorize to Spotify by give  credentials.");
+                await ShowMessage("Notification", "Cant authorize to Spotify by given credentials.");
 
                 throw new Exception();
             }
@@ -797,14 +805,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private RelayCommand _createProcessGroupCommand;
         public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
-        private void GetTrends()
+        private async void GetTrends()
         {
             var group = new Group(_targetGroup, _targetAudios, _targetPlaylists, _spotifyServices);
 
             if (group.IsReady)
             {
-                group.Process();
-
                 _monitoringViewModel.Groups.Add(group);
 
                 TargetGroup = new Group();
@@ -820,6 +826,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (Playlists != null)
                     foreach (var playlist in Playlists)
                         playlist.IsChecked = false;
+
+                await group.Process();
             }
         }
 

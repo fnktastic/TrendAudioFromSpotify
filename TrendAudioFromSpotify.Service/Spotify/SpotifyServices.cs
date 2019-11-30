@@ -40,6 +40,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id, limit: 1, offset: 0);
 
+            if (playlists.Error != null)
+            {
+                SpotifyProvider.Auth();
+            }
+
             int total = playlists.Total;
 
             var usersPlaylists = new List<SimplePlaylist>();
@@ -62,6 +67,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
             int limit = 50;
 
             var tracks = await _spotifyWebAPI.GetSavedTracksAsync(limit: 1, offset: 0);
+
+            if (tracks.Error != null)
+            {
+                SpotifyProvider.Auth();
+            }
 
             int total = tracks.Total;
 
@@ -114,6 +124,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
             int limit = 100;
 
             var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(username, limit: 1, offset: 0);
+
+            if (playlists.Error != null)
+            {
+                SpotifyProvider.Auth();
+            }
 
             int total = playlists.Total;
 
