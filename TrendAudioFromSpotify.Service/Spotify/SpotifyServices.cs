@@ -89,7 +89,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             if(tracks.Error != null)
             {
-
+                SpotifyProvider.Auth();
             }
 
             int total = tracks.Total;
