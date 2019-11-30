@@ -121,6 +121,12 @@
     <Compile Include="Controls\AudioControl.xaml.cs">
       <DependentUpon>AudioControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AudioHitsCollectionControl.xaml.cs">
+      <DependentUpon>AudioHitsCollectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AudioHitsControl.xaml.cs">
+      <DependentUpon>AudioHitsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\GroupControl.xaml.cs">
       <DependentUpon>GroupControl.xaml</DependentUpon>
     </Compile>
@@ -157,6 +163,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\AudioControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AudioHitsCollectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AudioHitsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -15,7 +15,7 @@
                 <views:AppAreaUserControl />
             </TabItem>
             <TabItem Header="Monitoring">
-                <views:MonitoringUserControl />
+                <views:MonitoringUserControl HorizontalAlignment="Stretch" />
             </TabItem>
         </TabControl>
     </Grid>

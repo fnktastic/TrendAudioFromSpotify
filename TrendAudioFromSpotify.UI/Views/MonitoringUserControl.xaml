@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              mc:Ignorable="d" 
+             xmlns:customControls="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              DataContext="{Binding Monitoring, Source={StaticResource Locator}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -17,6 +18,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <ListBox Grid.Column="0" Grid.Row="0"
+                 SelectedItem="{Binding SelectedGroup}"
                  ItemsSource="{Binding Groups}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -34,7 +36,10 @@
                     ResizeBehavior="PreviousAndNext"
                     />
         <Grid Grid.Column="2" Grid.Row="0">
-
+            <customControls:AudioHitsCollectionControl
+                ItemsSource="{Binding SelectedGroup.Trends}" 
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
+            </customControls:AudioHitsCollectionControl>
         </Grid>
     </Grid>
 </UserControl>

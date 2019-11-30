@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.UI.Collections;
 
 namespace TrendAudioFromSpotify.UI.Model
 {
@@ -23,6 +24,8 @@ namespace TrendAudioFromSpotify.UI.Model
         public string Uri => _track.Uri;
 
         public int Hits { get; set; }
+
+        public virtual PlaylistCollection Playlists { get; set; }
 
         private bool _isChecked;
         public bool IsChecked

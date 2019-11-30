@@ -97,7 +97,18 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public virtual AudioCollection Audios { get; set; }
         public virtual PlaylistCollection Playlists { get; set; }
-        public virtual AudioCollection Trends { get; set; }
+
+        private AudioCollection _trends;
+        public AudioCollection Trends
+        {
+            get { return _trends; }
+            set
+            {
+                if (value == _trends) return;
+                _trends = value;
+                RaisePropertyChanged(nameof(Trends));
+            }
+        }
 
         public Group()
         {
@@ -145,6 +156,8 @@ namespace TrendAudioFromSpotify.UI.Model
                         {
                             var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id)).Select(x => new Audio(x.Track)).ToList();
 
+                            playlist.Audios = new AudioCollection(audiosOfPlaylist);
+
                             if (audiosOfPlaylists.ContainsKey(playlist.Id))
                                 continue;
 
@@ -167,6 +180,14 @@ namespace TrendAudioFromSpotify.UI.Model
                             if (audio == null) return null;
 
                             audio.Hits = y.Count();
+
+                            audio.Playlists = new PlaylistCollection();
+
+                            foreach (var playlist in Playlists)
+                            {
+                                if (playlist.Audios.Any(x => string.Equals(x.Id, audio.Id, StringComparison.OrdinalIgnoreCase)))
+                                    audio.Playlists.Add(playlist);
+                            }
 
                             return audio;
                         })
@@ -210,7 +231,7 @@ namespace TrendAudioFromSpotify.UI.Model
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             ProcessingInProgress = false;
-                        });  
+                        });
                     }
                 });
             }

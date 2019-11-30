@@ -28,6 +28,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RaisePropertyChanged(nameof(Groups));
             }
         }
+
+        private Group _selectedGroup;
+        public Group SelectedGroup
+        {
+            get { return _selectedGroup; }
+            set
+            {
+                if (value == _selectedGroup) return;
+                _selectedGroup = value;
+                RaisePropertyChanged(nameof(SelectedGroup));
+            }
+        }
         #endregion
 
         public MonitoringViewModel(DbContext dbContext)

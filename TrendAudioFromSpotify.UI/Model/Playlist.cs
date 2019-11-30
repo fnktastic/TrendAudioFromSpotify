@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.ViewModel;
 
 namespace TrendAudioFromSpotify.UI.Model
@@ -20,6 +21,8 @@ namespace TrendAudioFromSpotify.UI.Model
         public int Total => _simplePlaylist.Tracks.Total;
 
         public string Owner => _simplePlaylist.Owner.DisplayName;
+
+        public virtual AudioCollection Audios { get; set; }
 
         private bool _isChecked;
         public bool IsChecked
