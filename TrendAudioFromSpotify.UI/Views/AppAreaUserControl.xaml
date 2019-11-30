@@ -48,8 +48,8 @@
                 <TextBlock Text="Spotify API credentials" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
                 <Grid Margin=" 0 15 0 0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.5*" />
-                        <ColumnDefinition Width="0.5*" />
+                        <ColumnDefinition Width="0.25*" />
+                        <ColumnDefinition Width="0.75*" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition />
@@ -58,10 +58,10 @@
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="User ID" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
-                    <TextBlock Text="Secret ID" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
-                    <TextBlock Text="Redirect URL" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
-                    <TextBlock Text="Server URL" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" />
+                    <TextBlock Text="User ID" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
+                    <TextBlock Text="Secret ID" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
+                    <TextBlock Text="Redirect URL" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
+                    <TextBlock Text="Server URL" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" />
 
                     <TextBox Text="{Binding UserId}" Controls:TextBoxHelper.Watermark="user id" Grid.Column="1" Grid.Row="0"  />
                     <TextBox Text="{Binding SecretId}" Controls:TextBoxHelper.Watermark="secret id" Grid.Column="1" Grid.Row="1" />
