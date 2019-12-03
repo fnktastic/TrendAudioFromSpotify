@@ -176,7 +176,7 @@ namespace TrendAudioFromSpotify.UI.Model
                 CreatedAt = DateTime.UtcNow;
                 UpdatedAt = DateTime.UtcNow;
 
-                if (playlists.Count > 0 && int.Parse(HitTreshold) > 0 && int.Parse(Top) > 0)
+                if (playlists.Count > 0 && int.Parse(HitTreshold ?? "") > 0 && int.Parse(Top ?? "") > 0)
                     IsReady = true;
             }
             catch
