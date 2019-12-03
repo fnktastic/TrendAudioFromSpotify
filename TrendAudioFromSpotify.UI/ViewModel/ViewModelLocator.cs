@@ -12,7 +12,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<SpotifyViewModel>();
 
             SimpleIoc.Default.Register<MonitoringViewModel>();
 
@@ -23,11 +23,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<IAudioRepository, AudioRepository>();
         }
 
-        public MainViewModel Main
+        public SpotifyViewModel Spotify
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MainViewModel>();
+                return ServiceLocator.Current.GetInstance<SpotifyViewModel>();
             }
         }
         

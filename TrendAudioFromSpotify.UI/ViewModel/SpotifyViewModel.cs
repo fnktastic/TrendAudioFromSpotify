@@ -24,7 +24,7 @@ using TrendAudioFromSpotify.UI.Utility;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
-    public class MainViewModel : ViewModelBase
+    public class SpotifyViewModel : ViewModelBase
     {
         #region fields
         private List<Audio> likedSongs;
@@ -370,7 +370,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MainViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, SerialQueue serialQueue)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, SerialQueue serialQueue)
         {
             _monitoringViewModel = monitoringViewModel;
             _audioRepository = audioRepository;

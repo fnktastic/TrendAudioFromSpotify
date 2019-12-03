@@ -115,10 +115,20 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private bool _autoRecreatePlaylisOnSpotify;
+        public bool AutoRecreatePlaylisOnSpotify
+        {
+            get { return _autoRecreatePlaylisOnSpotify; }
+            set
+            {
+                if (value == _autoRecreatePlaylisOnSpotify) return;
+                _autoRecreatePlaylisOnSpotify = value;
+                RaisePropertyChanged(nameof(AutoRecreatePlaylisOnSpotify));
+            }
+        }
+
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
-
         public bool IsReady { get; } = false;
 
         public virtual AudioCollection Audios { get; set; }
@@ -288,6 +298,19 @@ namespace TrendAudioFromSpotify.UI.Model
         private void RunTimer()
         {
             timer = new Timer(async x => await GetTrends(), null, RefreshPeriod, RefreshPeriod);
+        }
+
+        private void RecreateOnSpotify()
+        {
+            if(PlaylistType == PlaylistTypeEnum.Fifo)
+            {
+
+            }
+
+            if (PlaylistType == PlaylistTypeEnum.Standard)
+            {
+
+            }
         }
     }
 }

@@ -32,7 +32,7 @@
                         </TextBlock.Style>
                     </TextBlock>
                 </TabItem.Header>
-                <views:AppAreaUserControl />
+                <views:SpotifyUserControl />
             </TabItem>
             <TabItem>
                 <TabItem.Header>

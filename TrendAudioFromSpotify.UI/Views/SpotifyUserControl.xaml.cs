@@ -19,9 +19,9 @@ namespace TrendAudioFromSpotify.UI.Views
     /// <summary>
     /// Interaction logic for AppAreaUserControl.xaml
     /// </summary>
-    public partial class AppAreaUserControl : UserControl
+    public partial class SpotifyUserControl : UserControl
     {
-        public AppAreaUserControl()
+        public SpotifyUserControl()
         {
             InitializeComponent();
         }

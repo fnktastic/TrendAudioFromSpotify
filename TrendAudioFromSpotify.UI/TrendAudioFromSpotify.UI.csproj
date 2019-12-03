@@ -149,11 +149,11 @@
     <Compile Include="Model\User.cs" />
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\SpotifyViewModel.cs" />
     <Compile Include="ViewModel\MonitoringViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="Views\AppAreaUserControl.xaml.cs">
-      <DependentUpon>AppAreaUserControl.xaml</DependentUpon>
+    <Compile Include="Views\SpotifyUserControl.xaml.cs">
+      <DependentUpon>SpotifyUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MonitoringUserControl.xaml.cs">
       <DependentUpon>MonitoringUserControl.xaml</DependentUpon>
@@ -206,7 +206,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\AppAreaUserControl.xaml">
+    <Page Include="Views\SpotifyUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
