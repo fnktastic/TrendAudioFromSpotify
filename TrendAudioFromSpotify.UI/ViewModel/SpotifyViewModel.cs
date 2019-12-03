@@ -347,9 +347,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 if (_selectedPlaylist != null)
                 {
-                    _selectedPlaylist.IsChecked = true;
+                    //_selectedPlaylist.IsChecked = true;
 
-                    PlaylistSelectedCommand.Execute(_selectedPlaylist);
+                    //PlaylistSelectedCommand.Execute(_selectedPlaylist);
 
                     GetPlaylistsAudios();
                 }
