@@ -1,5 +1,6 @@
 using CommonServiceLocator;
 using GalaSoft.MvvmLight.Ioc;
+using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.UI.Utility;
 using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
@@ -18,6 +19,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<DbContext>();
 
             SimpleIoc.Default.Register<SerialQueue>();
+
+            SimpleIoc.Default.Register<IAudioRepository, AudioRepository>();
         }
 
         public MainViewModel Main
@@ -49,6 +52,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<SerialQueue>();
+            }
+        }
+
+        public IAudioRepository AudioRepository
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<AudioRepository>();
             }
         }
 

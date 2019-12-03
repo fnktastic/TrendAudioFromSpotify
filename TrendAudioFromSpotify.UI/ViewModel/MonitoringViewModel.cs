@@ -7,20 +7,20 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Utility;
-using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
     public class MonitoringViewModel : ViewModelBase
     {
         #region fields
-        private readonly DbContext _dbContext;
         public ISpotifyServices SpotifyServices = null;
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly SerialQueue _serialQueue;
+        private readonly IAudioRepository _audioRepository;
         #endregion
 
         #region properties
@@ -49,13 +49,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel(DbContext dbContext, SerialQueue serialQueue)
+        public MonitoringViewModel(IAudioRepository audioRepository, SerialQueue serialQueue)
         {
             _dialogCoordinator = DialogCoordinator.Instance;
 
-            _dbContext = dbContext;
-
             _serialQueue = serialQueue;
+
+            _audioRepository = audioRepository;
 
             Groups = new ObservableCollection<Group>();
         }

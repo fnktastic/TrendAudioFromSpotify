@@ -21,7 +21,6 @@ using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Utility;
-using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
@@ -40,8 +39,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private readonly SerialQueue _serialQueue;
 
-
-        private readonly DbContext _context;
 
         private readonly IAudioRepository _audioRepository;
 
@@ -373,11 +370,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MainViewModel(MonitoringViewModel monitoringViewModel, DbContext dbContext, SerialQueue serialQueue)
+        public MainViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, SerialQueue serialQueue)
         {
             _monitoringViewModel = monitoringViewModel;
-            _context = dbContext;
-            _audioRepository = new AudioRepository(_context);
+            _audioRepository = audioRepository;
             _serialQueue = serialQueue;
 
             _dialogCoordinator = DialogCoordinator.Instance;
@@ -502,6 +498,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 await HideConnectingMessage();
 
                 var myPublicProfile = await _spotifyServices.GetMyProfile();
+
+                isStartup = false;
             }
             else
             {
@@ -509,6 +507,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
+        private bool isStartup = true;
         private async void OnAuthResponse(object sender, AuthorizationCode payload)
         {
             if (sender is AuthorizationCodeAuth authorization)
@@ -532,7 +531,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 IsConnectionEsatblished = true;
 
                 await HideConnectingMessage();
-                await ShowMessage("Notification", "Succesfully authorized in Spotify!");
+                if (isStartup)
+                {
+                    await ShowMessage("Notification", "Succesfully authorized in Spotify!");
+                }
 
                 await FetchSpotifyData();
             }
