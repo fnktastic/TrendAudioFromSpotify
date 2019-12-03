@@ -20,7 +20,8 @@
                 <ColumnDefinition Width="50"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
-                   TextAlignment="Left" FontWeight="DemiBold" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" 
+                   TextAlignment="Left" FontWeight="DemiBold" TextWrapping="Wrap" 
+                   MaxWidth="345" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" 
                    FontSize="12" 
                    Text="{Binding Name}" ToolTip="{Binding Name}" />
             <TextBlock Grid.Column="1"
