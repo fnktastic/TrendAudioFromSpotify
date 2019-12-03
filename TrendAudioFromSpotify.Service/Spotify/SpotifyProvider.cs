@@ -21,6 +21,8 @@ namespace TrendAudioFromSpotify.Service.Spotify
             secretId,
             redirectUri,
             serverUri,
+            Scope.PlaylistModifyPublic |
+            Scope.PlaylistModifyPrivate |
             Scope.UserFollowRead |
             Scope.UserReadPrivate |
             Scope.UserModifyPlaybackState | 

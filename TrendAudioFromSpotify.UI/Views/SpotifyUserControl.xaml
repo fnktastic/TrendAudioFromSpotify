@@ -416,7 +416,8 @@
                                     </DockPanel>
 
                                     <StackPanel Margin="0 10 0 0">
-                                        <CheckBox Content="Automatically recreate on Spotify" VerticalAlignment="Center" IsChecked="{Binding TargetGroup.AutoRecreatePlaylisOnSpotify}"/>
+                                        <CheckBox Content="Automatically recreate on Spotify" VerticalAlignment="Center" 
+                                                  IsChecked="{Binding TargetGroup.AutoRecreatePlaylisOnSpotify}"/>
                                     </StackPanel>
    
                                     

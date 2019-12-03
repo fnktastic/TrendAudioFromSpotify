@@ -165,6 +165,7 @@ namespace TrendAudioFromSpotify.UI.Model
                 this.PlaylistType = group.PlaylistType;
                 this.RefreshPeriod = group.RefreshPeriod;
                 this.TargetPlaylistName = group.TargetPlaylistName;
+                this.AutoRecreatePlaylisOnSpotify = group.AutoRecreatePlaylisOnSpotify;
 
                 Audios = new AudioCollection(audios);
                 Playlists = new PlaylistCollection(playlists);
@@ -283,6 +284,9 @@ namespace TrendAudioFromSpotify.UI.Model
                         {
                             Trends = new AudioCollection(groupedAudios);
                         });
+
+                        if (_autoRecreatePlaylisOnSpotify)
+                            RecreateOnSpotify();
                     }
                     finally
                     {
@@ -299,17 +303,17 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             timer = new Timer(async x => await GetTrends(), null, RefreshPeriod, RefreshPeriod);
         }
-
+        
         private void RecreateOnSpotify()
         {
-            if(PlaylistType == PlaylistTypeEnum.Fifo)
+            if (PlaylistType == PlaylistTypeEnum.Fifo)
             {
-
+                _spotifyServices.RecreatePlaylist(_targetPlaylistName, _trends.Select(x => x.Href));
             }
 
             if (PlaylistType == PlaylistTypeEnum.Standard)
             {
-
+                _spotifyServices.RecreatePlaylist(_targetPlaylistName, _trends.Select(x => x.Uri));
             }
         }
     }
