@@ -14,10 +14,10 @@
             Background="Black">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.7*"></ColumnDefinition>
-                <ColumnDefinition Width="0.3*"></ColumnDefinition>
-                <ColumnDefinition Width="100"></ColumnDefinition>
-                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="1*" MinWidth="150"></ColumnDefinition>
+                <ColumnDefinition Width="125" MinWidth="125"></ColumnDefinition>
+                <ColumnDefinition Width="100" MinWidth="100"></ColumnDefinition>
+                <ColumnDefinition Width="50" MinWidth="50"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0"
                    TextAlignment="Left" FontWeight="DemiBold" TextWrapping="Wrap" 
@@ -25,7 +25,7 @@
                    FontSize="12" 
                    Text="{Binding Name}" ToolTip="{Binding Name}" />
             <TextBlock Grid.Column="1"
-                   TextAlignment="Left" FontWeight="Light" 
+                   TextAlignment="Center" FontWeight="Light" HorizontalAlignment="Center"
                    FontSize="12" 
                    Text="{Binding Total, StringFormat={}0 track(s)}" />
             <TextBlock Grid.Column="2"

@@ -52,6 +52,19 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public CollectionViewSource FilteredExplorePlaylistsCollection { get; set; }
         public CollectionViewSource FilteredMyPlaylistsCollection { get; set; }
 
+        private bool _globalSearchEnabled;
+        public bool GlobalSearchEnabled
+        {
+            get { return _globalSearchEnabled; }
+            set
+            {
+                if (value == _globalSearchEnabled) return;
+                _globalSearchEnabled = value;
+
+                RaisePropertyChanged(nameof(GlobalSearchEnabled));
+            }
+        }
+
         private string _myPlaylistsSearchText;
         public string MyPlaylistsSearchText
         {
@@ -663,6 +676,27 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
+        private RelayCommand _globalSearchCommand;
+        public RelayCommand GlobalSearchCommand => _globalSearchCommand ?? (_globalSearchCommand = new RelayCommand(GlobalSearch));
+        private async void GlobalSearch()
+        {
+            if (_globalSearchEnabled)
+            {
+                try
+                {
+                    IsPlaylistsAreaBusy = true;
+
+                    var playlists = await _spotifyServices.GlobalPlaylistsSearch(_explorePlaylistsSearchText);
+
+                    ExplorePlaylists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
+                }
+                finally
+                {
+                    IsPlaylistsAreaBusy = false;
+                }
+            }
+        }
+
         private RelayCommand<KeyEventArgs> _addSpotifyUsernameCommand;
         public RelayCommand<KeyEventArgs> AddSpotifyUsernameCommand => _addSpotifyUsernameCommand ?? (_addSpotifyUsernameCommand = new RelayCommand<KeyEventArgs>(AddSpotifyUsername));
         private void AddSpotifyUsername(KeyEventArgs e)

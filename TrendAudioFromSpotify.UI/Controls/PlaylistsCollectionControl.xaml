@@ -6,6 +6,7 @@
              HorizontalContentAlignment="Stretch"
              xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             VirtualizingPanel.IsVirtualizing="True"
              mc:Ignorable="d">
     <ListBox.Resources>
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
@@ -13,23 +14,23 @@
     </ListBox.Resources>
     <ListBox.Template>
         <ControlTemplate>
-            <DockPanel >
-                <Grid DockPanel.Dock="Top" Height="30">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="0.7*"></ColumnDefinition>
-                        <ColumnDefinition Width="0.3*"></ColumnDefinition>
-                        <ColumnDefinition Width="100"></ColumnDefinition>
-                        <ColumnDefinition Width="50"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" FontWeight="Thin" Padding="15 0 0 0" FontSize="14" HorizontalAlignment="Left">Playlist Name</TextBlock>
-                    <TextBlock Grid.Column="1" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Tracks Count</TextBlock>
-                    <TextBlock Grid.Column="2" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Owner</TextBlock>
-                    <TextBlock Grid.Column="3" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Check</TextBlock>
-                </Grid>
-                <ScrollViewer>
+            <ScrollViewer>
+                <DockPanel >
+                    <Grid DockPanel.Dock="Top" Height="30">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MinWidth="150"></ColumnDefinition>
+                            <ColumnDefinition Width="125" MinWidth="125"></ColumnDefinition>
+                            <ColumnDefinition Width="100" MinWidth="100"></ColumnDefinition>
+                            <ColumnDefinition Width="50" MinWidth="50"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" MinWidth="150" FontWeight="Thin" Padding="15 0 0 0" FontSize="14" HorizontalAlignment="Left">Playlist Name</TextBlock>
+                        <TextBlock Grid.Column="1" MinWidth="125" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Center">Tracks Count</TextBlock>
+                        <TextBlock Grid.Column="2" MinWidth="100" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Owner</TextBlock>
+                        <TextBlock Grid.Column="3" MinWidth="50" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Check</TextBlock>
+                    </Grid>
                     <ItemsPresenter></ItemsPresenter>
-                </ScrollViewer>
-            </DockPanel>
+                </DockPanel>
+            </ScrollViewer>
         </ControlTemplate>
     </ListBox.Template>
 
@@ -38,4 +39,10 @@
             <local:PlaylistControl />
         </DataTemplate>
     </ListBox.ItemTemplate>
+
+    <ListBox.ItemsPanel>
+        <ItemsPanelTemplate>
+            <VirtualizingStackPanel />
+        </ItemsPanelTemplate>
+    </ListBox.ItemsPanel>
 </ListBox>

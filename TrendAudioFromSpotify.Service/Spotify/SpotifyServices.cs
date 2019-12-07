@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Enums = SpotifyAPI.Web.Enums;
 
 namespace TrendAudioFromSpotify.Service.Spotify
 {
@@ -19,6 +20,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<PublicProfile> GetMyProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
         PrivateProfile PrivateProfile { get; }
+        Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -98,7 +100,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             var tracks = await _spotifyWebAPI.GetPlaylistTracksAsync(playlistId: playlistId, limit: 1, offset: 0);
 
-            if(tracks.Error != null)
+            if (tracks.Error != null)
             {
                 SpotifyProvider.Auth();
             }
@@ -193,6 +195,34 @@ namespace TrendAudioFromSpotify.Service.Spotify
             var playlist = await _spotifyWebAPI.CreatePlaylistAsync(PrivateProfile.Id, playlistName);
 
             var error = await _spotifyWebAPI.AddPlaylistTracksAsync(PrivateProfile.Id, playlist.Id, ids.ToList());
+        }
+
+        public async Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query)
+        {
+            var foundPlaylists = new List<SimplePlaylist>();
+
+            if (query == null) return foundPlaylists;
+
+            int counter = 0;
+            int limit = 20;
+            int maxSize = 300;
+
+            var searchResultPack = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, 1, 0, "");
+
+            int total = searchResultPack.Playlists.Total;
+
+            while (counter < total && counter < maxSize)
+            {
+                var searchResult = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, limit, counter, "");
+
+                var items = searchResult.Playlists.Items;
+
+                counter += items.Count;
+
+                foundPlaylists.AddRange(items);
+            }
+
+            return foundPlaylists;
         }
     }
 }

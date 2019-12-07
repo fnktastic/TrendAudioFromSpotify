@@ -212,23 +212,42 @@
                                             Grid.RowSpan="2"
                                             Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
 
-                                        <DockPanel Grid.Row="0" Grid.Column="0">
-                                            <Button Visibility="Visible"
-                                                DockPanel.Dock="Right"
-                                                VerticalAlignment="Center"
-                                                Command="{Binding SelectExplorePlaylistsCommand}" Height="27" Width="100" Content="Select All" />
+                                        <Grid Grid.Row="0" Grid.Column="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="110" />
+                                                <ColumnDefinition Width="100" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox 
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Stretch"
+                                                Text="{Binding ExplorePlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                                Margin="0 10 10 10"
+                                                VerticalContentAlignment="Center"
+                                                Style="{DynamicResource SearchMetroTextBox}"
+                                                Controls:TextBoxHelper.ButtonCommand="{Binding GlobalSearchCommand}"
+                                                Controls:TextBoxHelper.Watermark="filter playlists" />
 
-                                            <TextBox Text="{Binding ExplorePlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
-                                                 Margin="0 10 10 10"
-                                                 VerticalContentAlignment="Center"
-                                                 Style="{DynamicResource SearchMetroTextBox}"
-                                                 Controls:TextBoxHelper.Watermark="filter playlists" />
-                                        </DockPanel>
+                                            <CheckBox 
+                                                Grid.Column="1"
+                                                Height="30"   
+                                                VerticalAlignment="Center"
+                                                Content="Global Search"
+                                                Margin="0 0 10 0"
+                                                IsChecked="{Binding GlobalSearchEnabled}" />
+
+                                            <Button Visibility="Visible" 
+                                                    Grid.Column="2"
+                                                    VerticalAlignment="Center"
+                                                    Command="{Binding SelectExplorePlaylistsCommand}" Height="27" Width="100" Content="Select All" />
+
+                                        </Grid>
 
                                         <customControls:PlaylistsCollectionControl
                                             Grid.Row="1"
                                             Margin="0"
                                             IsSynchronizedWithCurrentItem="False"
+                                            VirtualizingPanel.IsVirtualizing="True"
                                             ItemsSource="{Binding FilteredExplorePlaylistsCollection.View}"
                                             Visibility="{Binding IsPlaylistsAreaBusy, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                                             SelectedItem="{Binding SelectedPlaylist}"/>
