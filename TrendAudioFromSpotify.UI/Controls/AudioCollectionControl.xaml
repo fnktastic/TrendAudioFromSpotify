@@ -14,21 +14,21 @@
     </ListBox.Resources>
     <ListBox.Template>
         <ControlTemplate>
-            <ScrollViewer>
-                <DockPanel >
-                    <Grid DockPanel.Dock="Top" Height="30">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="40"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="50"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" FontSize="14" FontWeight="Thin" Padding="15 0 0 0" HorizontalAlignment="Left">№</TextBlock>
-                        <TextBlock Grid.Column="1" FontSize="14" FontWeight="Thin" HorizontalAlignment="Left">Track details</TextBlock>
-                        <TextBlock Grid.Column="2" FontSize="14" FontWeight="Thin" HorizontalAlignment="Left">Action</TextBlock>
-                    </Grid>
+            <DockPanel >
+                <Grid DockPanel.Dock="Top" Height="30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="50"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" FontSize="14" FontWeight="Thin" Padding="15 0 0 0" HorizontalAlignment="Left">№</TextBlock>
+                    <TextBlock Grid.Column="1" FontSize="14" FontWeight="Thin" HorizontalAlignment="Left">Track details</TextBlock>
+                    <TextBlock Grid.Column="2" FontSize="14" FontWeight="Thin" HorizontalAlignment="Left">Action</TextBlock>
+                </Grid>
+                <ScrollViewer>
                     <ItemsPresenter></ItemsPresenter>
-                </DockPanel>
-            </ScrollViewer>
+                </ScrollViewer>
+            </DockPanel>
         </ControlTemplate>
     </ListBox.Template>
 

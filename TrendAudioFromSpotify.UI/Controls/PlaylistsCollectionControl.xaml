@@ -14,23 +14,23 @@
     </ListBox.Resources>
     <ListBox.Template>
         <ControlTemplate>
-            <ScrollViewer>
-                <DockPanel >
-                    <Grid DockPanel.Dock="Top" Height="30">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*" MinWidth="150"></ColumnDefinition>
-                            <ColumnDefinition Width="125" MinWidth="125"></ColumnDefinition>
-                            <ColumnDefinition Width="100" MinWidth="100"></ColumnDefinition>
-                            <ColumnDefinition Width="50" MinWidth="50"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" MinWidth="150" FontWeight="Thin" Padding="15 0 0 0" FontSize="14" HorizontalAlignment="Left">Playlist Name</TextBlock>
-                        <TextBlock Grid.Column="1" MinWidth="125" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Center">Tracks Count</TextBlock>
-                        <TextBlock Grid.Column="2" MinWidth="100" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Owner</TextBlock>
-                        <TextBlock Grid.Column="3" MinWidth="50" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Check</TextBlock>
-                    </Grid>
+            <DockPanel >
+                <Grid DockPanel.Dock="Top" Height="30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" MinWidth="150"></ColumnDefinition>
+                        <ColumnDefinition Width="125" MinWidth="125"></ColumnDefinition>
+                        <ColumnDefinition Width="100" MinWidth="100"></ColumnDefinition>
+                        <ColumnDefinition Width="50" MinWidth="50"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" MinWidth="150" FontWeight="Thin" Padding="15 0 0 0" FontSize="14" HorizontalAlignment="Left">Playlist Name</TextBlock>
+                    <TextBlock Grid.Column="1" MinWidth="125" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Center">Tracks Count</TextBlock>
+                    <TextBlock Grid.Column="2" MinWidth="100" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Owner</TextBlock>
+                    <TextBlock Grid.Column="3" MinWidth="50" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Check</TextBlock>
+                </Grid>
+                <ScrollViewer>
                     <ItemsPresenter></ItemsPresenter>
-                </DockPanel>
-            </ScrollViewer>
+                </ScrollViewer>
+            </DockPanel>
         </ControlTemplate>
     </ListBox.Template>
 
