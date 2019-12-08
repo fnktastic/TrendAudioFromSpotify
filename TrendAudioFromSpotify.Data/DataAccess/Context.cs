@@ -17,6 +17,10 @@ namespace TrendAudioFromSpotify.Data.DataAccess
 
         public DbSet<AudioDto> Audios { get; set; }
 
+        public DbSet<PlaylistDto> Playlists { get; set; }
+
+        public DbSet<PlaylistAudioDto> PlaylistAudios { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AudioDto>().HasKey(a => a.Id);

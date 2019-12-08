@@ -21,6 +21,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<SerialQueue>();
 
             SimpleIoc.Default.Register<IAudioRepository, AudioRepository>();
+
+            SimpleIoc.Default.Register<IPlaylistRepository, PlaylistRepository>();
+
+            SimpleIoc.Default.Register<IPlaylistAudioRepository, PlaylistAudioRepository>();
         }
 
         public SpotifyViewModel Spotify
@@ -60,6 +64,22 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<AudioRepository>();
+            }
+        }
+
+        public IPlaylistRepository PlaylistRepository
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<PlaylistRepository>();
+            }
+        }
+
+        public IPlaylistAudioRepository PlaylistAudioRepository
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<PlaylistAudioRepository>();
             }
         }
 
