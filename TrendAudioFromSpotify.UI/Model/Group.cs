@@ -20,6 +20,8 @@ namespace TrendAudioFromSpotify.UI.Model
         private Timer timer;
 
         #region properties
+        public Guid Id { get; set; }
+
         private string _name;
         public string Name
         {
@@ -159,6 +161,7 @@ namespace TrendAudioFromSpotify.UI.Model
             {
                 _spotifyServices = spotifyServices;
 
+                this.Id = Guid.NewGuid();
                 this.Name = group.Name;
                 this.Top = group.Top;
                 this.HitTreshold = group.HitTreshold;
@@ -186,7 +189,7 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
-        public async Task Process()
+        public async Task<bool> Process()
         {
             if (IsReady)
             {
@@ -194,7 +197,11 @@ namespace TrendAudioFromSpotify.UI.Model
 
                 if (RefreshPeriod > TimeSpan.Zero)
                     RunTimer();
+
+                return true;
             }
+
+            return false;
         }
 
         private async Task GetTrends()

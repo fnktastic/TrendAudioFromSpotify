@@ -373,9 +373,9 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="220" />
-                            <ColumnDefinition Width="0.65*" />
+                            <ColumnDefinition Width="1*" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="0.35*" />
+                            <ColumnDefinition Width="0*" />
                         </Grid.ColumnDefinitions>
                         <GroupBox Header="Group setting" Grid.Column="0" Background="Black" BorderBrush="Black">
                             <Grid  HorizontalAlignment="Center" Margin="0 5 0 0">
@@ -464,7 +464,7 @@
                             </Grid>
                         </GroupBox>
                         <GridSplitter 
-                            ResizeDirection="Columns" Grid.Column="2"
+                            ResizeDirection="Columns" Grid.Column="2" Visibility="Collapsed"
                             Width="3"
                             Margin="5,0"
                             Opacity="0.2"
@@ -472,7 +472,7 @@
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Stretch"
                             ResizeBehavior="PreviousAndNext"/>
-                        <GroupBox Header="Target Audios" Grid.Column="3" 
+                        <GroupBox Header="Target Audios" Grid.Column="3" Visibility="Collapsed"
                                   Background="Black" BorderBrush="Black">
                             <Grid>
                                 <StackPanel VerticalAlignment="Center" Visibility="{Binding IsProcessingAreaIsBusy, FallbackValue=Collapsed, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}">

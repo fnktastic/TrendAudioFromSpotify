@@ -39,5 +39,10 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             _simplePlaylist = simplePlaylist;
         }
+
+        public Playlist()
+        {
+
+        }
     }
 }

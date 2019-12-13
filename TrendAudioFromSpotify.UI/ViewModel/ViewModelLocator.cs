@@ -1,6 +1,9 @@
+using AutoMapper;
 using CommonServiceLocator;
 using GalaSoft.MvvmLight.Ioc;
+using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
+using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Utility;
 using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
@@ -16,6 +19,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             SimpleIoc.Default.Register<MonitoringViewModel>();
 
+            SimpleIoc.Default.Register<GroupManagingViewModel>();
+
             SimpleIoc.Default.Register<DbContext>();
 
             SimpleIoc.Default.Register<SerialQueue>();
@@ -25,6 +30,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<IPlaylistRepository, PlaylistRepository>();
 
             SimpleIoc.Default.Register<IPlaylistAudioRepository, PlaylistAudioRepository>();
+
+            SimpleIoc.Default.Register<IGroupRepository, GroupRepository>();
+
+            SimpleIoc.Default.Register<IGroupPlaylistRepository, GroupPlaylistRepository>();
+
+            SimpleIoc.Default.Register<IConfigurationProvider, MyConfig>();
+
+            SimpleIoc.Default.Register<IMapper, MyMapper> ();
         }
 
         public SpotifyViewModel Spotify
@@ -40,6 +53,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<MonitoringViewModel>();
+            }
+        }
+
+        public GroupManagingViewModel GroupManaging
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<GroupManagingViewModel>();
             }
         }
 

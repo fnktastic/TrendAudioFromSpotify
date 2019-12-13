@@ -8,18 +8,16 @@ using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.Data.Model
 {
-    [Table("PlaylistAudio")]
-    public class PlaylistAudioDto
+    [Table("GroupPlaylist")]
+    public class GroupPlaylistDto
     {
+        [Key]
+        public Guid GroupId { get; set; }
+        public GroupDto Group { get; set; }
+
         [Key]
         public string PlaylistId { get; set; }
         public PlaylistDto Playlist { get; set; }
-
-        [Key]
-        public string AudioId { get; set; }
-        public AudioDto Audio { get; set; }
-
-        public int Placement { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

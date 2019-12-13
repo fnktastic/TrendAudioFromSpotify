@@ -42,7 +42,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private readonly IAudioRepository _audioRepository;
 
-        private readonly Mapper _mapper;
+        private readonly IGroupRepository _groupRepository;
+
+        private readonly IGroupPlaylistRepository _groupPlaylistRepository;
+
+        private readonly IMapper _mapper;
 
         private readonly MonitoringViewModel _monitoringViewModel;
         #endregion
@@ -383,10 +387,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, SerialQueue serialQueue)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, IGroupRepository groupRepository, IGroupPlaylistRepository groupPlaylistRepository, IMapper mapper, SerialQueue serialQueue)
         {
             _monitoringViewModel = monitoringViewModel;
             _audioRepository = audioRepository;
+            _groupRepository = groupRepository;
+            _groupPlaylistRepository = groupPlaylistRepository;
             _serialQueue = serialQueue;
 
             _dialogCoordinator = DialogCoordinator.Instance;
@@ -409,13 +415,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FilteredMyPlaylistsCollection = new CollectionViewSource();
             FilteredMyPlaylistsCollection.Filter += FilteredMyPlaylistsCollection_Filter;
 
-            var configuration = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Audio, AudioDto>();
-                cfg.CreateMap<Playlist, PlaylistDto>();
-            });
-
-            _mapper = new Mapper(configuration);
+            _mapper = mapper;
         }
 
         #region dialogs
@@ -848,6 +848,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             if (group.IsReady)
             {
                 _monitoringViewModel.Groups.Add(group);
+
+                //db
+                await _groupRepository.InsertAsync(_mapper.Map<GroupDto>(group));
 
                 TargetGroup = new Group();
 
