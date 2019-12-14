@@ -13,15 +13,15 @@ namespace TrendAudioFromSpotify.UI.Model
     {
         private FullTrack _track { get; set; }
 
-        public string Id => _track.Id;
+        public string Id {get;set;}
 
-        public string Artist => string.Join(" ", _track.Artists.Select(x => x.Name));
+        public string Artist { get; set; }
 
-        public string Title => _track.Name;
+        public string Title { get; set; }
 
-        public string Href => _track.Href;
+        public string Href { get; set; }
 
-        public string Uri => _track.Uri;
+        public string Uri { get; set; }
 
         public int Hits { get; set; }
 
@@ -54,6 +54,12 @@ namespace TrendAudioFromSpotify.UI.Model
         public Audio(FullTrack track)
         {
             _track = track;
+
+            Id = _track.Id;
+            Artist = string.Join(" ", _track.Artists.Select(x => x.Name));
+            Title = _track.Name;
+            Href = _track.Href;
+            Uri = _track.Uri;
         }
 
         public Audio()

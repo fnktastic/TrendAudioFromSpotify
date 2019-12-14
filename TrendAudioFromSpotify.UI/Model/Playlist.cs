@@ -14,13 +14,13 @@ namespace TrendAudioFromSpotify.UI.Model
     {
         private SimplePlaylist _simplePlaylist { get; set; }
 
-        public string Id => _simplePlaylist.Id;
+        public string Id { get; set; }
 
-        public string Name => _simplePlaylist.Name;
+        public string Name { get; set; }
 
-        public int Total => _simplePlaylist.Tracks.Total;
+        public int Total { get; set; }
 
-        public string Owner => _simplePlaylist.Owner.DisplayName;
+        public string Owner { get; set; }
 
         public virtual AudioCollection Audios { get; set; }
 
@@ -38,6 +38,11 @@ namespace TrendAudioFromSpotify.UI.Model
         public Playlist(SimplePlaylist simplePlaylist)
         {
             _simplePlaylist = simplePlaylist;
+
+            Id = _simplePlaylist.Id;
+            Name = _simplePlaylist.Name;
+            Total = _simplePlaylist.Tracks.Total;
+            Owner = _simplePlaylist.Owner.DisplayName;
         }
 
         public Playlist()

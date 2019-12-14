@@ -44,6 +44,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private readonly IGroupRepository _groupRepository;
 
+        private readonly IPlaylistRepository _playlistRepository;
+
         private readonly IGroupPlaylistRepository _groupPlaylistRepository;
 
         private readonly IMapper _mapper;
@@ -387,12 +389,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, IGroupRepository groupRepository, IGroupPlaylistRepository groupPlaylistRepository, IMapper mapper, SerialQueue serialQueue)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, IGroupRepository groupRepository, IGroupPlaylistRepository groupPlaylistRepository, IPlaylistRepository playlistRepository, IMapper mapper, SerialQueue serialQueue)
         {
             _monitoringViewModel = monitoringViewModel;
             _audioRepository = audioRepository;
             _groupRepository = groupRepository;
             _groupPlaylistRepository = groupPlaylistRepository;
+            _playlistRepository = playlistRepository;
             _serialQueue = serialQueue;
 
             _dialogCoordinator = DialogCoordinator.Instance;
@@ -849,8 +852,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             {
                 _monitoringViewModel.Groups.Add(group);
 
-                //db
+                //move to service
                 await _groupRepository.InsertAsync(_mapper.Map<GroupDto>(group));
+                await _playlistRepository.InsertRangeAsync(_mapper.Map<List<PlaylistDto>>(group.Playlists));
+                await _groupPlaylistRepository.InsertRangeAsync(group.Playlists.Select(x => new GroupPlaylistDto()
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    GroupId = group.Id,
+                    PlaylistId = x.Id
+                }).ToList());
+         
 
                 TargetGroup = new Group();
 

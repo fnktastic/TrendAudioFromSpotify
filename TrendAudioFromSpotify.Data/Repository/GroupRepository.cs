@@ -28,7 +28,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         public async Task<List<GroupDto>> GetAllAsync()
         {
             return await _context.Groups
-                .Include(x => x.GroupPlaylists)
+                .Include(x => x.GroupPlaylists.Select(y => y.Playlist))
                 .ToListAsync();
         }
 

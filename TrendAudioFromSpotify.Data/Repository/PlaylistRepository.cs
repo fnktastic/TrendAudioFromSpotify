@@ -14,6 +14,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task<List<PlaylistDto>> GetAllAsync();
 
         Task InsertAsync(PlaylistDto playlist);
+
+        Task InsertRangeAsync(List<PlaylistDto> playlists);
     }
 
     public class PlaylistRepository : IPlaylistRepository
@@ -51,6 +53,12 @@ namespace TrendAudioFromSpotify.Data.Repository
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task InsertRangeAsync(List<PlaylistDto> playlists)
+        {
+            foreach (var playlist in playlists)
+                await InsertAsync(playlist);
         }
     }
 }
