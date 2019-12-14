@@ -5,16 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
+using TrendAudioFromSpotify.UI.Service;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
     public class GroupManagingViewModel : ViewModelBase
     {
-        private readonly IGroupRepository _groupRepository;
-        private readonly IMapper _mapper;
+        private readonly IDataService _dataService;
 
         private GroupCollection _groups;
         public GroupCollection Groups
@@ -28,19 +27,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        public GroupManagingViewModel(IGroupRepository groupPlaylist, IMapper mapper)
+        public GroupManagingViewModel(IDataService dataService)
         {
-            _groupRepository = groupPlaylist;
-            _mapper = mapper;
+            _dataService = dataService;
 
             FetchData();
         }
 
         private async void FetchData()
         {
-            var groups = await _groupRepository.GetAllAsync();
+            var groups = await _dataService.GetAllGroups();
 
-            Groups = new GroupCollection(_mapper.Map<List<Group>>(groups));
+            Groups = new GroupCollection(groups);
         }
     }
 }

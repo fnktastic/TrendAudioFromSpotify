@@ -140,7 +140,6 @@
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
     <Compile Include="Converter\InverseBoolToVisibilityConverter.cs" />
-    <Compile Include="DataService\DataService.cs" />
     <Compile Include="Enum\ComparisonEnum.cs" />
     <Compile Include="Enum\PlaylistTypeEnum.cs" />
     <Compile Include="Enum\RefreshActionEnum.cs" />
@@ -149,6 +148,7 @@
     <Compile Include="Model\Setting.cs" />
     <Compile Include="Model\Audio.cs" />
     <Compile Include="Model\User.cs" />
+    <Compile Include="Service\DataService.cs" />
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />

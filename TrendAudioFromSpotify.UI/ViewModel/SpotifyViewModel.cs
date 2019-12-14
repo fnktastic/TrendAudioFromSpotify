@@ -15,11 +15,10 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using TrendAudioFromSpotify.Data.Model;
-using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
+using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
@@ -37,18 +36,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private ProgressDialogController progressDialogController;
 
-        private readonly SerialQueue _serialQueue;
-
-
-        private readonly IAudioRepository _audioRepository;
-
-        private readonly IGroupRepository _groupRepository;
-
-        private readonly IPlaylistRepository _playlistRepository;
-
-        private readonly IGroupPlaylistRepository _groupPlaylistRepository;
-
-        private readonly IMapper _mapper;
+        private readonly IDataService _dataService;
 
         private readonly MonitoringViewModel _monitoringViewModel;
         #endregion
@@ -389,14 +377,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IAudioRepository audioRepository, IGroupRepository groupRepository, IGroupPlaylistRepository groupPlaylistRepository, IPlaylistRepository playlistRepository, IMapper mapper, SerialQueue serialQueue)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IDataService dataService, SerialQueue serialQueue)
         {
             _monitoringViewModel = monitoringViewModel;
-            _audioRepository = audioRepository;
-            _groupRepository = groupRepository;
-            _groupPlaylistRepository = groupPlaylistRepository;
-            _playlistRepository = playlistRepository;
-            _serialQueue = serialQueue;
+            _dataService = dataService;
 
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
@@ -417,8 +401,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             FilteredMyPlaylistsCollection = new CollectionViewSource();
             FilteredMyPlaylistsCollection.Filter += FilteredMyPlaylistsCollection_Filter;
-
-            _mapper = mapper;
         }
 
         #region dialogs
@@ -737,7 +719,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Audio> SaveAudioToDbCommand => _saveAudioToDbCommand ?? (_saveAudioToDbCommand = new RelayCommand<Audio>(SaveAudioToDb));
         private async void SaveAudioToDb(Audio audio)
         {
-            await _audioRepository.InsertAsync(_mapper.Map<AudioDto>(audio));
+            await _dataService.InsertAudioAsync(audio);
         }
 
 
@@ -853,15 +835,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _monitoringViewModel.Groups.Add(group);
 
                 //move to service
-                await _groupRepository.InsertAsync(_mapper.Map<GroupDto>(group));
-                await _playlistRepository.InsertRangeAsync(_mapper.Map<List<PlaylistDto>>(group.Playlists));
-                await _groupPlaylistRepository.InsertRangeAsync(group.Playlists.Select(x => new GroupPlaylistDto()
-                {
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    GroupId = group.Id,
-                    PlaylistId = x.Id
-                }).ToList());
+                await _dataService.InsertGroupAsync(group);
+                await _dataService.InsertPlaylistRangeAsync(group.Playlists);
+                await _dataService.InsertGroupPlaylistRangeAsync(group);
          
 
                 TargetGroup = new Group();

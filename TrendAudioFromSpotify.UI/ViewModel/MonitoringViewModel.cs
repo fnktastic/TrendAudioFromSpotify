@@ -7,9 +7,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Model;
+using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
@@ -19,8 +19,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region fields
         public ISpotifyServices SpotifyServices = null;
         private readonly IDialogCoordinator _dialogCoordinator;
-        private readonly SerialQueue _serialQueue;
-        private readonly IAudioRepository _audioRepository;
+        private readonly IDataService _dataService;
         #endregion
 
         #region properties
@@ -49,13 +48,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel(IAudioRepository audioRepository, SerialQueue serialQueue)
+        public MonitoringViewModel(IDataService dataService)
         {
             _dialogCoordinator = DialogCoordinator.Instance;
-
-            _serialQueue = serialQueue;
-
-            _audioRepository = audioRepository;
+            _dataService = dataService;
 
             Groups = new ObservableCollection<Group>();
         }

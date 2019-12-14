@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Ioc;
 using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.UI.Model;
+using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
 using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;
 
@@ -38,6 +39,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<IConfigurationProvider, MyConfig>();
 
             SimpleIoc.Default.Register<IMapper, MyMapper> ();
+
+            SimpleIoc.Default.Register<IDataService, DataService>();
         }
 
         public SpotifyViewModel Spotify
