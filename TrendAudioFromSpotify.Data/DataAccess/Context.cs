@@ -25,6 +25,10 @@ namespace TrendAudioFromSpotify.Data.DataAccess
 
         public DbSet<GroupPlaylistDto> GroupPlaylists { get; set; }
 
+        public DbSet<MonitoringItemDto> MonitoringItems { get; set; }
+
+        public DbSet<MonitoringItemAudioDto> MonitoringItemAudios { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AudioDto>().HasKey(a => a.Id);

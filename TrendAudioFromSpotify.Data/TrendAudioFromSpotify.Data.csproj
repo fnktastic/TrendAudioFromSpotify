@@ -60,6 +60,8 @@
     <Compile Include="Model\AudioDto.cs" />
     <Compile Include="Model\GroupDto.cs" />
     <Compile Include="Model\GroupPlaylistDto.cs" />
+    <Compile Include="Model\MonitoringItemAudioDto.cs" />
+    <Compile Include="Model\MonitoringItemDto.cs" />
     <Compile Include="Model\PlaylistDto.cs" />
     <Compile Include="Model\PlaylistAudioDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

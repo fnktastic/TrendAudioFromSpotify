@@ -36,29 +36,6 @@
             </TabItem>
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="Monitoring" 
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               FontSize="28">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Foreground" Value="Black" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
-                                        <Setter Property="Foreground" Value="White"/>
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
-                                        <Setter Property="Foreground" Value="Black"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-                </TabItem.Header>
-                <views:MonitoringUserControl HorizontalAlignment="Stretch" />
-            </TabItem>
-            <TabItem>
-                <TabItem.Header>
                     <TextBlock Text="Groups" 
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center"
@@ -79,6 +56,29 @@
                     </TextBlock>
                 </TabItem.Header>
                 <views:GroupManagingUserControl HorizontalAlignment="Stretch" />
+            </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Monitoring" 
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               FontSize="28">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground" Value="Black" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </TabItem.Header>
+                <views:MonitoringUserControl HorizontalAlignment="Stretch" />
             </TabItem>
         </TabControl>
     </Grid>
