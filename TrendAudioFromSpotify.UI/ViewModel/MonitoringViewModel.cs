@@ -23,15 +23,15 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region properties
-        private ObservableCollection<Group> _groups;
-        public ObservableCollection<Group> Groups
+        private ObservableCollection<MonitoringItem> _monitoringItems;
+        public ObservableCollection<MonitoringItem> MonitoringItems
         {
-            get { return _groups; }
+            get { return _monitoringItems; }
             set
             {
-                if (value == _groups) return;
-                _groups = value;
-                RaisePropertyChanged(nameof(Groups));
+                if (value == _monitoringItems) return;
+                _monitoringItems = value;
+                RaisePropertyChanged(nameof(MonitoringItems));
             }
         }
 
@@ -53,7 +53,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _dialogCoordinator = DialogCoordinator.Instance;
             _dataService = dataService;
 
-            Groups = new ObservableCollection<Group>();
+            MonitoringItems = new ObservableCollection<MonitoringItem>();
         }
 
         #region dialogs

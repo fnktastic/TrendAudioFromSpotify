@@ -144,11 +144,13 @@
     <Compile Include="Enum\PlaylistTypeEnum.cs" />
     <Compile Include="Enum\RefreshActionEnum.cs" />
     <Compile Include="Model\Group.cs" />
+    <Compile Include="Model\MonitoringItem.cs" />
     <Compile Include="Model\Playlist.cs" />
     <Compile Include="Model\Setting.cs" />
     <Compile Include="Model\Audio.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Service\DataService.cs" />
+    <Compile Include="Service\MonitoringService.cs" />
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />

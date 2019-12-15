@@ -39,6 +39,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IDataService _dataService;
 
         private readonly MonitoringViewModel _monitoringViewModel;
+
+        private readonly MonitoringService _monitoringService;
         #endregion
 
         #region properties
@@ -375,12 +377,25 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RaisePropertyChanged(nameof(TargetGroup));
             }
         }
+
+        private MonitoringItem _targetMonitoringItem;
+        public MonitoringItem TargetMonitoringItem
+        {
+            get { return _targetMonitoringItem; }
+            set
+            {
+                if (value == _targetMonitoringItem) return;
+                _targetMonitoringItem = value;
+                RaisePropertyChanged(nameof(TargetMonitoringItem));
+            }
+        }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IDataService dataService, SerialQueue serialQueue)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IDataService dataService, SerialQueue serialQueue, MonitoringService monitoringService)
         {
             _monitoringViewModel = monitoringViewModel;
             _dataService = dataService;
+            _monitoringService = monitoringService;
 
             _dialogCoordinator = DialogCoordinator.Instance;
             _settingUtility = new SettingUtility();
@@ -828,17 +843,16 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
         private async void GetTrends()
         {
-            var group = new Group(_targetGroup, _targetAudios, _targetPlaylists, _spotifyServices);
+            var monitoringItem = _monitoringService.Initiate(_targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists, _spotifyServices);
 
-            if (group.IsReady)
+            if (_monitoringService.IsMonitoringItemReady)
             {
-                _monitoringViewModel.Groups.Add(group);
+                _monitoringViewModel.MonitoringItems.Add(monitoringItem);
 
                 //move to service
-                await _dataService.InsertGroupAsync(group);
-                await _dataService.InsertPlaylistRangeAsync(group.Playlists);
-                await _dataService.InsertGroupPlaylistRangeAsync(group);
-         
+                await _dataService.InsertGroupAsync(monitoringItem);
+                await _dataService.InsertPlaylistRangeAsync(monitoringItem.Playlists);
+                await _dataService.InsertGroupPlaylistRangeAsync(monitoringItem);
 
                 TargetGroup = new Group();
 
@@ -854,7 +868,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     foreach (var playlist in Playlists)
                         playlist.IsChecked = false;
 
-                await group.Process();
+                await _monitoringService.Process();
             }
         }
 

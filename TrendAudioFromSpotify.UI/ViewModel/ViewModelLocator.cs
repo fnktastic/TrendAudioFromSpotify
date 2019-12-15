@@ -41,6 +41,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<IMapper, MyMapper> ();
 
             SimpleIoc.Default.Register<IDataService, DataService>();
+
+            SimpleIoc.Default.Register<IMonitoringService, MonitoringService>();
         }
 
         public SpotifyViewModel Spotify

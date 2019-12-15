@@ -1,0 +1,127 @@
+﻿using GalaSoft.MvvmLight;
+using System;
+using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Enum;
+
+namespace TrendAudioFromSpotify.UI.Model
+{
+    public class MonitoringItem : ViewModelBase
+    {
+        public Guid Id { get; set; }
+
+        private string _top;
+        public string Top
+        {
+            get { return _top; }
+            set
+            {
+                if (value == _top) return;
+                _top = value;
+                RaisePropertyChanged(nameof(Top));
+            }
+        }
+
+        private string _hitTreshold;
+        public string HitTreshold
+        {
+            get { return _hitTreshold; }
+            set
+            {
+                if (value == _hitTreshold) return;
+                _hitTreshold = value;
+                RaisePropertyChanged(nameof(HitTreshold));
+            }
+        }
+
+        private ComparisonEnum _comparison;
+        public ComparisonEnum Comparison
+        {
+            get { return _comparison; }
+            set
+            {
+                if (value == _comparison) return;
+                _comparison = value;
+                RaisePropertyChanged(nameof(Comparison));
+            }
+        }
+
+        private PlaylistTypeEnum _playlistType;
+        public PlaylistTypeEnum PlaylistType
+        {
+            get { return _playlistType; }
+            set
+            {
+                if (value == _playlistType) return;
+                _playlistType = value;
+                RaisePropertyChanged(nameof(PlaylistType));
+            }
+        }
+
+        private TimeSpan _refreshPeriod;
+        public TimeSpan RefreshPeriod
+        {
+            get { return _refreshPeriod; }
+            set
+            {
+                if (value == _refreshPeriod) return;
+                _refreshPeriod = value;
+                RaisePropertyChanged(nameof(RefreshPeriod));
+            }
+        }
+
+        private bool _processingInProgress;
+        public bool ProcessingInProgress
+        {
+            get { return _processingInProgress; }
+            set
+            {
+                if (value == _processingInProgress) return;
+                _processingInProgress = value;
+                RaisePropertyChanged(nameof(ProcessingInProgress));
+            }
+        }
+
+        private string _targetPlaylistName;
+        public string TargetPlaylistName
+        {
+            get { return _targetPlaylistName; }
+            set
+            {
+                if (value == _targetPlaylistName) return;
+                _targetPlaylistName = value;
+                RaisePropertyChanged(nameof(TargetPlaylistName));
+            }
+        }
+
+        private bool _autoRecreatePlaylisOnSpotify;
+        public bool AutoRecreatePlaylisOnSpotify
+        {
+            get { return _autoRecreatePlaylisOnSpotify; }
+            set
+            {
+                if (value == _autoRecreatePlaylisOnSpotify) return;
+                _autoRecreatePlaylisOnSpotify = value;
+                RaisePropertyChanged(nameof(AutoRecreatePlaylisOnSpotify));
+            }
+        }
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public bool IsReady { get; set; } = false;
+
+        public virtual AudioCollection Audios { get; set; }
+        public virtual PlaylistCollection Playlists { get; set; }
+
+        private AudioCollection _trends;
+        public AudioCollection Trends
+        {
+            get { return _trends; }
+            set
+            {
+                if (value == _trends) return;
+                _trends = value;
+                RaisePropertyChanged(nameof(Trends));
+            }
+        }
+    }
+}
