@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.Data.Model
 {
-    [Table("MonitoringItemAudioDto")]
+    [Table("MonitoringItemAudio")]
     public class MonitoringItemAudioDto
     {
         [Key]

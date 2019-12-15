@@ -42,8 +42,6 @@ namespace TrendAudioFromSpotify.Data.Repository
             {
                 group.CreatedAt = DateTime.UtcNow;
                 group.UpdatedAt = DateTime.UtcNow;
-                group.Playlists = null;
-                group.Audios = null;
                 _context.Groups.Add(group);
             }
             else

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.Data.Model
 {
-    [Table("MonitoringItemDto")]
+    [Table("MonitoringItem")]
     public class MonitoringItemDto
     {
         [Key]
@@ -16,6 +16,9 @@ namespace TrendAudioFromSpotify.Data.Model
 
         public Guid GroupId { get; set; }
         public GroupDto Group { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual ICollection<MonitoringItemAudioDto> Trends { get; set; }
     }

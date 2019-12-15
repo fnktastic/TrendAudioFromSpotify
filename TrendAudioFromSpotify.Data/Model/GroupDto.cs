@@ -13,20 +13,20 @@ namespace TrendAudioFromSpotify.Data.Model
     public class GroupDto
     {
         [Key]
-        public Guid Id { get; set; }
-        public string Name { get; set; }
+        public Guid Id { get; set; } //group
+        public string Name { get; set; } //group
         public string Top { get; set; }
         public string HitTreshold { get; set; }
 
         public ComparisonEnum Comparison { get; set; }
         public PlaylistTypeEnum PlaylistType { get; set; }
 
-        public long TimeSpanTicks { get; set; }
+        public long RefreshPeriodTicks { get; set; }
         [NotMapped]
         public TimeSpan RefreshPeriod
         {
-            get { return TimeSpan.FromTicks(TimeSpanTicks); }
-            set { TimeSpanTicks = value.Ticks; }
+            get { return TimeSpan.FromTicks(RefreshPeriodTicks); }
+            set { RefreshPeriodTicks = value.Ticks; }
         }
 
         public string TargetPlaylistName { get; set; }
@@ -34,9 +34,6 @@ namespace TrendAudioFromSpotify.Data.Model
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public virtual Collection<AudioDto> Audios { get; set; }
-        public virtual Collection<PlaylistDto> Playlists { get; set; }
 
         public virtual ICollection<GroupPlaylistDto> GroupPlaylists { get; set; }
     }

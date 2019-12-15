@@ -37,11 +37,16 @@ namespace TrendAudioFromSpotify.Data.DataAccess
 
             modelBuilder.Entity<GroupDto>().HasKey(g => g.Id);
 
+            modelBuilder.Entity<MonitoringItemDto>().HasKey(m => m.Id);
+
             modelBuilder.Entity<PlaylistAudioDto>()
                 .HasKey(pa => new { pa.PlaylistId, pa.AudioId });
 
             modelBuilder.Entity<GroupPlaylistDto>()
                 .HasKey(ga => new { ga.GroupId, ga.PlaylistId });
+
+            modelBuilder.Entity<MonitoringItemAudioDto>()
+                .HasKey(mi => new { mi.MonitoringItemId, mi.AudioId });
 
             modelBuilder.Entity<PlaylistAudioDto>()
                 .HasRequired(pa => pa.Audio)
@@ -63,7 +68,10 @@ namespace TrendAudioFromSpotify.Data.DataAccess
                 .WithMany(g => g.GroupPlaylists)
                 .HasForeignKey(gc => gc.PlaylistId);
 
-
+            modelBuilder.Entity<MonitoringItemAudioDto>()
+                .HasRequired(mi => mi.MonitoringItem)
+                .WithMany(m => m.Trends)
+                .HasForeignKey(mt => mt.MonitoringItemId);
 
             base.OnModelCreating(modelBuilder);
         }
