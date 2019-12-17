@@ -21,6 +21,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public ISpotifyServices SpotifyServices = null;
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly IDataService _dataService;
+        private readonly IMonitoringService _monitoringService;
         #endregion
 
         #region properties
@@ -51,10 +52,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel(IDataService dataService)
+        public MonitoringViewModel(IDataService dataService, IMonitoringService monitoringService)
         {
             _dialogCoordinator = DialogCoordinator.Instance;
             _dataService = dataService;
+            _monitoringService = monitoringService;
 
             FetchData();
         }
@@ -99,6 +101,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private void SelectMonitoringItem(MonitoringItem monitoringItem)
         {
             SelectedMonitoringItem = monitoringItem;
+        }
+
+        private RelayCommand<MonitoringItem> _processMonitoringItemCommand;
+        public RelayCommand<MonitoringItem> ProcessMonitoringItemCommand => _processMonitoringItemCommand ?? (_processMonitoringItemCommand = new RelayCommand<MonitoringItem>(ProcessMonitoringItem));
+        private void ProcessMonitoringItem(MonitoringItem monitoringItem)
+        {
+            _monitoringService.Initiate(SpotifyServices, monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
+            _monitoringService.Process();
         }
         #endregion
     }

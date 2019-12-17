@@ -66,8 +66,10 @@
             <StackPanel FlowDirection="LeftToRight">
                 <Button 
                     Width="40" Height="40"
+                    Command="{Binding Path=DataContext.ProcessMonitoringItemCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                    CommandParameter="{Binding}"
                     Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                    <icons:PackIconBoxIcons Kind="LogosApple" />
+                    <icons:PackIconBoxIcons Kind="RegularStopwatch" />
                 </Button>
                 <Expander Header="info" Background="Black" Margin="0 5 0 0" BorderThickness="0" FlowDirection="RightToLeft">
                     <local:MonitoringSettingsControl 
