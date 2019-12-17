@@ -27,6 +27,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
+        private Group _selectedGroup;
+        public Group SelectedGroup
+        {
+            get { return _selectedGroup; }
+            set
+            {
+                if (_selectedGroup == value) return;
+                _selectedGroup = value;
+                RaisePropertyChanged(nameof(SelectedGroup));
+            }
+        }
+
         public GroupManagingViewModel(IDataService dataService)
         {
             _dataService = dataService;

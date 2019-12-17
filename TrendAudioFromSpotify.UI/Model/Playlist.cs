@@ -22,6 +22,10 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string Owner { get; set; }
 
+        public string Href { get; set; }
+
+        public string Cover { get; set; }
+
         public virtual AudioCollection Audios { get; set; }
 
         private bool _isChecked;
@@ -43,6 +47,8 @@ namespace TrendAudioFromSpotify.UI.Model
             Name = _simplePlaylist.Name;
             Total = _simplePlaylist.Tracks.Total;
             Owner = _simplePlaylist.Owner.DisplayName;
+            Href = _simplePlaylist.Href;
+            Cover = _simplePlaylist.Images != null && _simplePlaylist.Images.Count > 0 ? _simplePlaylist.Images.First().Url : "null";
         }
 
         public Playlist()

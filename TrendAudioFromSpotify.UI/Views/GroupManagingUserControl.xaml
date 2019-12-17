@@ -3,17 +3,44 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Views"
+             xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              mc:Ignorable="d" 
              DataContext="{Binding GroupManaging, Source={StaticResource Locator}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ListBox ItemsSource="{Binding Groups}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Name}" /> 
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.3*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="0.7*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <GroupBox Header="Stored Groups" Background="Black" BorderBrush="Black"
+                  Grid.Column="0" Grid.Row="0">
+            <ListBox   SelectedItem="{Binding SelectedGroup}"
+                       ItemsSource="{Binding Groups}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <local:GroupControl />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </GroupBox>
+        <GridSplitter 
+                    ResizeDirection="Columns" Grid.Column="1" Grid.Row="0"
+                    Margin="10,0"
+                    Opacity="0.2"
+                    Width="3"
+                    Background="Black"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    ResizeBehavior="PreviousAndNext"
+                    />
+        <GroupBox Header="Playlists" Background="Black" BorderBrush="Black"
+                  Grid.Column="2" Grid.Row="0">
+
+        </GroupBox>
     </Grid>
 </UserControl>

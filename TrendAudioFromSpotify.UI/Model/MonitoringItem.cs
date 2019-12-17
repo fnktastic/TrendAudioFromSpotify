@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using AutoMapper;
+using GalaSoft.MvvmLight;
 using System;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
@@ -114,6 +115,7 @@ namespace TrendAudioFromSpotify.UI.Model
         public virtual Group Group { get; set; }
 
         private AudioCollection _trends;
+        [IgnoreMap]
         public AudioCollection Trends
         {
             get { return _trends; }

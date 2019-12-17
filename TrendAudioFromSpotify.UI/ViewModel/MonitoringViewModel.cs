@@ -54,7 +54,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _dialogCoordinator = DialogCoordinator.Instance;
             _dataService = dataService;
 
-            MonitoringItems = new MonitoringItemCollection();
+            FetchData();
+        }
+
+        private async void FetchData()
+        {
+            var monitoringItems = await _dataService.GetAllMonitoringItemsAsync();
+
+            MonitoringItems = new MonitoringItemCollection(monitoringItems);
         }
 
         #region dialogs

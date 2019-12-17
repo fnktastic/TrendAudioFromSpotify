@@ -29,6 +29,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         {
             return await _context.MonitoringItems
                 .Include(x => x.Group.GroupPlaylists.Select(y => y.Playlist))
+                .Include(y => y.Trends)
                 .ToListAsync();
         }
 
