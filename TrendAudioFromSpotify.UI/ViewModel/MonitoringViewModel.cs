@@ -45,6 +45,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _selectedMonitoringItem) return;
                 _selectedMonitoringItem = value;
                 RaisePropertyChanged(nameof(SelectedMonitoringItem));
+
+                FetchTrends();
             }
         }
         #endregion
@@ -55,6 +57,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _dataService = dataService;
 
             FetchData();
+        }
+
+        private async void FetchTrends()
+        {
+            var audios = await _dataService.GetAllMonitoringItemAudioByMonitoringItemIdAsync(_selectedMonitoringItem.Id);
+
+            SelectedMonitoringItem.Trends = new AudioCollection(audios);
         }
 
         private async void FetchData()

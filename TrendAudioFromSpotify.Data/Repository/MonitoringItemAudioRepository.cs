@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ namespace TrendAudioFromSpotify.Data.Repository
     public interface IMonitoringItemAudioRepository
     {
         Task InsertRangeAsync(IList<MonitoringItemAudioDto> monitoringItemAudioDtos);
+
+        Task<List<MonitoringItemAudioDto>> GetAllByMonitoringItemIdAsync(Guid monitoringItemId);
     }
 
     public class MonitoringItemAudioRepository : IMonitoringItemAudioRepository
@@ -37,6 +40,14 @@ namespace TrendAudioFromSpotify.Data.Repository
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<MonitoringItemAudioDto>> GetAllByMonitoringItemIdAsync(Guid monitoringItemId)
+        {
+            return await _context.MonitoringItemAudios
+                .Where(x => x.MonitoringItemId == monitoringItemId)
+                .Include(x => x.Audio.PlaylistAudios.Select(y => y.Playlist))
+                .ToListAsync();
         }
     }
 }

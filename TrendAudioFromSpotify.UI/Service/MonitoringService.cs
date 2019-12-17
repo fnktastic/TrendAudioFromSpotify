@@ -203,7 +203,7 @@ namespace TrendAudioFromSpotify.UI.Service
             if (audios == null || audios.Count() == 0) return;
 
             await _dataService.InsertAudioRangeAsync(audios);
-
+            await _dataService.InsertPlaylistAudioRangeAsync(audios);
             await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
         }
 

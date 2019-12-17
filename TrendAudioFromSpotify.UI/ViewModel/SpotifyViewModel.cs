@@ -28,7 +28,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region fields
         private List<Audio> likedSongs;
 
-        private ISpotifyServices _spotifyServices;
+        public static ISpotifyServices SpotifyServices;
 
         private readonly ISettingUtility _settingUtility;
 
@@ -498,12 +498,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 TokenType = "Bearer"
             };
 
-            _spotifyServices = new SpotifyServices(api);
+            SpotifyServices = new SpotifyServices(api);
 
 
-            if (_spotifyServices.PrivateProfile.StatusCode() == HttpStatusCode.OK)
+            if (SpotifyServices.PrivateProfile.StatusCode() == HttpStatusCode.OK)
             {
-                _monitoringViewModel.SpotifyServices = _spotifyServices;
+                _monitoringViewModel.SpotifyServices = SpotifyServices;
 
                 IsConnectionEsatblished = true;
 
@@ -511,7 +511,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 await HideConnectingMessage();
 
-                var myPublicProfile = await _spotifyServices.GetMyProfile();
+                var myPublicProfile = await SpotifyServices.GetMyProfile();
 
                 isStartup = false;
             }
@@ -536,9 +536,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     TokenType = token.TokenType
                 };
 
-                _spotifyServices = new SpotifyServices(api);
+                SpotifyServices = new SpotifyServices(api);
 
-                _monitoringViewModel.SpotifyServices = _spotifyServices;
+                _monitoringViewModel.SpotifyServices = SpotifyServices;
 
                 _settingUtility.SaveAccessToken(api.AccessToken);
 
@@ -650,17 +650,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
 
-            var playlists = (await _spotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
+            var playlists = (await SpotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
 
             Playlists = new PlaylistCollection(playlists);
 
             IsPlaylistsAreaBusy = false;
 
-            likedSongs = (await _spotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
+            likedSongs = (await SpotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
 
             SavedTracks = new AudioCollection(likedSongs);
 
-            var foreignUserPlaylists = await _spotifyServices.GetForeignUserPlaylists();
+            var foreignUserPlaylists = await SpotifyServices.GetForeignUserPlaylists();
 
             IsSongsAreaBusy = false;
         }
@@ -669,7 +669,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsSongsAreaBusy = true;
 
-            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
+            var audios = await SpotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
             SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
 
             IsSongsAreaBusy = false;
@@ -687,7 +687,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 {
                     IsPlaylistsAreaBusy = true;
 
-                    var playlists = await _spotifyServices.GlobalPlaylistsSearch(_explorePlaylistsSearchText);
+                    var playlists = await SpotifyServices.GlobalPlaylistsSearch(_explorePlaylistsSearchText);
 
                     ExplorePlaylists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
                 }
@@ -745,7 +745,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             if (audio != null)
             {
-                var playback = await _spotifyServices.PlayTrack(audio.Uri);
+                var playback = await SpotifyServices.PlayTrack(audio.Uri);
 
                 if (playback.HasError())
                     await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
@@ -800,7 +800,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsPlaylistsAreaBusy = true;
 
-            var userPlaylists = (await _spotifyServices
+            var userPlaylists = (await SpotifyServices
                 .GetForeignUserPlaylists(_users
                 .Where(x => x.IsChecked)
                 .Select(x => x.Username)
@@ -844,7 +844,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
         private async void GetTrends()
         {
-            var monitoringItem = _monitoringService.Initiate(_spotifyServices, _targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
+            var monitoringItem = _monitoringService.Initiate(SpotifyServices, _targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
 
             if (_monitoringService.IsMonitoringItemReady)
             {
