@@ -1,0 +1,46 @@
+﻿<ListBox x:Class="TrendAudioFromSpotify.UI.Controls.GroupPlaylistCollectionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             HorizontalContentAlignment="Stretch"
+             xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
+             xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             VirtualizingPanel.IsVirtualizing="True"
+             mc:Ignorable="d">
+    <ListBox.Resources>
+        <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
+        <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+    </ListBox.Resources>
+    <ListBox.Template>
+        <ControlTemplate>
+            <DockPanel >
+                <Grid DockPanel.Dock="Top" Height="30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" MinWidth="150"></ColumnDefinition>
+                        <ColumnDefinition Width="125" MinWidth="125"></ColumnDefinition>
+                        <ColumnDefinition Width="100" MinWidth="100"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" MinWidth="150" FontWeight="Thin" Padding="15 0 0 0" FontSize="14" HorizontalAlignment="Left">Playlist Name</TextBlock>
+                    <TextBlock Grid.Column="1" MinWidth="125" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Center">Tracks Count</TextBlock>
+                    <TextBlock Grid.Column="2" MinWidth="100" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Owner</TextBlock>
+                </Grid>
+                <ScrollViewer>
+                    <ItemsPresenter></ItemsPresenter>
+                </ScrollViewer>
+            </DockPanel>
+        </ControlTemplate>
+    </ListBox.Template>
+
+    <ListBox.ItemTemplate>
+        <DataTemplate>
+            <local:GroupPlaylistControl />
+        </DataTemplate>
+    </ListBox.ItemTemplate>
+
+    <ListBox.ItemsPanel>
+        <ItemsPanelTemplate>
+            <VirtualizingStackPanel />
+        </ItemsPanelTemplate>
+    </ListBox.ItemsPanel>
+</ListBox>

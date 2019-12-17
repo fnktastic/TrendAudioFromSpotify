@@ -106,6 +106,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private bool _isOverrideTrends;
+        public bool IsOverrideTrends
+        {
+            get { return _isOverrideTrends; }
+            set
+            {
+                if (value == _isOverrideTrends) return;
+                _isOverrideTrends = value;
+                RaisePropertyChanged(nameof(IsOverrideTrends));
+            }
+        }
+
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsReady { get; set; } = false;

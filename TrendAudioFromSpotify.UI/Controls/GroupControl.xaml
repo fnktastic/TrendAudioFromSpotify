@@ -6,6 +6,7 @@
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             xmlns:customControls="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -43,11 +44,16 @@
                     <TextBlock Grid.Row="2" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
                 </Grid>
             </Expander.Header>
-            <Button 
-                Width="40" Height="40"
-                Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                <icons:PackIconBoxIcons Kind="LogosApple" />
-            </Button>
+            <StackPanel FlowDirection="LeftToRight">
+                <customControls:MonitoringSettingsControl 
+                    Margin="0 10"
+                    DataContext="{Binding MonitoringItem}" />
+                <Button 
+                    Width="40" Height="40"
+                    Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                    <icons:PackIconBoxIcons Kind="LogosApple" />
+                </Button>
+            </StackPanel>
         </Expander>
     </Border>
 </UserControl>

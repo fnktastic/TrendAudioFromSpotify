@@ -38,9 +38,14 @@
                     HorizontalAlignment="Stretch"
                     ResizeBehavior="PreviousAndNext"
                     />
-        <GroupBox Header="Playlists" Background="Black" BorderBrush="Black"
+        <GroupBox Header="Group Playlists" Background="Black" BorderBrush="Black"
                   Grid.Column="2" Grid.Row="0">
-
+            <local:GroupPlaylistCollectionControl 
+                                        Margin="5"
+                                        IsSynchronizedWithCurrentItem="False"
+                                        HorizontalAlignment="Stretch"
+                                        ItemsSource="{Binding SelectedGroup.Playlists}">
+            </local:GroupPlaylistCollectionControl>
         </GroupBox>
     </Grid>
 </UserControl>

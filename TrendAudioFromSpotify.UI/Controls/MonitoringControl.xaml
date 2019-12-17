@@ -63,10 +63,18 @@
                     </StackPanel>
                 </Grid>
             </Expander.Header>
-            <Button  Width="40" Height="40"
-                     Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                <icons:PackIconBoxIcons Kind="LogosApple" />
-            </Button>
+            <StackPanel FlowDirection="LeftToRight">
+                <Button 
+                    Width="40" Height="40"
+                    Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                    <icons:PackIconBoxIcons Kind="LogosApple" />
+                </Button>
+                <Expander Header="info" Background="Black" Margin="0 5 0 0" BorderThickness="0" FlowDirection="RightToLeft">
+                    <local:MonitoringSettingsControl 
+                        FlowDirection="LeftToRight"
+                        IsEnabled="False" />
+                </Expander>
+            </StackPanel>
         </Expander>
     </Border>
 </UserControl>

@@ -201,8 +201,17 @@
     <Compile Include="Controls\GroupControl.xaml.cs">
       <DependentUpon>GroupControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\MonitoringSettingsControl.xaml.cs">
+      <DependentUpon>MonitoringSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GroupPlaylistControl.xaml.cs">
+      <DependentUpon>GroupPlaylistControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PlaylistControl.xaml.cs">
       <DependentUpon>PlaylistControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GroupPlaylistCollectionControl.xaml.cs">
+      <DependentUpon>GroupPlaylistCollectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PlaylistsCollectionControl.xaml.cs">
       <DependentUpon>PlaylistsCollectionControl.xaml</DependentUpon>
@@ -261,9 +270,21 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\MonitoringSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\GroupPlaylistControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\PlaylistControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\GroupPlaylistCollectionControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\PlaylistsCollectionControl.xaml">
       <SubType>Designer</SubType>

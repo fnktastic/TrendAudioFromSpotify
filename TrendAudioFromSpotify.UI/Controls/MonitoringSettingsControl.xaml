@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="TrendAudioFromSpotify.UI.Controls.MonitoringSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:enums="clr-namespace:TrendAudioFromSpotify.UI.Enum"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="comparisonEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:ComparisonEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="playlistTypeEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:PlaylistTypeEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </UserControl.Resources>
+    <Grid Margin="0 15 0 0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.4*" />
+            <ColumnDefinition Width="0.6*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Text="Hit treshold:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
+        <TextBlock Text="Playlist name:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
+        <TextBlock Text="Top trends:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
+        <TextBlock Text="Playlist type:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" />
+        <TextBlock Text="Refresh period:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" />
+
+        <DockPanel Grid.Column="1" Grid.Row="0">
+            <ComboBox ItemsSource="{Binding Source={StaticResource comparisonEnum}}"
+                                              Controls:TextBoxHelper.Watermark="-"
+                                              HorizontalContentAlignment="Center"
+                                              HorizontalAlignment="Stretch"
+                                              SelectedItem="{Binding Comparison}" />
+            <TextBox VerticalAlignment="Center" 
+                     HorizontalAlignment="Stretch"
+                     HorizontalContentAlignment="Center" Text="{Binding HitTreshold}" 
+                     Controls:TextBoxHelper.Watermark="time(s)" />
+        </DockPanel>
+        <TextBox 
+            Grid.Column="1" Grid.Row="1"
+            Text="{Binding TargetPlaylistName}"
+            Controls:TextBoxHelper.Watermark="target playlist name"
+            HorizontalContentAlignment="Center"
+            HorizontalAlignment="Stretch" />
+        <TextBox Grid.Column="1" Grid.Row="2"
+                 Text="{Binding Top}"
+                 Controls:TextBoxHelper.Watermark="top X trends" HorizontalContentAlignment="Center" />
+        <ComboBox Grid.Column="1" Grid.Row="3"
+                  ItemsSource="{Binding Source={StaticResource playlistTypeEnum}}"
+                  Controls:TextBoxHelper.Watermark="target playlist type"
+                  HorizontalContentAlignment="Center"
+                  HorizontalAlignment="Stretch"
+                  SelectedItem="{Binding PlaylistType}" />
+        <Controls:TimePicker Grid.Column="1" Grid.Row="4"
+                             SelectedTimeFormat="Long"
+                             VerticalAlignment="Center"
+                             Culture="ru-UA" 
+                             SelectedTime="{Binding RefreshPeriod}" />
+        <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5"
+                  Content="Automatically recreate on Spotify" VerticalAlignment="Center" 
+                  IsChecked="{Binding AutoRecreatePlaylisOnSpotify}"/>
+        <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6"
+                  Content="Override Trends" VerticalAlignment="Center" 
+                  IsChecked="{Binding IsOverrideTrends}"/>
+    </Grid>
+</UserControl>

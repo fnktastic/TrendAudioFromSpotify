@@ -30,6 +30,7 @@ namespace TrendAudioFromSpotify.Data.Model
 
         public string TargetPlaylistName { get; set; }
         public bool AutoRecreatePlaylisOnSpotify { get; set; }
+        public bool IsOverrideTrends { get; set; }
 
         public Guid GroupId { get; set; }
         public GroupDto Group { get; set; }
