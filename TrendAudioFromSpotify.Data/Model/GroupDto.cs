@@ -20,5 +20,7 @@ namespace TrendAudioFromSpotify.Data.Model
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual ICollection<GroupPlaylistDto> GroupPlaylists { get; set; }
+
+        public virtual ICollection<MonitoringItemDto> MonitoringItems { get; set; }
     }
 }
