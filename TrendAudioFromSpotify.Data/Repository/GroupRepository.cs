@@ -46,16 +46,7 @@ namespace TrendAudioFromSpotify.Data.Repository
             }
             else
             {
-                dbEntry.Comparison = group.Comparison;
-                dbEntry.UpdatedAt = group.UpdatedAt;
-                dbEntry.HitTreshold = group.HitTreshold;
                 dbEntry.Name = group.Name;
-                dbEntry.RefreshPeriod = group.RefreshPeriod;
-                dbEntry.Top = group.Top;
-                dbEntry.TargetPlaylistName = group.TargetPlaylistName;
-                dbEntry.AutoRecreatePlaylisOnSpotify = group.AutoRecreatePlaylisOnSpotify;
-                dbEntry.PlaylistType = group.PlaylistType;
-
                 dbEntry.UpdatedAt = DateTime.UtcNow;
             }
 

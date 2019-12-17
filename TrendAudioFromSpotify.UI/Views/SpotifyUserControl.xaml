@@ -395,23 +395,23 @@
                                               Controls:TextBoxHelper.Watermark="-"
                                               HorizontalContentAlignment="Center"
                                               HorizontalAlignment="Stretch"
-                                              SelectedItem="{Binding TargetGroup.Comparison}" />
+                                              SelectedItem="{Binding TargetMonitoringItem.Comparison}" />
                                         <TextBox VerticalAlignment="Center" 
                                                  HorizontalAlignment="Stretch"
-                                                 HorizontalContentAlignment="Center" Text="{Binding TargetGroup.HitTreshold}" Controls:TextBoxHelper.Watermark="time(s)" />
+                                                 HorizontalContentAlignment="Center" Text="{Binding TargetMonitoringItem.HitTreshold}" Controls:TextBoxHelper.Watermark="time(s)" />
                                     </DockPanel>
 
                                     <DockPanel Margin="0 10 0 0">
                                         <TextBlock Text="Top trends: " VerticalAlignment="Center" />
                                         <TextBox 
-                                            Text="{Binding TargetGroup.Top}"
+                                            Text="{Binding TargetMonitoringItem.Top}"
                                             Controls:TextBoxHelper.Watermark="top X trends" HorizontalContentAlignment="Center" />
                                     </DockPanel>
 
                                     <DockPanel Margin="0 10 0 0">
                                         <TextBlock Text="Playlist name: " VerticalAlignment="Center" />
                                         <TextBox 
-                                            Text="{Binding TargetGroup.TargetPlaylistName}"
+                                            Text="{Binding TargetMonitoringItem.TargetPlaylistName}"
                                             Controls:TextBoxHelper.Watermark="target playlist name"
                                              HorizontalContentAlignment="Center"
                                              HorizontalAlignment="Stretch" />
@@ -423,7 +423,7 @@
                                               Controls:TextBoxHelper.Watermark="target playlist type"
                                               HorizontalContentAlignment="Center"
                                               HorizontalAlignment="Stretch"
-                                              SelectedItem="{Binding TargetGroup.PlaylistType}" />
+                                              SelectedItem="{Binding TargetMonitoringItem.PlaylistType}" />
                                     </DockPanel>
 
                                     <DockPanel Margin="0 10 0 0">
@@ -431,12 +431,12 @@
                                         <Controls:TimePicker SelectedTimeFormat="Long"
                                                              VerticalAlignment="Center"
                                                              Culture="ru-UA" 
-                                                             SelectedTime="{Binding TargetGroup.RefreshPeriod}" />
+                                                             SelectedTime="{Binding TargetMonitoringItem.RefreshPeriod}" />
                                     </DockPanel>
 
                                     <StackPanel Margin="0 10 0 0">
                                         <CheckBox Content="Automatically recreate on Spotify" VerticalAlignment="Center" 
-                                                  IsChecked="{Binding TargetGroup.AutoRecreatePlaylisOnSpotify}"/>
+                                                  IsChecked="{Binding TargetMonitoringItem.AutoRecreatePlaylisOnSpotify}"/>
                                     </StackPanel>
    
                                     

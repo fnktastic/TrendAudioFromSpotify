@@ -14,6 +14,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task<List<AudioDto>> GetAllAsync();
 
         Task InsertAsync(AudioDto audio);
+        Task InsertAudioRangeAsync(IEnumerable<AudioDto> audios);
 
         Task RemoveAsync(string audioId);
         Task RemoveAsync(AudioDto audio);
@@ -71,6 +72,12 @@ namespace TrendAudioFromSpotify.Data.Repository
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task InsertAudioRangeAsync(IEnumerable<AudioDto> audios)
+        {
+            foreach (var audio in audios)
+                await InsertAsync(audio);
         }
     }
 }

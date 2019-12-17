@@ -18,13 +18,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <GroupBox Header="Group Tasks" Background="Black" BorderBrush="Black"
+        <GroupBox Header="Monitoring Tasks" Background="Black" BorderBrush="Black"
                   Grid.Column="0" Grid.Row="0">
-            <ListBox   SelectedItem="{Binding SelectedGroup}"
-                       ItemsSource="{Binding Groups}">
+            <ListBox   SelectedItem="{Binding SelectedMonitoringItem}"
+                       ItemsSource="{Binding MonitoringItems}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:GroupControl />
+                        <local:MonitoringControl />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -43,7 +43,7 @@
                   Grid.Column="2" Grid.Row="0">
             <Grid>
                 <customControls:AudioHitsCollectionControl
-                ItemsSource="{Binding SelectedGroup.Trends}" 
+                ItemsSource="{Binding SelectedMonitoringItem.Trends}" 
                 ScrollViewer.VerticalScrollBarVisibility="Auto">
                 </customControls:AudioHitsCollectionControl>
             </Grid>

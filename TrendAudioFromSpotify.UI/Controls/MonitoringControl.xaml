@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="TrendAudioFromSpotify.UI.Controls.GroupControl"
+﻿<UserControl x:Class="TrendAudioFromSpotify.UI.Controls.MonitoringControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -27,7 +27,21 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="55" />
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" />
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TargetPlaylistName}" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Top}" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding HitTreshold}"/>
+
+            <StackPanel Grid.Row="0" Grid.RowSpan="3"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding ProcessingInProgress, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                        HorizontalAlignment="Center"
+                        Grid.Column="1">
+                <Controls:ProgressRing Height="45" 
+                                       Width="45" />
+                <TextBlock Text="processing..." 
+                           Margin="0 10 0 0"
+                           FontWeight="Thin" FontSize="10" />
+            </StackPanel>
         </Grid>
     </Border>
 </UserControl>

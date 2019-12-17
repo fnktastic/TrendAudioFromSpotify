@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Service.Spotify;
+using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
@@ -23,8 +24,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region properties
-        private ObservableCollection<MonitoringItem> _monitoringItems;
-        public ObservableCollection<MonitoringItem> MonitoringItems
+        private MonitoringItemCollection _monitoringItems;
+        public MonitoringItemCollection MonitoringItems
         {
             get { return _monitoringItems; }
             set
@@ -35,15 +36,15 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private Group _selectedGroup;
-        public Group SelectedGroup
+        private MonitoringItem _selectedMonitoringItem;
+        public MonitoringItem SelectedMonitoringItem
         {
-            get { return _selectedGroup; }
+            get { return _selectedMonitoringItem; }
             set
             {
-                if (value == _selectedGroup) return;
-                _selectedGroup = value;
-                RaisePropertyChanged(nameof(SelectedGroup));
+                if (value == _selectedMonitoringItem) return;
+                _selectedMonitoringItem = value;
+                RaisePropertyChanged(nameof(SelectedMonitoringItem));
             }
         }
         #endregion
@@ -53,7 +54,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _dialogCoordinator = DialogCoordinator.Instance;
             _dataService = dataService;
 
-            MonitoringItems = new ObservableCollection<MonitoringItem>();
+            MonitoringItems = new MonitoringItemCollection();
         }
 
         #region dialogs

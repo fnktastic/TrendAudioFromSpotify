@@ -111,6 +111,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public virtual AudioCollection Audios { get; set; }
         public virtual PlaylistCollection Playlists { get; set; }
+        public virtual Group Group { get; set; }
 
         private AudioCollection _trends;
         public AudioCollection Trends

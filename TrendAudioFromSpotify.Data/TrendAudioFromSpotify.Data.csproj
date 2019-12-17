@@ -68,6 +68,8 @@
     <Compile Include="Repository\AudioRepository.cs" />
     <Compile Include="Repository\GroupPlaylistRepository.cs" />
     <Compile Include="Repository\GroupRepository.cs" />
+    <Compile Include="Repository\MonitoringItemAudioRepository.cs" />
+    <Compile Include="Repository\MonitoringItemRepository.cs" />
     <Compile Include="Repository\PlaylistAudioRepository.cs" />
     <Compile Include="Repository\PlaylistRepository.cs" />
   </ItemGroup>

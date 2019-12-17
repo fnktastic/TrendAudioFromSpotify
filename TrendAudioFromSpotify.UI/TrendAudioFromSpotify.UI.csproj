@@ -115,6 +115,7 @@
     </ApplicationDefinition>
     <Compile Include="Collections\AudioCollection.cs" />
     <Compile Include="Collections\GroupCollection.cs" />
+    <Compile Include="Collections\MonitoringItemCollection.cs" />
     <Compile Include="Collections\PlaylistCollection.cs" />
     <Compile Include="Controls\AudioCollectionControl.xaml.cs">
       <DependentUpon>AudioCollectionControl.xaml</DependentUpon>
@@ -127,6 +128,9 @@
     </Compile>
     <Compile Include="Controls\AudioHitsControl.xaml.cs">
       <DependentUpon>AudioHitsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MonitoringControl.xaml.cs">
+      <DependentUpon>MonitoringControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\GroupControl.xaml.cs">
       <DependentUpon>GroupControl.xaml</DependentUpon>
@@ -182,6 +186,10 @@
     <Page Include="Controls\AudioHitsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\MonitoringControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\GroupControl.xaml">
       <SubType>Designer</SubType>

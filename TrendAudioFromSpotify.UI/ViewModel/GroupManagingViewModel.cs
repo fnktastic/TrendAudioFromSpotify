@@ -36,7 +36,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private async void FetchData()
         {
-            var groups = await _dataService.GetAllGroups();
+            var groups = await _dataService.GetAllGroupsAsync();
 
             Groups = new GroupCollection(groups);
         }

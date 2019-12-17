@@ -40,7 +40,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private readonly MonitoringViewModel _monitoringViewModel;
 
-        private readonly MonitoringService _monitoringService;
+        private readonly IMonitoringService _monitoringService;
         #endregion
 
         #region properties
@@ -391,7 +391,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IDataService dataService, SerialQueue serialQueue, MonitoringService monitoringService)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IDataService dataService, SerialQueue serialQueue, IMonitoringService monitoringService)
         {
             _monitoringViewModel = monitoringViewModel;
             _dataService = dataService;
@@ -407,6 +407,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             TargetPlaylists = new PlaylistCollection();
             TargetAudios = new AudioCollection();
             TargetGroup = new Group();
+            TargetMonitoringItem = new MonitoringItem();
 
             FilteredAudioCollection = new CollectionViewSource();
             FilteredAudioCollection.Filter += FilteredAudioCollection_Filter;
@@ -843,16 +844,19 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
         private async void GetTrends()
         {
-            var monitoringItem = _monitoringService.Initiate(_targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists, _spotifyServices);
+            var monitoringItem = _monitoringService.Initiate(_spotifyServices, _targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
 
             if (_monitoringService.IsMonitoringItemReady)
             {
                 _monitoringViewModel.MonitoringItems.Add(monitoringItem);
 
                 //move to service
-                await _dataService.InsertGroupAsync(monitoringItem);
+                await _dataService.InsertGroupAsync(monitoringItem.Group);
+                await _dataService.InsertPlaylistRangeAsync(monitoringItem.Group.Playlists);
+                await _dataService.InsertGroupPlaylistRangeAsync(monitoringItem.Group);
+
+                await _dataService.InsertMonitoringItemAsync(monitoringItem);
                 await _dataService.InsertPlaylistRangeAsync(monitoringItem.Playlists);
-                await _dataService.InsertGroupPlaylistRangeAsync(monitoringItem);
 
                 TargetGroup = new Group();
 

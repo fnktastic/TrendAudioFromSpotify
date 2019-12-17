@@ -36,9 +36,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             SimpleIoc.Default.Register<IGroupPlaylistRepository, GroupPlaylistRepository>();
 
+            SimpleIoc.Default.Register<IMonitoringItemRepository, MonitoringItemRepository>();
+
+            SimpleIoc.Default.Register<IMonitoringItemAudioRepository, MonitoringItemAudioRepository>();
+
             SimpleIoc.Default.Register<IConfigurationProvider, MyConfig>();
 
-            SimpleIoc.Default.Register<IMapper, MyMapper> ();
+            SimpleIoc.Default.Register<IMapper, MyMapper>();
 
             SimpleIoc.Default.Register<IDataService, DataService>();
 

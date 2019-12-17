@@ -14,7 +14,7 @@ namespace TrendAudioFromSpotify.UI.Service
 {
     public interface IMonitoringService
     {
-        MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists, ISpotifyServices spotifyServices);
+        MonitoringItem Initiate(ISpotifyServices spotifyServices, Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
         Task<bool> Process();
         bool IsMonitoringItemReady { get; }
     }
@@ -22,20 +22,28 @@ namespace TrendAudioFromSpotify.UI.Service
     public class MonitoringService : IMonitoringService
     {
         private ISpotifyServices _spotifyServices;
+        private IDataService _dataService;
         private bool processingSpecificAudios = false;
         private Timer timer;
         public MonitoringItem MonitoringItem { get; set; }
-        public Group Group { get; set; }
 
-        public MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists, ISpotifyServices spotifyServices)
+        public MonitoringService(IDataService dataService)
+        {
+            _dataService = dataService;
+        }
+
+        public MonitoringItem Initiate(ISpotifyServices spotifyServices, Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists)
         {
             try
             {
                 _spotifyServices = spotifyServices;
-                this.Group = new Group();
-                this.Group.Id = Guid.NewGuid();
-                this.Group.Name = group.Name;
+
                 this.MonitoringItem = new MonitoringItem();
+                this.MonitoringItem.Group = new Group();
+
+                this.MonitoringItem.Group.Id = Guid.NewGuid();
+                this.MonitoringItem.Group.Name = group.Name;
+
                 this.MonitoringItem.Id = Guid.NewGuid();
                 this.MonitoringItem.Top = monitoringItem.Top;
                 this.MonitoringItem.HitTreshold = monitoringItem.HitTreshold;
@@ -47,17 +55,18 @@ namespace TrendAudioFromSpotify.UI.Service
 
                 MonitoringItem.Audios = new AudioCollection(audios);
                 MonitoringItem.Playlists = new PlaylistCollection(playlists);
+                MonitoringItem.Group.Playlists = new PlaylistCollection(playlists);
 
                 if (audios.Count > 0)
                     processingSpecificAudios = true;
 
-                MonitoringItem.CreatedAt = Group.CreatedAt = DateTime.UtcNow;
-                MonitoringItem.UpdatedAt = Group.UpdatedAt = DateTime.UtcNow;
+                MonitoringItem.CreatedAt = MonitoringItem.Group.CreatedAt = DateTime.UtcNow;
+                MonitoringItem.UpdatedAt = MonitoringItem.Group.UpdatedAt = DateTime.UtcNow;
 
                 if (playlists.Count > 0 && int.Parse(MonitoringItem.HitTreshold ?? "") > 0 && int.Parse(MonitoringItem.Top ?? "") > 0)
                     MonitoringItem.IsReady = true;
 
-                return monitoringItem;
+                return MonitoringItem;
             }
             catch
             {
@@ -173,6 +182,8 @@ namespace TrendAudioFromSpotify.UI.Service
                             MonitoringItem.Trends = new AudioCollection(groupedAudios);
                         });
 
+                        await SaveTrends(groupedAudios, MonitoringItem);
+
                         if (MonitoringItem.AutoRecreatePlaylisOnSpotify)
                             RecreateOnSpotify();
                     }
@@ -185,6 +196,15 @@ namespace TrendAudioFromSpotify.UI.Service
                     }
                 });
             }
+        }
+
+        private async Task SaveTrends(IEnumerable<Audio> audios, MonitoringItem monitoringItem)
+        {
+            if (audios == null || audios.Count() == 0) return;
+
+            await _dataService.InsertAudioRangeAsync(audios);
+
+            await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
         }
 
         private void RunTimer()
