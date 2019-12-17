@@ -93,6 +93,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
             }
         }
+
+        private RelayCommand<MonitoringItem> _selectMonitoringItemCommand;
+        public RelayCommand<MonitoringItem> SelectMonitoringItemCommand => _selectMonitoringItemCommand ?? (_selectMonitoringItemCommand = new RelayCommand<MonitoringItem>(SelectMonitoringItem));
+        private void SelectMonitoringItem(MonitoringItem monitoringItem)
+        {
+            SelectedMonitoringItem = monitoringItem;
+        }
         #endregion
     }
 }

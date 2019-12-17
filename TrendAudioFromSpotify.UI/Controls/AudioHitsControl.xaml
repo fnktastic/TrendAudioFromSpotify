@@ -38,7 +38,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Margin="10 0">
-                            <TextBlock FontSize="8" Text="{Binding Name}" />
+                            <TextBlock FontSize="10" FontWeight="Thin" Text="{Binding Name}" />
                         </Border>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

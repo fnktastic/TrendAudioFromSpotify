@@ -417,6 +417,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             FilteredMyPlaylistsCollection = new CollectionViewSource();
             FilteredMyPlaylistsCollection.Filter += FilteredMyPlaylistsCollection_Filter;
+
+            GlobalSearchEnabled = true;
         }
 
         #region dialogs

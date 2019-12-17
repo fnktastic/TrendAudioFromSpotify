@@ -6,6 +6,8 @@
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -19,6 +21,12 @@
             Padding="10 5" 
             Background="Black">
         <Expander Background="Black" BorderThickness="0" FlowDirection="RightToLeft">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Expanded">
+                    <cmd:EventToCommand Command="{Binding Path=DataContext.SelectGroupCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                                    CommandParameter="{Binding}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <Expander.Header>
                 <Grid FlowDirection="LeftToRight">
                     <Grid.RowDefinitions>

@@ -79,7 +79,17 @@
                 Panel.ZIndex="1"
                 Background="Black"
                 Visibility="{Binding IsConnectionEsatblished, FallbackValue=Collapsed, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-            <Button Content="Connect to Spotify" Command="{Binding ConnectToSpotifyCommand}" Width="175" Height="50" />
+            <Button Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}"
+                    Width="150" Height="150"
+                    Command="{Binding ConnectToSpotifyCommand}" >
+                <StackPanel HorizontalAlignment="Center" Margin="0 15 0 0">
+                    <icons:PackIconBoxIcons Kind="LogosSpotify" Width="75" Height="75"  
+                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock Margin="0 5 0 0" 
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Text="Connect" FontSize="16" FontWeight="Thin" />
+                </StackPanel>
+            </Button>
         </Border>
 
         <Border Grid.Column="0" Grid.Row="0" 
@@ -139,7 +149,7 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="30" />
                                             <RowDefinition Height="1*" />
-                                            <RowDefinition Height="40" />
+                                            <RowDefinition Height="35" />
                                         </Grid.RowDefinitions>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -163,7 +173,7 @@
                                                 HorizontalAlignment="Right"
                                                 Command="{Binding AddUserCommand}" 
                                                 Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                                                <icons:PackIconBoxIcons Kind="SolidPlusCircle" />
+                                                <icons:PackIconBoxIcons Kind="RegularListPlus" />
                                             </Button>
 
                                             <Button Grid.Column="2" Visibility="Collapsed" Command="{Binding SelectAllUsersCommand}" HorizontalAlignment="Left" Content="✔" Width="30" Margin="5 0 0 0" />
@@ -193,12 +203,12 @@
                                             </ListBox>
                                         </Border>
                                         <Button Grid.Column="0" Grid.Row="2" 
-                                                Width="40" Height="40"
+                                                Width="35" Height="35"
                                                 Command="{Binding GetUsersPlaylistsCommand}"
                                                 Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                                             <icons:PackIconBoxIcons Kind="RegularCloudDownload" />
                                         </Button>
-                                        
+
                                     </Grid>
 
                                     <GridSplitter 
@@ -222,8 +232,8 @@
                                         <Grid Grid.Row="0" Grid.Column="0">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="110" />
-                                                <ColumnDefinition Width="100" />
+                                                <ColumnDefinition Width="0" />
+                                                <ColumnDefinition Width="40" />
                                             </Grid.ColumnDefinitions>
                                             <TextBox 
                                                 Grid.Column="0"
@@ -241,13 +251,19 @@
                                                 VerticalAlignment="Center"
                                                 Content="Global Search"
                                                 Margin="0 0 10 0"
+                                                Visibility="Collapsed"
                                                 IsChecked="{Binding GlobalSearchEnabled}" />
 
-                                            <Button Visibility="Visible" 
-                                                    Grid.Column="2"
-                                                    VerticalAlignment="Center"
-                                                    Command="{Binding SelectExplorePlaylistsCommand}" Height="27" Width="100" Content="Select All" />
-
+                                            <Button
+                                                Width="30" Height="30"
+                                                Visibility="Visible" 
+                                                Grid.Column="2"
+                                                DockPanel.Dock="Right"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding SelectExplorePlaylistsCommand}"
+                                                Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                                                <icons:PackIconBoxIcons Kind="RegularListCheck" />
+                                            </Button>
                                         </Grid>
 
                                         <customControls:PlaylistsCollectionControl
@@ -292,10 +308,14 @@
 
                                     <DockPanel Grid.Row="0"
                                             Grid.Column="0">
-                                        <Button Visibility="Visible"
-                                                DockPanel.Dock="Right"
-                                                VerticalAlignment="Center"
-                                                Command="{Binding SelectAllMyPlaylistsCommand}" Height="27" Width="100" Content="Select All" />
+                                        <Button
+                                            Width="30" Height="30"
+                                            DockPanel.Dock="Right"
+                                            VerticalAlignment="Center"
+                                            Command="{Binding SelectAllMyPlaylistsCommand}"
+                                            Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                                            <icons:PackIconBoxIcons Kind="RegularListCheck" />
+                                        </Button>
 
                                         <TextBox Text="{Binding MyPlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
                                                  Margin="10"
@@ -447,7 +467,10 @@
                                     </StackPanel>
 
 
-                                    <Button Margin="0 15 0 0" Content="Create and process" Command="{Binding CreateProcessGroupCommand}" Width="150" />
+                                    <Button Margin="0 15 0 0" 
+                                            Content="Create and process"
+                                            Command="{Binding CreateProcessGroupCommand}">
+                                    </Button>
                                 </StackPanel>
                             </Grid>
                         </GroupBox>

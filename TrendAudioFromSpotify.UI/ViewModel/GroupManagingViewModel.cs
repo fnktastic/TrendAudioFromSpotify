@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,5 +53,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Groups = new GroupCollection(groups);
         }
+
+        #region commands 
+        private RelayCommand<Group> _selectGroupCommand;
+        public RelayCommand<Group> SelectGroupCommand => _selectGroupCommand ?? (_selectGroupCommand = new RelayCommand<Group>(SelectGroup));
+        private void SelectGroup(Group group)
+        {
+            SelectedGroup = group;
+        }
+        #endregion
     }
 }
