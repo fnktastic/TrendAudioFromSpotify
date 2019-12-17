@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              xmlns:views="clr-namespace:TrendAudioFromSpotify.UI.Views"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              mc:Ignorable="d" 
              xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
@@ -57,10 +58,14 @@
                       IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             
             <Button Grid.Row="0" Grid.Column="4"
-                    Content="Play"
-                    HorizontalAlignment="Right"
-                    Command="{Binding Path=DataContext.PlaySongCommand, RelativeSource={RelativeSource AncestorType={x:Type views:MonitoringUserControl}}}"
-                    CommandParameter="{Binding}" />
+                Width="40" Height="40"
+                HorizontalAlignment="Right"
+                Command="{Binding Path=DataContext.PlaySongCommand, RelativeSource={RelativeSource AncestorType={x:Type views:MonitoringUserControl}}}"
+                CommandParameter="{Binding}"
+                Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                <icons:PackIconBoxIcons Kind="RegularPlayCircle" />
+            </Button>
+            
         </Grid>
     </Border>
 </UserControl>
