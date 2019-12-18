@@ -51,7 +51,7 @@
                 <Button 
                     Width="40" Height="40"
                     Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                    <icons:PackIconBoxIcons Kind="LogosApple" />
+                    <icons:Material Kind="Refresh" />
                 </Button>
             </StackPanel>
         </Expander>
