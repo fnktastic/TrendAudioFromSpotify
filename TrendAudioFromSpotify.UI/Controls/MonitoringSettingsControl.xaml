@@ -75,7 +75,7 @@
                              VerticalAlignment="Center"
                              Culture="ru-UA" 
                              SelectedTime="{Binding RefreshPeriod}" />
-        <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5"
+        <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Margin="0 5 0 0"
                   Content="Automatically recreate on Spotify" VerticalAlignment="Center" 
                   IsChecked="{Binding AutoRecreatePlaylisOnSpotify}"/>
         <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6"

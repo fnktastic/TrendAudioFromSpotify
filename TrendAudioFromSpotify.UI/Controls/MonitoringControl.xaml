@@ -74,7 +74,7 @@
                 <Expander Header="info" Background="Black" Margin="0 5 0 0" BorderThickness="0" FlowDirection="RightToLeft">
                     <local:MonitoringSettingsControl 
                         FlowDirection="LeftToRight"
-                        IsEnabled="False" />
+                        IsHitTestVisible="False" />
                 </Expander>
             </StackPanel>
         </Expander>
