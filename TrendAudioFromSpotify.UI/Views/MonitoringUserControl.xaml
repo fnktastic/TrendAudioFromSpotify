@@ -45,7 +45,7 @@
                   Grid.Column="2" Grid.Row="0">
             <Grid>
                 <customControls:AudioHitsCollectionControl
-                    ItemsSource="{Binding SelectedMonitoringItem.Trends}" 
+                    ItemsSource="{Binding SelectedMonitoringItem.Trends, IsAsync=True}" 
                     ScrollViewer.VerticalScrollBarVisibility="Auto">
                 </customControls:AudioHitsCollectionControl>
             </Grid>

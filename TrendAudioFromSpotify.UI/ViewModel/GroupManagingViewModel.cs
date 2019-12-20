@@ -35,6 +35,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             set
             {
                 if (_selectedGroup == value) return;
+
+                if (_selectedGroup != null)
+                    _selectedGroup.IsExpanded = false;
+
                 _selectedGroup = value;
                 RaisePropertyChanged(nameof(SelectedGroup));
             }

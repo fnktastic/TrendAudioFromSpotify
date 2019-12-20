@@ -21,6 +21,7 @@
             Padding="10 5" 
             Background="Black">
         <Expander Background="Black"
+                  IsExpanded="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                   BorderThickness="0" FlowDirection="RightToLeft">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Expanded">

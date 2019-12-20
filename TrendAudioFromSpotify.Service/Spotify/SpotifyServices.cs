@@ -141,7 +141,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
             {
                 var items = (await _spotifyWebAPI.GetUserPlaylistsAsync(username, limit: limit, offset: counter))?.Items;
 
-                counter += items.Count; ;
+                counter += items.Count;
 
                 usersPlaylists.AddRange(items);
             }

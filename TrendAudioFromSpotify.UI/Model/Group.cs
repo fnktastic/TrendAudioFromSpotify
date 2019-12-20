@@ -21,6 +21,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private bool _isExpanded;
+        public bool IsExpanded
+        {
+            get { return _isExpanded; }
+            set
+            {
+                if (value == _isExpanded) return;
+                _isExpanded = value;
+                RaisePropertyChanged(nameof(IsExpanded));
+            }
+        }
+
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

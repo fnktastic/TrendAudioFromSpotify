@@ -44,7 +44,7 @@
                                         Margin="5"
                                         IsSynchronizedWithCurrentItem="False"
                                         HorizontalAlignment="Stretch"
-                                        ItemsSource="{Binding SelectedGroup.Playlists}">
+                                        ItemsSource="{Binding SelectedGroup.Playlists, IsAsync=True}">
             </local:GroupPlaylistCollectionControl>
         </GroupBox>
     </Grid>
