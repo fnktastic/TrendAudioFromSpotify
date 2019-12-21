@@ -40,6 +40,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private readonly MonitoringViewModel _monitoringViewModel;
 
+        private readonly GroupManagingViewModel _groupManagingViewModel;
+
         private readonly IMonitoringService _monitoringService;
         #endregion
 
@@ -391,9 +393,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, IDataService dataService, SerialQueue serialQueue, IMonitoringService monitoringService)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, GroupManagingViewModel groupManagingViewModel, IDataService dataService, SerialQueue serialQueue, IMonitoringService monitoringService)
         {
             _monitoringViewModel = monitoringViewModel;
+            _groupManagingViewModel = groupManagingViewModel;
             _dataService = dataService;
             _monitoringService = monitoringService;
 
@@ -851,6 +854,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             if (_monitoringService.IsMonitoringItemReady)
             {
                 _monitoringViewModel.MonitoringItems.Add(monitoringItem);
+
+                //monitoringItem.Group.MonitoringItem = monitoringItem;
+
+                _groupManagingViewModel.Groups.Add(monitoringItem.Group);
 
                 //move to service
                 await _dataService.InsertGroupAsync(monitoringItem.Group);
