@@ -448,7 +448,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (progressDialogController != null)
                     await progressDialogController.CloseAsync();
             }
-            catch { }
+            catch(Exception ex)
+            {
+                _logger.Error("Error in SpotifyViewModel.HideConnectingMessage", ex);
+            }
         }
         #endregion
 
