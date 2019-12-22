@@ -88,7 +88,7 @@
                                 <ColumnDefinition Width="135" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Based on:" Grid.Column="0" VerticalAlignment="Center"  />
+                            <TextBlock Text="Based on Group:" Grid.Column="0" VerticalAlignment="Center"  />
                             <Border Grid.Column="1" Background="#252525" CornerRadius="3" Padding="10" HorizontalAlignment="Center">
                                 <TextBlock Text="{Binding Group.Name}" FontWeight="Thin" HorizontalAlignment="Center" FontSize="14" />
                             </Border>
