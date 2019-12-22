@@ -11,7 +11,7 @@ namespace TrendAudioFromSpotify.Data.Repository
 {
     public interface IMonitoringItemRepository
     {
-        Task<List<MonitoringItemDto>> GetAllAsync();
+        Task<List<MonitoringItemDto>> GetAllAsync(bool getDeleted = false);
 
         Task InsertAsync(MonitoringItemDto monitoringItem);
 
@@ -27,9 +27,10 @@ namespace TrendAudioFromSpotify.Data.Repository
             _context = context;
         }
 
-        public async Task<List<MonitoringItemDto>> GetAllAsync()
+        public async Task<List<MonitoringItemDto>> GetAllAsync(bool getDeleted = false)
         {
             return await _context.MonitoringItems
+                .Where(x => x.IsDeleted == getDeleted)
                 .Include(x => x.Group.GroupPlaylists.Select(y => y.Playlist))
                 .Include(y => y.Trends)
                 .ToListAsync();
