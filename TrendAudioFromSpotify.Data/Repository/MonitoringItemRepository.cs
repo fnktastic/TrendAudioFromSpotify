@@ -56,6 +56,7 @@ namespace TrendAudioFromSpotify.Data.Repository
                 dbEntry.TargetPlaylistName = monitoringItem.TargetPlaylistName;
                 dbEntry.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
                 dbEntry.PlaylistType = monitoringItem.PlaylistType;
+                dbEntry.IsOverrideTrends = monitoringItem.IsOverrideTrends;
 
                 dbEntry.UpdatedAt = DateTime.UtcNow;
             }
