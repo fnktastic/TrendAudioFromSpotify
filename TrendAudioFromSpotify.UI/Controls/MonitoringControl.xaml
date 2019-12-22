@@ -65,18 +65,39 @@
                 </Grid>
             </Expander.Header>
             <StackPanel FlowDirection="LeftToRight">
-                <Button 
-                    Width="40" Height="40"
-                    Command="{Binding Path=DataContext.ProcessMonitoringItemCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
-                    CommandParameter="{Binding}"
-                    Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                    <icons:Material Kind="Refresh" />
-                </Button>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button 
+                        Width="40" Height="40"
+                        Command="{Binding Path=DataContext.ProcessMonitoringItemCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                        CommandParameter="{Binding}"
+                        Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                        <icons:Material Kind="Refresh" />
+                    </Button>
+                    <Button 
+                        Width="40" Height="40"
+                        Command="{Binding Path=DataContext.DeleteMonitoringItemCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                        CommandParameter="{Binding}"
+                        Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                        <icons:Material Kind="Delete" />
+                    </Button>
+                </StackPanel>
                 <Expander Header="info" Background="Black" Margin="0 5 0 0" BorderThickness="0" FlowDirection="RightToLeft">
-                    <local:MonitoringSettingsControl 
-                        Opacity=".6"
-                        FlowDirection="LeftToRight"
-                        IsHitTestVisible="False" />
+                    <StackPanel>
+                        <Grid FlowDirection="LeftToRight">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="135" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Based on:" Grid.Column="0" VerticalAlignment="Center"  />
+                            <Border Grid.Column="1" Background="#252525" CornerRadius="3" Padding="10" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Group.Name}" FontWeight="Thin" HorizontalAlignment="Center" FontSize="14" />
+                            </Border>
+                        </Grid>
+                        <local:MonitoringSettingsControl 
+                            Opacity=".6"
+                            FlowDirection="LeftToRight"
+                            IsHitTestVisible="False" />
+                    </StackPanel>
                 </Expander>
             </StackPanel>
         </Expander>

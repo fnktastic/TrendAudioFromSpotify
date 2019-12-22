@@ -53,7 +53,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _selectedMonitoringItem = value;
                 RaisePropertyChanged(nameof(SelectedMonitoringItem));
 
-                FetchTrends();
+                if (_selectedMonitoringItem != null)
+                    FetchTrends();
             }
         }
         #endregion
@@ -90,7 +91,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             {
                 await _dialogCoordinator.ShowMessageAsync(this, header, message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error("Error in MonitoringViewModel.ShowMessage", ex);
             }
@@ -112,7 +113,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                         await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error("Error in MonitoringViewModel.PlaySong", ex);
             }
@@ -131,6 +132,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             _monitoringService.Initiate(SpotifyServices, monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
             _monitoringService.Process();
+        }
+
+        private RelayCommand<MonitoringItem> _deleteMonitoringItemCommand;
+        public RelayCommand<MonitoringItem> DeleteMonitoringItemCommand => _deleteMonitoringItemCommand ?? (_deleteMonitoringItemCommand = new RelayCommand<MonitoringItem>(DeleteMonitoringItem));
+        private void DeleteMonitoringItem(MonitoringItem monitoringItem)
+        {
+            _monitoringItems.Remove(monitoringItem);
         }
         #endregion
     }

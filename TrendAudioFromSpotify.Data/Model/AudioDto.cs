@@ -23,6 +23,7 @@ namespace TrendAudioFromSpotify.Data.Model
         public string Cover { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsDeleted { get; set; }
 
         public virtual ICollection<PlaylistAudioDto> PlaylistAudios { get; set; }
 
