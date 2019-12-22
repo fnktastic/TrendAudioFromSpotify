@@ -13,7 +13,7 @@ namespace TrendAudioFromSpotify.UI.Model
     {
         private FullTrack _track { get; set; }
 
-        public string Id {get;set;}
+        public string Id { get; set; }
 
         public string Artist { get; set; }
 
@@ -25,7 +25,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public int Hits { get; set; }
 
-        public long Duration { get; set; } 
+        public long Duration { get; set; }
 
         public int Popularity { get; set; }
 
@@ -63,6 +63,8 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             _track = track;
 
+            if (_track == null) return;
+
             Id = _track.Id;
             Href = _track.Href;
             Artist = string.Join(" ", _track.Artists.Select(x => x.Name));
@@ -71,8 +73,8 @@ namespace TrendAudioFromSpotify.UI.Model
             Popularity = _track.Popularity;
             Duration = _track.DurationMs;
             Album = _track.Album.Name;
-            
-            if(_track.Album != null && _track.Album.Images != null && _track.Album.Images.Count > 0)
+
+            if (_track.Album != null && _track.Album.Images != null && _track.Album.Images.Count > 0)
             {
                 Cover = _track.Album.Images.First().Url;
             }
