@@ -14,6 +14,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task<List<GroupDto>> GetAllAsync();
 
         Task InsertAsync(GroupDto group);
+
+        Task RemoveAsync(GroupDto group);
     }
 
     public class GroupRepository : IGroupRepository
@@ -35,7 +37,7 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         public async Task InsertAsync(GroupDto group)
         {
-            if (group.Id == Guid.Empty) throw new ArgumentException("Cant insert group with empty id."); 
+            if (group.Id == Guid.Empty) throw new ArgumentException("Cant insert group with empty id.");
 
             var dbEntry = await _context.Groups.FindAsync(group.Id);
 
@@ -49,6 +51,20 @@ namespace TrendAudioFromSpotify.Data.Repository
             {
                 dbEntry.Name = group.Name;
                 dbEntry.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAsync(GroupDto group)
+        {
+            if (group.Id == Guid.Empty) throw new ArgumentException("Cant insert group with empty id.");
+
+            var dbEntry = await _context.Groups.FindAsync(group.Id);
+
+            if (dbEntry != null)
+            {
+                dbEntry.IsDeleted = true;
             }
 
             await _context.SaveChangesAsync();

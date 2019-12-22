@@ -77,9 +77,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private RelayCommand<Group> _deleteGroupCommand;
         public RelayCommand<Group> DeleteGroupCommand => _deleteGroupCommand ?? (_deleteGroupCommand = new RelayCommand<Group>(DeleteGroup));
-        private void DeleteGroup(Group group)
+        private async void DeleteGroup(Group group)
         {
             _groups.Remove(group);
+
+            await _dataService.RemoveGroupAsync(group);
         }
         #endregion
     }

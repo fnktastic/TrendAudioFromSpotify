@@ -136,9 +136,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private RelayCommand<MonitoringItem> _deleteMonitoringItemCommand;
         public RelayCommand<MonitoringItem> DeleteMonitoringItemCommand => _deleteMonitoringItemCommand ?? (_deleteMonitoringItemCommand = new RelayCommand<MonitoringItem>(DeleteMonitoringItem));
-        private void DeleteMonitoringItem(MonitoringItem monitoringItem)
+        private async void DeleteMonitoringItem(MonitoringItem monitoringItem)
         {
             _monitoringItems.Remove(monitoringItem);
+
+            await _dataService.RemoveMonitoringItemAsync(monitoringItem);
         }
         #endregion
     }

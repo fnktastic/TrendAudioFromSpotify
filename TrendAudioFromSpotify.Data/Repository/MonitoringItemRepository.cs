@@ -14,6 +14,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task<List<MonitoringItemDto>> GetAllAsync();
 
         Task InsertAsync(MonitoringItemDto monitoringItem);
+
+        Task RemoveAsync(MonitoringItemDto monitoringItemDto);
     }
 
     public class MonitoringItemRepository : IMonitoringItemRepository
@@ -59,6 +61,20 @@ namespace TrendAudioFromSpotify.Data.Repository
                 dbEntry.IsOverrideTrends = monitoringItem.IsOverrideTrends;
 
                 dbEntry.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAsync(MonitoringItemDto monitoringItem)
+        {
+            if (monitoringItem.Id == Guid.Empty) throw new ArgumentException("Cant insert group with empty id.");
+
+            var dbEntry = await _context.MonitoringItems.FindAsync(monitoringItem.Id);
+
+            if(dbEntry != null)
+            {
+                dbEntry.IsDeleted = true;
             }
 
             await _context.SaveChangesAsync();
