@@ -102,12 +102,19 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
         private async void PlaySong(Audio audio)
         {
-            if (audio != null)
+            try
             {
-                var playback = await SpotifyServices.PlayTrack(audio.Uri);
+                if (audio != null)
+                {
+                    var playback = await SpotifyServices.PlayTrack(audio.Uri);
 
-                if (playback.HasError())
-                    await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
+                    if (playback.HasError())
+                        await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.Error("Error in MonitoringViewModel.PlaySong", ex);
             }
         }
 
