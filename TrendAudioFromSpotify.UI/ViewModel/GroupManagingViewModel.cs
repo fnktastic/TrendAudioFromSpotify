@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 {
     public class GroupManagingViewModel : ViewModelBase
     {
+        #region fields
         private readonly IDataService _dataService;
 
+        private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        #endregion
+
+        #region properties
         private GroupCollection _groups;
         public GroupCollection Groups
         {
@@ -53,10 +59,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private async void FetchData()
         {
+            _logger.Info("Fetching Groups Data...");
+
             var groups = await _dataService.GetAllGroupsAsync();
 
             Groups = new GroupCollection(groups);
         }
+        #endregion
 
         #region commands 
         private RelayCommand<Group> _selectGroupCommand;

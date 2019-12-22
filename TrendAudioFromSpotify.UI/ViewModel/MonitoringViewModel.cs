@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using log4net;
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly IDataService _dataService;
         private readonly IMonitoringService _monitoringService;
+        private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
         #region properties
@@ -74,6 +76,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private async void FetchData()
         {
+            _logger.Info("Fetching Monitoring Data...");
+
             var monitoringItems = await _dataService.GetAllMonitoringItemsAsync();
 
             MonitoringItems = new MonitoringItemCollection(monitoringItems);
@@ -82,7 +86,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region dialogs
         private async Task ShowMessage(string header, string message)
         {
-            await _dialogCoordinator.ShowMessageAsync(this, header, message);
+            try
+            {
+                await _dialogCoordinator.ShowMessageAsync(this, header, message);
+            }
+            catch(Exception ex)
+            {
+                _logger.Error("Error in MonitoringViewModel.ShowMessage", ex);
+            }
         }
         #endregion
 

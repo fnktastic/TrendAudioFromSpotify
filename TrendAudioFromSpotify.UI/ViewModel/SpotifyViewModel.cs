@@ -1,6 +1,7 @@
 using AutoMapper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using log4net;
 using MahApps.Metro.Controls.Dialogs;
 using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
@@ -43,6 +44,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly GroupManagingViewModel _groupManagingViewModel;
 
         private readonly IMonitoringService _monitoringService;
+
+        private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
         #region properties
@@ -454,6 +457,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
+                _logger.Info("Load Settings...");
+
                 UserId = _settingUtility.GetByKey(nameof(UserId)).Value;
                 SecretId = _settingUtility.GetByKey(nameof(SecretId)).Value;
                 RedirectUri = _settingUtility.GetByKey(nameof(RedirectUri)).Value;
@@ -476,6 +481,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private async Task EstablishConnection()
         {
+            _logger.Info("Connecting to Spotify...");
+
             var accessToken = _settingUtility.GetAccessToken();
 
             await ShowConnectingMessage();
@@ -497,6 +504,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private async Task AuthByToken(Setting accessToken)
         {
+            _logger.Info("Auth by token in Spotify...");
+
             SpotifyWebAPI api = new SpotifyWebAPI
             {
                 AccessToken = accessToken.Value,
@@ -529,6 +538,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private bool isStartup = true;
         private async void OnAuthResponse(object sender, AuthorizationCode payload)
         {
+            _logger.Info("Auth response...");
+
             if (sender is AuthorizationCodeAuth authorization)
             {
                 authorization.Stop();
