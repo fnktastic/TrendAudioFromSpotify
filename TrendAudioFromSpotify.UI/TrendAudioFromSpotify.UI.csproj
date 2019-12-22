@@ -222,9 +222,11 @@
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
     <Compile Include="Converter\InverseBoolToVisibilityConverter.cs" />
+    <Compile Include="Converter\TabsConverter.cs" />
     <Compile Include="Enum\ComparisonEnum.cs" />
     <Compile Include="Enum\PlaylistTypeEnum.cs" />
     <Compile Include="Enum\RefreshActionEnum.cs" />
+    <Compile Include="Enum\TabsEnum.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\MonitoringItem.cs" />
     <Compile Include="Model\Playlist.cs" />
@@ -237,6 +239,7 @@
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />
     <Compile Include="ViewModel\GroupManagingViewModel.cs" />
+    <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\SpotifyViewModel.cs" />
     <Compile Include="ViewModel\MonitoringViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _dataService = dataService;
 
             FetchData();
+
+            Messenger.Default.Register<Group>(this, ReceiveSelectGroupMessage);
         }
 
         private async void FetchData()
@@ -82,6 +85,19 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _groups.Remove(group);
 
             await _dataService.RemoveGroupAsync(group);
+        }
+        #endregion
+
+        #region messages
+        private void ReceiveSelectGroupMessage(Group group)
+        {
+            var targetGroup = Groups
+                .FirstOrDefault(x => x.Name == group.Name && x.CreatedAt == group.CreatedAt);
+
+            if (targetGroup != null)
+                SelectedGroup = targetGroup;
+            else
+                SelectedGroup = group;
         }
         #endregion
     }

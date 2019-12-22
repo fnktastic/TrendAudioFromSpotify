@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using log4net;
 using MahApps.Metro.Controls.Dialogs;
 using System;
@@ -10,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Enum;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
@@ -24,6 +26,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IDataService _dataService;
         private readonly IMonitoringService _monitoringService;
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly SpotifyViewModel _spotifyViewModel;
         #endregion
 
         #region properties
@@ -141,6 +144,15 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _monitoringItems.Remove(monitoringItem);
 
             await _dataService.RemoveMonitoringItemAsync(monitoringItem);
+        }
+
+        private RelayCommand<MonitoringItem> _goToBaseGoupCommand;
+        public RelayCommand<MonitoringItem> GoToBaseGoupCommand => _goToBaseGoupCommand ?? (_goToBaseGoupCommand = new RelayCommand<MonitoringItem>(GoToBaseGoup));
+        private void GoToBaseGoup(MonitoringItem monitoringItem)
+        {
+            Messenger.Default.Send<Group>(monitoringItem.Group);
+
+            Messenger.Default.Send<TabsEnum>(TabsEnum.Groups);
         }
         #endregion
     }
