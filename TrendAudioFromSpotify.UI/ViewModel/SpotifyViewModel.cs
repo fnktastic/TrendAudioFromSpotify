@@ -396,7 +396,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, GroupManagingViewModel groupManagingViewModel, IDataService dataService, SerialQueue serialQueue, IMonitoringService monitoringService)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, GroupManagingViewModel groupManagingViewModel, IDataService dataService, IMonitoringService monitoringService)
         {
             _monitoringViewModel = monitoringViewModel;
             _groupManagingViewModel = groupManagingViewModel;
@@ -895,7 +895,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     foreach (var playlist in Playlists)
                         playlist.IsChecked = false;
 
-                await _monitoringService.Process();
+                await _monitoringService.ProcessAsync();
             }
         }
 

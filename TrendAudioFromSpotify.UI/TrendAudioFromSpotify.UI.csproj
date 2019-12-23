@@ -234,6 +234,7 @@
     <Compile Include="Model\Audio.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Service\DataService.cs" />
+    <Compile Include="Service\GroupService.cs" />
     <Compile Include="Service\MonitoringService.cs" />
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />

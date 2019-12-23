@@ -50,8 +50,10 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button 
                         Width="40" Height="40"
+                        Command="{Binding Path=DataContext.RepeatGroupCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                        CommandParameter="{Binding}"
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                        <icons:Material Kind="Refresh" />
+                        <icons:Material Kind="Repeat" />
                     </Button>
                     <Button 
                         Width="40" Height="40"

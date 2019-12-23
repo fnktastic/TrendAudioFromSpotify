@@ -57,7 +57,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RaisePropertyChanged(nameof(SelectedMonitoringItem));
 
                 if (_selectedMonitoringItem != null)
-                    FetchTrends();
+                    FetchTrends().ConfigureAwait(true);
             }
         }
         #endregion
@@ -68,17 +68,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _dataService = dataService;
             _monitoringService = monitoringService;
 
-            FetchData();
+            FetchData().ConfigureAwait(true);
         }
 
-        private async void FetchTrends()
+        private async Task FetchTrends()
         {
             var audios = await _dataService.GetAllMonitoringItemAudioByMonitoringItemIdAsync(_selectedMonitoringItem.Id);
 
             SelectedMonitoringItem.Trends = new AudioCollection(audios);
         }
 
-        private async void FetchData()
+        private async Task FetchData()
         {
             _logger.Info("Fetching Monitoring Data...");
 
@@ -134,7 +134,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private void ProcessMonitoringItem(MonitoringItem monitoringItem)
         {
             _monitoringService.Initiate(SpotifyServices, monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
-            _monitoringService.Process();
+            _monitoringService.ProcessAsync();
         }
 
         private RelayCommand<MonitoringItem> _deleteMonitoringItemCommand;

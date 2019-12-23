@@ -18,6 +18,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     {
         #region fields
         private readonly IDataService _dataService;
+        private readonly IGroupService _groupService;
 
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
@@ -51,16 +52,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        public GroupManagingViewModel(IDataService dataService)
+        public GroupManagingViewModel(IDataService dataService, IGroupService groupService)
         {
             _dataService = dataService;
 
-            FetchData();
+            _groupService = groupService;
+
+            FetchData().ConfigureAwait(true);
 
             Messenger.Default.Register<Group>(this, ReceiveSelectGroupMessage);
         }
 
-        private async void FetchData()
+        private async Task FetchData()
         {
             _logger.Info("Fetching Groups Data...");
 
@@ -85,6 +88,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _groups.Remove(group);
 
             await _dataService.RemoveGroupAsync(group);
+        }
+
+        private RelayCommand<Group> _repeatGroupCommand;
+        public RelayCommand<Group> RepeatGroupCommand => _repeatGroupCommand ?? (_repeatGroupCommand = new RelayCommand<Group>(RepeatGroup));
+        private async void RepeatGroup(Group group)
+        {
+            await _groupService.MonitorGroupAsync(group);
         }
         #endregion
 

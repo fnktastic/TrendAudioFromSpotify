@@ -15,7 +15,7 @@ namespace TrendAudioFromSpotify.UI.Service
     public interface IMonitoringService
     {
         MonitoringItem Initiate(ISpotifyServices spotifyServices, Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
-        Task<bool> Process();
+        Task<bool> ProcessAsync();
         bool IsMonitoringItemReady { get; }
     }
 
@@ -79,7 +79,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public bool IsMonitoringItemReady => MonitoringItem.IsReady;
 
-        public async Task<bool> Process()
+        public async Task<bool> ProcessAsync()
         {
             if (MonitoringItem.IsReady)
             {

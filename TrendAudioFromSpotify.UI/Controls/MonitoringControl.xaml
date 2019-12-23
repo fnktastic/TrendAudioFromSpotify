@@ -89,7 +89,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Based on Group:" Grid.Column="0" VerticalAlignment="Center"  />
-                            <Border Grid.Column="1" Background="#252525" CornerRadius="3" Padding="5 3" BorderThickness="1" HorizontalAlignment="Center">
+                            <Border Grid.Column="1" Background="#252525" CornerRadius="3" Padding="0" BorderThickness="1" HorizontalAlignment="Center">
                                 <Button Command="{Binding Path=DataContext.GoToBaseGoupCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
                                         CommandParameter="{Binding}">
                                     <TextBlock Text="{Binding Group.Name}" FontWeight="Thin" HorizontalAlignment="Center" FontSize="14" />

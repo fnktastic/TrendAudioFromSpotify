@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.Model;
+using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
 
 namespace TrendAudioFromSpotify.UI.Utility
@@ -25,7 +26,7 @@ namespace TrendAudioFromSpotify.UI.Utility
                                 cfg.CreateMap<Audio, AudioDto>();
                                 cfg.CreateMap<Playlist, PlaylistDto>();
                                 cfg.CreateMap<Group, GroupDto>();
-                                cfg.CreateMap<MonitoringItem, MonitoringItemDto>().ForMember(x => x.Trends, opt => opt.Ignore()); ;
+                                cfg.CreateMap<MonitoringItem, MonitoringItemDto>().ForMember(x => x.Trends, opt => opt.Ignore());
 
                                 cfg.CreateMap<GroupDto, Group>();
                                 cfg.CreateMap<PlaylistDto, Playlist>();
