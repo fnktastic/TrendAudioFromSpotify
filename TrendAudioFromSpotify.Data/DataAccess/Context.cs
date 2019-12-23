@@ -12,7 +12,7 @@ namespace TrendAudioFromSpotify.Data.DataAccess
     {
         public Context() : base("TrendifyDb")
         {
-
+            this.Configuration.LazyLoadingEnabled = false;
         }
 
         public DbSet<AudioDto> Audios { get; set; }

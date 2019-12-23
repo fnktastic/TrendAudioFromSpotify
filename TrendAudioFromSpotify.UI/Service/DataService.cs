@@ -65,69 +65,75 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public async Task InsertAudioAsync(Audio audio)
         {
-            await _audioRepository.InsertAsync(_mapper.Map<AudioDto>(audio));
+            await _serialQueue.Enqueue(async () => await _audioRepository.InsertAsync(_mapper.Map<AudioDto>(audio)));
         }
 
         public async Task InsertMonitoringItemAsync(MonitoringItem monitoringItem)
         { 
-            await _monitoringItemRepository.InsertAsync(_mapper.Map<MonitoringItemDto>(monitoringItem));
+            await _serialQueue.Enqueue(async () => await _monitoringItemRepository.InsertAsync(_mapper.Map<MonitoringItemDto>(monitoringItem)));
         }
 
         public async Task InsertPlaylistRangeAsync(IEnumerable<Playlist> playlists)
         {
-            await _playlistRepository.InsertRangeAsync(_mapper.Map<List<PlaylistDto>>(playlists));
+            await _serialQueue.Enqueue(async () => await _playlistRepository.InsertRangeAsync(_mapper.Map<List<PlaylistDto>>(playlists)));
         }
 
         public async Task InsertGroupAsync(Group group)
         {
-            await _groupRepository.InsertAsync(_mapper.Map<GroupDto>(group));
+            await _serialQueue.Enqueue(async () => await _groupRepository.InsertAsync(_mapper.Map<GroupDto>(group)));
         }
 
         public async Task InsertGroupPlaylistRangeAsync(Group group)
         {
-            await _groupPlaylistRepository.InsertRangeAsync(group.Playlists.Select(x => new GroupPlaylistDto()
+            await _serialQueue.Enqueue(async () => 
             {
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                GroupId = group.Id,
-                PlaylistId = x.Id
-            }).ToList());
+                await _groupPlaylistRepository.InsertRangeAsync(group.Playlists.Select(x => new GroupPlaylistDto()
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    GroupId = group.Id,
+                    PlaylistId = x.Id
+                }).ToList());
+            });
         }
 
         public async Task InsertMonitoringItemAudioRangeAsync(MonitoringItem monitoringItem)
         {
-            await _monitoringItemAudioRepository.InsertRangeAsync(monitoringItem.Trends.Select(x => new MonitoringItemAudioDto()
+            await _serialQueue.Enqueue(async () => 
             {
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                MonitoringItemId = monitoringItem.Id,
-                AudioId = x.Id,
-                Hits = x.Hits
-            }).ToList());
+                await _monitoringItemAudioRepository.InsertRangeAsync(monitoringItem.Trends.Select(x => new MonitoringItemAudioDto()
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    MonitoringItemId = monitoringItem.Id,
+                    AudioId = x.Id,
+                    Hits = x.Hits
+                }).ToList());
+            });
         }
 
         public async Task<List<Group>> GetAllGroupsAsync()
         {
-            var groups = await _groupRepository.GetAllAsync();
+            var groups = await _serialQueue.Enqueue(async () => await _groupRepository.GetAllAsync());
 
             return _mapper.Map<List<Group>>(groups);
         }
 
         public async Task InsertAudioRangeAsync(IEnumerable<Audio> audios)
         {
-            await _audioRepository.InsertAudioRangeAsync(_mapper.Map<IEnumerable<AudioDto>>(audios));
+            await _serialQueue.Enqueue(async () => await _audioRepository.InsertAudioRangeAsync(_mapper.Map<IEnumerable<AudioDto>>(audios)));
         }
 
         public async Task<List<MonitoringItem>> GetAllMonitoringItemsAsync()
         {
-            var monitoringItems = await _monitoringItemRepository.GetAllAsync();
+            var monitoringItems = await _serialQueue.Enqueue(async () => await _monitoringItemRepository.GetAllAsync());
 
             return _mapper.Map<List<MonitoringItem>>(monitoringItems);
         }
 
         public async Task<List<Audio>> GetAllMonitoringItemAudioByMonitoringItemIdAsync(Guid monitoringItemId)
         {
-            var monitoringItemAudios = await _monitoringItemAudioRepository.GetAllByMonitoringItemIdAsync(monitoringItemId);
+            var monitoringItemAudios = await _serialQueue.Enqueue(async () => await _monitoringItemAudioRepository.GetAllByMonitoringItemIdAsync(monitoringItemId));
 
             var audios = _mapper.Map<List<Audio>>(monitoringItemAudios.Select(x => x.Audio ));
 
@@ -152,21 +158,21 @@ namespace TrendAudioFromSpotify.UI.Service
                 }));
             }
 
-            await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos);
+            await _serialQueue.Enqueue(async () => await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos));
         }
 
         public async Task RemoveGroupAsync(Group group)
         {
             var groupDto = _mapper.Map<GroupDto>(group);
 
-            await _groupRepository.RemoveAsync(groupDto);
+            await _serialQueue.Enqueue(async () => await _groupRepository.RemoveAsync(groupDto));
         }
 
         public async Task RemoveMonitoringItemAsync(MonitoringItem monitoringItem)
         {
             var monitoringItemDto = _mapper.Map<MonitoringItemDto>(monitoringItem);
 
-            await _monitoringItemRepository.RemoveAsync(monitoringItemDto);
+            await _serialQueue.Enqueue(async () => await _monitoringItemRepository.RemoveAsync(monitoringItemDto));
         }
     }
 }
