@@ -15,8 +15,7 @@ namespace TrendAudioFromSpotify.UI.Service
     public interface IMonitoringService
     {
         MonitoringItem Initiate(ISpotifyServices spotifyServices, Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
-        Task<bool> ProcessAsync();
-        bool IsMonitoringItemReady { get; }
+        Task<bool> ProcessAsync(MonitoringItem monitoringItem);
     }
 
     public class MonitoringService : IMonitoringService
@@ -25,7 +24,6 @@ namespace TrendAudioFromSpotify.UI.Service
         private IDataService _dataService;
         private bool processingSpecificAudios = false;
         private Timer timer;
-        public MonitoringItem MonitoringItem { get; set; }
 
         public MonitoringService(IDataService dataService)
         {
@@ -34,59 +32,59 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public MonitoringItem Initiate(ISpotifyServices spotifyServices, Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists)
         {
+            MonitoringItem _monitoringItem = new MonitoringItem();
+
             try
             {
                 _spotifyServices = spotifyServices;
 
-                this.MonitoringItem = new MonitoringItem();
-                this.MonitoringItem.Group = new Group();
+                _monitoringItem = new MonitoringItem();
+                _monitoringItem.Group = new Group();
 
-                this.MonitoringItem.Group.Id = Guid.NewGuid();
-                this.MonitoringItem.Group.Name = group.Name;
+                _monitoringItem.Group.Id = Guid.NewGuid();
+                _monitoringItem.Group.Name = group.Name;
 
-                this.MonitoringItem.Id = Guid.NewGuid();
-                this.MonitoringItem.Top = monitoringItem.Top;
-                this.MonitoringItem.HitTreshold = monitoringItem.HitTreshold;
-                this.MonitoringItem.Comparison = monitoringItem.Comparison;
-                this.MonitoringItem.PlaylistType = monitoringItem.PlaylistType;
-                this.MonitoringItem.RefreshPeriod = monitoringItem.RefreshPeriod;
-                this.MonitoringItem.TargetPlaylistName = monitoringItem.TargetPlaylistName;
-                this.MonitoringItem.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
-                this.MonitoringItem.IsOverrideTrends = monitoringItem.IsOverrideTrends;
+                _monitoringItem.Id = Guid.NewGuid();
+                _monitoringItem.Top = monitoringItem.Top;
+                _monitoringItem.HitTreshold = monitoringItem.HitTreshold;
+                _monitoringItem.Comparison = monitoringItem.Comparison;
+                _monitoringItem.PlaylistType = monitoringItem.PlaylistType;
+                _monitoringItem.RefreshPeriod = monitoringItem.RefreshPeriod;
+                _monitoringItem.TargetPlaylistName = monitoringItem.TargetPlaylistName;
+                _monitoringItem.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
+                _monitoringItem.IsOverrideTrends = monitoringItem.IsOverrideTrends;
 
-                MonitoringItem.Audios = new AudioCollection(audios);
-                MonitoringItem.Playlists = new PlaylistCollection(playlists);
-                MonitoringItem.Group.Playlists = new PlaylistCollection(playlists);
+                _monitoringItem.Audios = new AudioCollection(audios);
+                _monitoringItem.Playlists = new PlaylistCollection(playlists);
+                _monitoringItem.Group.Playlists = new PlaylistCollection(playlists);
 
                 if (audios.Count > 0)
                     processingSpecificAudios = true;
 
-                MonitoringItem.CreatedAt = MonitoringItem.Group.CreatedAt = DateTime.UtcNow;
-                MonitoringItem.UpdatedAt = MonitoringItem.Group.UpdatedAt = DateTime.UtcNow;
+                _monitoringItem.CreatedAt = _monitoringItem.Group.CreatedAt = DateTime.UtcNow;
+                _monitoringItem.UpdatedAt = _monitoringItem.Group.UpdatedAt = DateTime.UtcNow;
 
-                if (playlists.Count > 0 && int.Parse(MonitoringItem.HitTreshold ?? "") > 0 && int.Parse(MonitoringItem.Top ?? "") > 0)
-                    MonitoringItem.IsReady = true;
+                if (playlists.Count > 0 && int.Parse(_monitoringItem.HitTreshold ?? "") > 0 && int.Parse(monitoringItem.Top ?? "") > 0)
+                    _monitoringItem.IsReady = true;
 
-                return MonitoringItem;
+                return _monitoringItem;
             }
             catch
             {
-                MonitoringItem.IsReady = false;
+                _monitoringItem.IsReady = false;
 
                 return null;
             }
         }
 
-        public bool IsMonitoringItemReady => MonitoringItem.IsReady;
-
-        public async Task<bool> ProcessAsync()
+        public async Task<bool> ProcessAsync(MonitoringItem monitoringItem)
         {
-            if (MonitoringItem.IsReady)
+            if (monitoringItem.IsReady)
             {
-                await GetTrends();
+                await GetTrends(monitoringItem);
 
-                if (MonitoringItem.RefreshPeriod > TimeSpan.Zero)
-                    RunTimer();
+                if (monitoringItem.RefreshPeriod > TimeSpan.Zero)
+                    RunTimer(monitoringItem);
 
                 return true;
             }
@@ -94,9 +92,9 @@ namespace TrendAudioFromSpotify.UI.Service
             return false;
         }
 
-        private async Task GetTrends()
+        private async Task GetTrends(MonitoringItem monitoringItem)
         {
-            if (MonitoringItem.IsReady)
+            if (monitoringItem.IsReady)
             {
                 await Task.Run(async () =>
                 {
@@ -104,12 +102,12 @@ namespace TrendAudioFromSpotify.UI.Service
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            MonitoringItem.ProcessingInProgress = true;
+                            monitoringItem.ProcessingInProgress = true;
                         });
 
                         var audiosOfPlaylists = new Dictionary<string, List<Audio>>();
 
-                        foreach (var playlist in MonitoringItem.Playlists)
+                        foreach (var playlist in monitoringItem.Playlists)
                         {
                             var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id)).Select(x => new Audio(x.Track)).Where(x => x.IsFilled).ToList();
 
@@ -126,13 +124,13 @@ namespace TrendAudioFromSpotify.UI.Service
                         var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList();
 
                         if (processingSpecificAudios == false)
-                            MonitoringItem.Audios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList());
+                            monitoringItem.Audios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList());
 
                         var groupedAudios = audioBunch
                         .GroupBy(x => x.Id)
                         .Select(y =>
                         {
-                            var audio = MonitoringItem.Audios.FirstOrDefault(z => z.Id == y.Key);
+                            var audio = monitoringItem.Audios.FirstOrDefault(z => z.Id == y.Key);
 
                             if (audio == null) return null;
 
@@ -140,7 +138,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
                             audio.Playlists = new PlaylistCollection();
 
-                            foreach (var playlist in MonitoringItem.Playlists)
+                            foreach (var playlist in monitoringItem.Playlists)
                             {
                                 if (playlist.Audios.Any(x => string.Equals(x.Id, audio.Id, StringComparison.OrdinalIgnoreCase)))
                                     audio.Playlists.Add(playlist);
@@ -151,48 +149,48 @@ namespace TrendAudioFromSpotify.UI.Service
                         .Where(x => x != null)
                         .ToList();
 
-                        if (MonitoringItem.Comparison == ComparisonEnum.Equals)
+                        if (monitoringItem.Comparison == ComparisonEnum.Equals)
                         {
                             groupedAudios = groupedAudios
-                            .Where(x => x.Hits == int.Parse(MonitoringItem.HitTreshold))
+                            .Where(x => x.Hits == int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(MonitoringItem.Top))
+                            .Take(int.Parse(monitoringItem.Top))
                             .ToList();
                         }
 
-                        if (MonitoringItem.Comparison == ComparisonEnum.More)
+                        if (monitoringItem.Comparison == ComparisonEnum.More)
                         {
                             groupedAudios = groupedAudios
-                            .Where(x => x.Hits >= int.Parse(MonitoringItem.HitTreshold))
+                            .Where(x => x.Hits >= int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(MonitoringItem.Top))
+                            .Take(int.Parse(monitoringItem.Top))
                             .ToList();
                         }
 
-                        if (MonitoringItem.Comparison == ComparisonEnum.Less)
+                        if (monitoringItem.Comparison == ComparisonEnum.Less)
                         {
                             groupedAudios = groupedAudios
-                            .Where(x => x.Hits <= int.Parse(MonitoringItem.HitTreshold))
+                            .Where(x => x.Hits <= int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(MonitoringItem.Top))
+                            .Take(int.Parse(monitoringItem.Top))
                             .ToList();
                         }
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            MonitoringItem.Trends = new AudioCollection(groupedAudios);
+                            monitoringItem.Trends = new AudioCollection(groupedAudios);
                         });
 
-                        await SaveTrends(groupedAudios, MonitoringItem);
+                        await SaveTrends(groupedAudios, monitoringItem);
 
-                        if (MonitoringItem.AutoRecreatePlaylisOnSpotify)
-                            RecreateOnSpotify();
+                        if (monitoringItem.AutoRecreatePlaylisOnSpotify)
+                            RecreateOnSpotify(monitoringItem);
                     }
                     finally
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            MonitoringItem.ProcessingInProgress = false;
+                            monitoringItem.ProcessingInProgress = false;
                         });
                     }
                 });
@@ -208,21 +206,21 @@ namespace TrendAudioFromSpotify.UI.Service
             await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
         }
 
-        private void RunTimer()
+        private void RunTimer(MonitoringItem monitoringItem)
         {
-            timer = new Timer(async x => await GetTrends(), null, MonitoringItem.RefreshPeriod, MonitoringItem.RefreshPeriod);
+            timer = new Timer(async x => await GetTrends(monitoringItem), null, monitoringItem.RefreshPeriod, monitoringItem.RefreshPeriod);
         }
 
-        private void RecreateOnSpotify()
+        private void RecreateOnSpotify(MonitoringItem monitoringItem)
         {
-            if (MonitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
+            if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
             {
-                _spotifyServices.RecreatePlaylist(MonitoringItem.TargetPlaylistName, MonitoringItem.Trends.Select(x => x.Href));
+                _spotifyServices.RecreatePlaylist(monitoringItem.TargetPlaylistName, monitoringItem.Trends.Select(x => x.Href));
             }
 
-            if (MonitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
+            if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
             {
-                _spotifyServices.RecreatePlaylist(MonitoringItem.TargetPlaylistName, MonitoringItem.Trends.Select(x => x.Uri));
+                _spotifyServices.RecreatePlaylist(monitoringItem.TargetPlaylistName, monitoringItem.Trends.Select(x => x.Uri));
             }
         }
     }

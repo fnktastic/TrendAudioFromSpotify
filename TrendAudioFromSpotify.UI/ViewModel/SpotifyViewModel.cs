@@ -865,7 +865,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             var monitoringItem = _monitoringService.Initiate(SpotifyServices, _targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
 
-            if (_monitoringService.IsMonitoringItemReady)
+            if (monitoringItem.IsReady)
             {
                 _monitoringViewModel.MonitoringItems.Add(monitoringItem);
 
@@ -895,7 +895,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     foreach (var playlist in Playlists)
                         playlist.IsChecked = false;
 
-                await _monitoringService.ProcessAsync();
+                await _monitoringService.ProcessAsync(monitoringItem);
             }
         }
 
