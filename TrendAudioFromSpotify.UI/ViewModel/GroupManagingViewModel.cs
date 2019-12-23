@@ -8,7 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Enum;
+using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 
@@ -19,6 +22,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region fields
         private readonly IDataService _dataService;
         private readonly IGroupService _groupService;
+        public ISpotifyServices SpotifyServices = null;
 
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
@@ -61,6 +65,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FetchData().ConfigureAwait(true);
 
             Messenger.Default.Register<Group>(this, ReceiveSelectGroupMessage);
+            Messenger.Default.Register<AddGroupMessage>(this, AddGroupMessage);
         }
 
         private async Task FetchData()
@@ -70,6 +75,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             var groups = await _dataService.GetAllGroupsAsync();
 
             Groups = new GroupCollection(groups);
+        }
+        #endregion
+
+        #region private methods
+        private void AddGroupMessage(AddGroupMessage addGroupMessage)
+        {
+            if (addGroupMessage != null && addGroupMessage.Group != null)
+                _groups.Add(addGroupMessage.Group);
         }
         #endregion
 
@@ -94,7 +107,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Group> RepeatGroupCommand => _repeatGroupCommand ?? (_repeatGroupCommand = new RelayCommand<Group>(RepeatGroup));
         private async void RepeatGroup(Group group)
         {
-            await _groupService.MonitorGroupAsync(group);
+            await _groupService.MonitorGroupAsync(SpotifyServices, group);
         }
         #endregion
 

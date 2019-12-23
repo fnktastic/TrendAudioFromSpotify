@@ -1,6 +1,7 @@
 using AutoMapper;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using log4net;
 using MahApps.Metro.Controls.Dialogs;
 using SpotifyAPI.Web;
@@ -18,6 +19,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Enum;
+using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
@@ -425,6 +428,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FilteredMyPlaylistsCollection.Filter += FilteredMyPlaylistsCollection_Filter;
 
             GlobalSearchEnabled = true;
+
+            Messenger.Default.Register<RefreshSpotifyViewUI>(this, ResetUI);  
         }
 
         #region dialogs
@@ -520,7 +525,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             if (SpotifyServices.PrivateProfile.StatusCode() == HttpStatusCode.OK)
             {
-                _monitoringViewModel.SpotifyServices = SpotifyServices;
+                _monitoringViewModel.SpotifyServices = _groupManagingViewModel.SpotifyServices = SpotifyServices;
 
                 IsConnectionEsatblished = true;
 
@@ -557,7 +562,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 SpotifyServices = new SpotifyServices(api);
 
-                _monitoringViewModel.SpotifyServices = SpotifyServices;
+                _monitoringViewModel.SpotifyServices = _groupManagingViewModel.SpotifyServices = SpotifyServices;
 
                 _settingUtility.SaveAccessToken(api.AccessToken);
 
@@ -584,6 +589,21 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region private data metods
+        private void ResetUI(object o)
+        {
+            TargetGroup = new Group(); 
+            TargetAudios = new AudioCollection(); 
+            TargetPlaylists = new PlaylistCollection(); 
+
+            if (ExplorePlaylists != null)
+                foreach (var playlist in ExplorePlaylists)
+                    playlist.IsChecked = false;
+
+            if (Playlists != null)
+                foreach (var playlist in Playlists)
+                    playlist.IsChecked = false;
+        }
+
         void FilteredMyPlaylistsCollection_Filter(object sender, FilterEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(_myPlaylistsSearchText))
@@ -881,19 +901,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 await _dataService.InsertMonitoringItemAsync(monitoringItem);
                 await _dataService.InsertPlaylistRangeAsync(monitoringItem.Playlists);
 
-                TargetGroup = new Group();
-
-                TargetAudios = new AudioCollection();
-
-                TargetPlaylists = new PlaylistCollection();
-
-                if (ExplorePlaylists != null)
-                    foreach (var playlist in ExplorePlaylists)
-                        playlist.IsChecked = false;
-
-                if (Playlists != null)
-                    foreach (var playlist in Playlists)
-                        playlist.IsChecked = false;
+                ResetUI(null);
 
                 await _monitoringService.ProcessAsync(monitoringItem);
             }

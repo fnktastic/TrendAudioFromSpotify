@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
+using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
@@ -26,7 +27,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IDataService _dataService;
         private readonly IMonitoringService _monitoringService;
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly SpotifyViewModel _spotifyViewModel;
         #endregion
 
         #region properties
@@ -69,6 +69,15 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _monitoringService = monitoringService;
 
             FetchData().ConfigureAwait(true);
+
+            Messenger.Default.Register<AddMonitoringItemMessage>(this, AddMonitoringItemMessage);
+        }
+
+        #region private methods
+        private void AddMonitoringItemMessage(AddMonitoringItemMessage addMonitoringItemMessage)
+        {
+            if (addMonitoringItemMessage != null && addMonitoringItemMessage.MonitoringItem != null)
+                _monitoringItems.Add(addMonitoringItemMessage.MonitoringItem);
         }
 
         private async Task FetchTrends()
@@ -86,6 +95,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             MonitoringItems = new MonitoringItemCollection(monitoringItems);
         }
+        #endregion
 
         #region dialogs
         private async Task ShowMessage(string header, string message)

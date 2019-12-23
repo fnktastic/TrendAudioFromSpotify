@@ -228,6 +228,9 @@
     <Compile Include="Enum\PlaylistTypeEnum.cs" />
     <Compile Include="Enum\RefreshActionEnum.cs" />
     <Compile Include="Enum\TabsEnum.cs" />
+    <Compile Include="Messaging\AddMonitoringItemMessage.cs" />
+    <Compile Include="Messaging\AddGroupMessage.cs" />
+    <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\MonitoringItem.cs" />
     <Compile Include="Model\Playlist.cs" />

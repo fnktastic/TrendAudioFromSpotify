@@ -41,7 +41,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem = new MonitoringItem();
                 _monitoringItem.Group = new Group();
 
-                _monitoringItem.Group.Id = Guid.NewGuid();
+                _monitoringItem.Group.Id = group.Id == Guid.Empty ? Guid.NewGuid() : group.Id;
                 _monitoringItem.Group.Name = group.Name;
 
                 _monitoringItem.Id = Guid.NewGuid();
