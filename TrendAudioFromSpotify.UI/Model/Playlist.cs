@@ -22,6 +22,8 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string Owner { get; set; }
 
+        public string OwnerProfileUrl { get; set; }
+
         public string Href { get; set; }
 
         public string Cover { get; set; }
@@ -47,6 +49,7 @@ namespace TrendAudioFromSpotify.UI.Model
             Name = _simplePlaylist.Name;
             Total = _simplePlaylist.Tracks.Total;
             Owner = _simplePlaylist.Owner.DisplayName;
+            OwnerProfileUrl = _simplePlaylist.Owner.Href;
             Href = _simplePlaylist.Href;
             Cover = _simplePlaylist.Images != null && _simplePlaylist.Images.Count > 0 ? _simplePlaylist.Images.First().Url : "null";
         }

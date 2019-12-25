@@ -109,7 +109,11 @@ namespace TrendAudioFromSpotify.UI.Service
 
                         foreach (var playlist in monitoringItem.Playlists)
                         {
-                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id)).Select(x => new Audio(x.Track)).Where(x => x.IsFilled).ToList();
+                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id))
+                            .Where(x => x != null && x.Track != null)
+                            .Select(x => new Audio(x.Track))
+                            .Where(x => x.IsFilled)
+                            .ToList();
 
                             playlist.Audios = new AudioCollection(audiosOfPlaylist);
 
@@ -117,6 +121,8 @@ namespace TrendAudioFromSpotify.UI.Service
                                 continue;
 
                             audiosOfPlaylists.Add(playlist.Id, audiosOfPlaylist);
+
+                            await Task.Delay(TimeSpan.FromSeconds(1));
                         }
 
                         var trendAudios = new Dictionary<Audio, int>();

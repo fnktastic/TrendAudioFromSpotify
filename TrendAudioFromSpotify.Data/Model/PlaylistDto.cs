@@ -16,6 +16,7 @@ namespace TrendAudioFromSpotify.Data.Model
         public string Href { get; set; }
         public string Name { get; set; }
         public string Owner { get; set; }
+        public string OwnerProfileUrl { get; set; }
         public int Total { get; set; }
         public string Cover { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
