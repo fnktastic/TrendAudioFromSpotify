@@ -85,6 +85,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
             };
 
             Messenger.Default.Send<SpotifyWebAPI>(api);
+            Messenger.Default.Send<Token>(_token);
         }
 
         private void Auth(AuthorizationCodeAuth authorizationCodeAuth)
@@ -102,17 +103,17 @@ namespace TrendAudioFromSpotify.Service.Spotify
             {
                 authorization.Stop(); 
 
-                Token token = await authorization.ExchangeCode(payload.Code);
+                _token = await authorization.ExchangeCode(payload.Code);
 
                 SpotifyWebAPI api = new SpotifyWebAPI
                 {
-                    AccessToken = token.AccessToken,
+                    AccessToken = _token.AccessToken,
                     UseAutoRetry = true,
-                    TokenType = token.TokenType
+                    TokenType = _token.TokenType
                 };
 
                 Messenger.Default.Send<SpotifyWebAPI>(api);
-                Messenger.Default.Send<Token>(token);
+                Messenger.Default.Send<Token>(_token);
             }
         }
     }

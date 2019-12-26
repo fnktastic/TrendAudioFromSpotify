@@ -40,7 +40,7 @@
         </Grid.RowDefinitions>
         <TextBlock Text="Hit treshold:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
         <TextBlock Text="Playlist name:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
-        <TextBlock Text="Top trends:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
+        <TextBlock Text="Max size:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
         <TextBlock Text="Playlist type:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" />
         <TextBlock Text="Refresh period:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" />
 
@@ -63,7 +63,7 @@
             HorizontalAlignment="Stretch" />
         <TextBox Grid.Column="1" Grid.Row="2"
                  Text="{Binding Top}"
-                 Controls:TextBoxHelper.Watermark="top X trends" HorizontalContentAlignment="Center" />
+                 Controls:TextBoxHelper.Watermark="max size" HorizontalContentAlignment="Center" />
         <ComboBox Grid.Column="1" Grid.Row="3"
                   ItemsSource="{Binding Source={StaticResource playlistTypeEnum}}"
                   Controls:TextBoxHelper.Watermark="target playlist type"

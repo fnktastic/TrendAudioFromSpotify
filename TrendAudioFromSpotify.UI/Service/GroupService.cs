@@ -32,7 +32,7 @@ namespace TrendAudioFromSpotify.UI.Service
         {
             var monitoringItem = _monitoringService.Initiate(spotifyServices, group, group.GroupSourceMonitoringItem, new AudioCollection(), group.Playlists);
 
-            if (monitoringItem.IsReady)
+            if (monitoringItem != null && monitoringItem.IsReady)
             {
                 Messenger.Default.Send<AddMonitoringItemMessage>(new AddMonitoringItemMessage(monitoringItem));
 

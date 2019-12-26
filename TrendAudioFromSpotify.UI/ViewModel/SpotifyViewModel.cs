@@ -12,11 +12,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using TrendAudioFromSpotify.Messaging;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
@@ -31,6 +33,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     public class SpotifyViewModel : ViewModelBase
     {
         #region fields
+        private DispatcherTimer _refreshTokenTimer;
+
         private Token _token;
 
         private List<Audio> likedSongs;
@@ -400,10 +404,29 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RaisePropertyChanged(nameof(TargetMonitoringItem));
             }
         }
+
+        private TimeSpan _tokenExpiredIn;
+        public TimeSpan TokenExpiredIn
+        {
+            get { return _tokenExpiredIn; }
+            set
+            {
+                if (value == _tokenExpiredIn) return;
+                _tokenExpiredIn = value;
+                RaisePropertyChanged(nameof(TokenExpiredIn));
+            }
+        }
         #endregion
 
         public SpotifyViewModel(MonitoringViewModel monitoringViewModel, GroupManagingViewModel groupManagingViewModel, IDataService dataService, IMonitoringService monitoringService, ISpotifyServices spotifyServices, ISettingUtility settingUtility)
         {
+            _refreshTokenTimer = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+
+            _refreshTokenTimer.Tick += RefreshTokenTimer_Tick;
+
             _monitoringViewModel = monitoringViewModel;
             _groupManagingViewModel = groupManagingViewModel;
             _dataService = dataService;
@@ -436,26 +459,50 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             Messenger.Default.Register<Token>(this, OnSpotifyTokenRecieved);
         }
 
+        private async void RefreshTokenTimer_Tick(object sender, EventArgs e)
+        {
+            TokenExpiredIn = TokenExpiredIn.Add(TimeSpan.FromSeconds(-1));
+
+            if (TokenExpiredIn.TotalSeconds <= 600)
+            {
+                var accessToken = _settingUtility.GetAccessToken();
+                var refreshToken = _settingUtility.GetRefreshToken();
+                await _spotifyServices.GetAccess(accessToken?.Value, refreshToken?.Value);
+            }
+
+        }
+
         private void OnSpotifyTokenRecieved(Token token)
         {
             _token = token;
-            _settingUtility.SaveAccessToken(token.AccessToken);
-            _settingUtility.SaveRefreshToken(token.RefreshToken);
+
+            if (string.IsNullOrEmpty(token.AccessToken) == false)
+                _settingUtility.SaveAccessToken(token.AccessToken);
+
+            if (string.IsNullOrEmpty(token.RefreshToken) == false)
+                _settingUtility.SaveRefreshToken(token.RefreshToken);
+
+            TokenExpiredIn = TimeSpan.FromSeconds(_token.ExpiresIn);
+
+            _refreshTokenTimer.Start();
         }
 
         private async void AuthResponse(AuthResponseMessage obj)
         {
-            IsConnectionEsatblished = true;
-
-            await HideConnectingMessage();
             if (isStartup)
             {
-                await ShowMessage("Notification", "Succesfully authorized in Spotify!");
+                IsConnectionEsatblished = true;
+
+                await HideConnectingMessage();
+                if (isStartup)
+                {
+                    await ShowMessage("Notification", "Succesfully authorized in Spotify!");
+                }
+
+                await FetchSpotifyData();
+
+                isStartup = false;
             }
-
-            await FetchSpotifyData();
-
-            isStartup = false;
         }
 
         #region dialogs

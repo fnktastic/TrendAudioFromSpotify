@@ -30,6 +30,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <TextBlock Text="{Binding TokenExpiredIn, StringFormat=Token expires in {0}, FallbackValue=XXX}" 
+                   Padding="15 5"    
+                   FontWeight="UltraLight"
+                   Panel.ZIndex="10"
+                   Foreground="White"
+                   VerticalAlignment="Top" HorizontalAlignment="Right" />
+
         <Border Grid.Row="0" Grid.Column="0" Panel.ZIndex="2"
                 Background="Black"
                 Visibility="{Binding IsSpotifyCredsEntered, Converter={StaticResource InverseBoolToVisibilityConverter}, FallbackValue=Collapsed}" >
