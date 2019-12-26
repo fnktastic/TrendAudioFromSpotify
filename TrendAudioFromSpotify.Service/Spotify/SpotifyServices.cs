@@ -16,7 +16,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(string username = "_annalasnier_");
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
-        Task RecreatePlaylist(string playlistName, IEnumerable<string> ids);
+        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids);
         Task<PublicProfile> GetMyProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
         PrivateProfile PrivateProfile { get; }
@@ -190,11 +190,25 @@ namespace TrendAudioFromSpotify.Service.Spotify
         }
 
         [Obsolete]
-        public async Task RecreatePlaylist(string playlistName, IEnumerable<string> ids)
+        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids)
         {
-            var playlist = await _spotifyWebAPI.CreatePlaylistAsync(PrivateProfile.Id, playlistName);
+            FullPlaylist playlist = null;
 
+            if(string.IsNullOrWhiteSpace(playlistUri) == false)
+            {
+                playlist = await _spotifyWebAPI.GetPlaylistAsync(userId: PrivateProfile.Id, playlistId: playlistUri);
+
+                if(playlist.HasError() == true)
+                    playlist = await _spotifyWebAPI.CreatePlaylistAsync(PrivateProfile.Id, playlistName);
+            }
+            else
+            {
+                playlist = await _spotifyWebAPI.CreatePlaylistAsync(PrivateProfile.Id, playlistName);
+            }
+            
             var error = await _spotifyWebAPI.AddPlaylistTracksAsync(PrivateProfile.Id, playlist.Id, ids.ToList());
+
+            return playlist;
         }
 
         public async Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query)

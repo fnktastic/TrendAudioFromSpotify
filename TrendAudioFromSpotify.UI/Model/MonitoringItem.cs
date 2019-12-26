@@ -130,6 +130,8 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        public string SpotifyPlaylistId { get; set; }
+        public string SpotifyPlaylistHref { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsReady { get; set; } = false;

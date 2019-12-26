@@ -164,6 +164,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Messenger.Default.Send<TabsEnum>(TabsEnum.Groups);
         }
+
+        private RelayCommand<MonitoringItem> _syncMonitoringItemCommand;
+        public RelayCommand<MonitoringItem> SyncMonitoringItemCommand => _syncMonitoringItemCommand ?? (_syncMonitoringItemCommand = new RelayCommand<MonitoringItem>(SyncMonitoringItem));
+        private async void SyncMonitoringItem(MonitoringItem monitoringItem)
+        {
+            var syncedPalylist = await _monitoringService.RecreateOnSpotify(monitoringItem, SpotifyServices);
+
+            await _dataService.AddSpotifyUriHrefToMonitoringItem(monitoringItem.Id, syncedPalylist.Id, syncedPalylist.Href);
+
+            monitoringItem.SpotifyPlaylistId = syncedPalylist.Id;
+            monitoringItem.SpotifyPlaylistHref = syncedPalylist.Href;
+        }
         #endregion
     }
 }
