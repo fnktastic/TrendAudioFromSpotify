@@ -1,4 +1,5 @@
-﻿using SpotifyAPI.Web;
+﻿using GalaSoft.MvvmLight.Messaging;
+using SpotifyAPI.Web;
 using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web.Enums;
 using SpotifyAPI.Web.Models;
@@ -10,13 +11,26 @@ using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.Service.Spotify
 {
-    public class SpotifyProvider
+    public interface ISpotifyProvider
     {
-        public static AuthorizationCodeAuth Authorization { get; set; } = null; 
+        void GetAccess(string clientId, string secretId, string redirectUri, string serverUri);
+        Task GetAccess(string clientId, string secretId, string redirectUri, string serverUri, string refreshToken);
+    }
 
-        public static void InitProvider(string clientId, string secretId, string redirectUri, string serverUri)
+    public class SpotifyProvider : ISpotifyProvider
+    {
+        private AuthorizationCodeAuth _authorization;
+
+        private Token _token;
+
+        public SpotifyProvider()
         {
-            Authorization = new AuthorizationCodeAuth(
+
+        }
+
+        public void GetAccess(string clientId, string secretId, string redirectUri, string serverUri)
+        {
+            _authorization = new AuthorizationCodeAuth(
             clientId,
             secretId,
             redirectUri,
@@ -34,15 +48,72 @@ namespace TrendAudioFromSpotify.Service.Spotify
             Scope.PlaylistReadCollaborative |
             Scope.AppRemoteControl |
             Scope.UserLibraryRead);
+
+            _authorization.AuthReceived += OnAuthResponse;
+
+            Auth(_authorization);
         }
 
-        public static void Auth()
+        public async Task GetAccess(string clientId, string secretId, string redirectUri, string serverUri, string refreshToken)
         {
-            if (Authorization == null)
+            _authorization = new AuthorizationCodeAuth(
+                       clientId,
+                       secretId,
+                       redirectUri,
+                       serverUri,
+                       Scope.PlaylistModifyPublic |
+                       Scope.PlaylistModifyPrivate |
+                       Scope.UserFollowRead |
+                       Scope.UserReadPrivate |
+                       Scope.UserModifyPlaybackState |
+                       Scope.UserReadPlaybackState |
+                       Scope.UserReadRecentlyPlayed |
+                       Scope.Streaming |
+                       Scope.UserReadCurrentlyPlaying |
+                       Scope.PlaylistReadPrivate |
+                       Scope.PlaylistReadCollaborative |
+                       Scope.AppRemoteControl |
+                       Scope.UserLibraryRead);
+
+            _token = await  _authorization.RefreshToken(refreshToken);
+
+            SpotifyWebAPI api = new SpotifyWebAPI
+            {
+                AccessToken = _token.AccessToken,
+                UseAutoRetry = true,
+                TokenType = _token.TokenType
+            };
+
+            Messenger.Default.Send<SpotifyWebAPI>(api);
+        }
+
+        private void Auth(AuthorizationCodeAuth authorizationCodeAuth)
+        {
+            if (authorizationCodeAuth == null)
                 throw new AccessViolationException();
 
-            Authorization.Start();
-            Authorization.OpenBrowser();
+            authorizationCodeAuth.Start();
+            authorizationCodeAuth.OpenBrowser();
+        }
+
+        private async void OnAuthResponse(object sender, AuthorizationCode payload)
+        { 
+            if (sender is AuthorizationCodeAuth authorization)
+            {
+                authorization.Stop(); 
+
+                Token token = await authorization.ExchangeCode(payload.Code);
+
+                SpotifyWebAPI api = new SpotifyWebAPI
+                {
+                    AccessToken = token.AccessToken,
+                    UseAutoRetry = true,
+                    TokenType = token.TokenType
+                };
+
+                Messenger.Default.Send<SpotifyWebAPI>(api);
+                Messenger.Default.Send<Token>(token);
+            }
         }
     }
 }

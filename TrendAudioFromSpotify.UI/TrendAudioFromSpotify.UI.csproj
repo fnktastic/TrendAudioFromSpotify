@@ -369,6 +369,10 @@
       <Project>{9D494909-8488-47EB-B746-A8EA1E03C7C4}</Project>
       <Name>TrendAudioFromSpotify.Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TrendAudioFromSpotify.Messaging\TrendAudioFromSpotify.Messaging.csproj">
+      <Project>{6156A350-96C6-4DFF-BA12-70F6E533A7C3}</Project>
+      <Name>TrendAudioFromSpotify.Messaging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TrendAudioFromSpotify.Service\TrendAudioFromSpotify.Service.csproj">
       <Project>{30a341e0-8e7a-4a00-927d-d31914561717}</Project>
       <Name>TrendAudioFromSpotify.Service</Name>

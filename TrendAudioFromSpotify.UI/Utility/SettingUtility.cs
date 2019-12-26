@@ -16,7 +16,9 @@ namespace TrendAudioFromSpotify.UI.Utility
         Setting GetByKey(string key);
         void Save(Setting setting);
         void SaveAccessToken(string accessToken);
+        void SaveRefreshToken(string refreshToken);
         Setting GetAccessToken();
+        Setting GetRefreshToken();
     }
 
     public class SettingUtility : ISettingUtility
@@ -32,12 +34,28 @@ namespace TrendAudioFromSpotify.UI.Utility
             return GetByKey("accessToken");
         }
 
+        public Setting GetRefreshToken()
+        {
+            return GetByKey("refreshToken");
+        }
+
         public void SaveAccessToken(string accessToken)
         {
             var setting = new Setting()
             {
                 Key = "accessToken",
                 Value = accessToken
+            };
+
+            Save(setting);
+        }
+
+        public void SaveRefreshToken(string refreshToken)
+        {
+            var setting = new Setting()
+            {
+                Key = "refreshToken",
+                Value = refreshToken
             };
 
             Save(setting);

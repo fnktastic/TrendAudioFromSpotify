@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using TrendAudioFromSpotify.Messaging;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
@@ -30,9 +31,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     public class SpotifyViewModel : ViewModelBase
     {
         #region fields
+        private Token _token;
+
         private List<Audio> likedSongs;
 
-        public static ISpotifyServices SpotifyServices;
+        private readonly ISpotifyServices _spotifyServices;
 
         private readonly ISettingUtility _settingUtility;
 
@@ -399,18 +402,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, GroupManagingViewModel groupManagingViewModel, IDataService dataService, IMonitoringService monitoringService)
+        public SpotifyViewModel(MonitoringViewModel monitoringViewModel, GroupManagingViewModel groupManagingViewModel, IDataService dataService, IMonitoringService monitoringService, ISpotifyServices spotifyServices, ISettingUtility settingUtility)
         {
             _monitoringViewModel = monitoringViewModel;
             _groupManagingViewModel = groupManagingViewModel;
             _dataService = dataService;
             _monitoringService = monitoringService;
+            _spotifyServices = spotifyServices;
 
             _dialogCoordinator = DialogCoordinator.Instance;
-            _settingUtility = new SettingUtility();
+            _settingUtility = settingUtility;
             IsSpotifyCredsEntered = LoadSettings();
-            if (IsSpotifyCredsEntered)
-                SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
 
             Users = new ObservableCollection<User>();
             TargetPlaylists = new PlaylistCollection();
@@ -429,7 +431,31 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             GlobalSearchEnabled = true;
 
-            Messenger.Default.Register<RefreshSpotifyViewUI>(this, ResetUI);  
+            Messenger.Default.Register<RefreshSpotifyViewUI>(this, ResetUI);
+            Messenger.Default.Register<AuthResponseMessage>(this, AuthResponse);
+            Messenger.Default.Register<Token>(this, OnSpotifyTokenRecieved);
+        }
+
+        private void OnSpotifyTokenRecieved(Token token)
+        {
+            _token = token;
+            _settingUtility.SaveAccessToken(token.AccessToken);
+            _settingUtility.SaveRefreshToken(token.RefreshToken);
+        }
+
+        private async void AuthResponse(AuthResponseMessage obj)
+        {
+            IsConnectionEsatblished = true;
+
+            await HideConnectingMessage();
+            if (isStartup)
+            {
+                await ShowMessage("Notification", "Succesfully authorized in Spotify!");
+            }
+
+            await FetchSpotifyData();
+
+            isStartup = false;
         }
 
         #region dialogs
@@ -453,7 +479,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (progressDialogController != null)
                     await progressDialogController.CloseAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error("Error in SpotifyViewModel.HideConnectingMessage", ex);
             }
@@ -492,108 +518,29 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _logger.Info("Connecting to Spotify...");
 
             var accessToken = _settingUtility.GetAccessToken();
+            var refreshToken = _settingUtility.GetRefreshToken();
 
             await ShowConnectingMessage();
 
-            SpotifyProvider.Authorization.AuthReceived += OnAuthResponse;
+            string userId = _userId;
+            string secretId = _secretId;
+            string redirectUri = _redirectUri;
+            string serverUri = _serverUri;
 
-            if (accessToken != null)
-            {
-                await AuthByToken(accessToken);
+            _spotifyServices.Init(userId, secretId, redirectUri, serverUri);
 
-                if (IsConnectionEsatblished)
-                    await FetchSpotifyData();
-            }
-            else
-            {
-                await Task.Run(() => SpotifyProvider.Auth());
-            }
-        }
-
-        private async Task AuthByToken(Setting accessToken)
-        {
-            _logger.Info("Auth by token in Spotify...");
-
-            SpotifyWebAPI api = new SpotifyWebAPI
-            {
-                AccessToken = accessToken.Value,
-                TokenType = "Bearer"
-            };
-
-            SpotifyServices = new SpotifyServices(api);
-
-
-            if (SpotifyServices.PrivateProfile.StatusCode() == HttpStatusCode.OK)
-            {
-                _monitoringViewModel.SpotifyServices = _groupManagingViewModel.SpotifyServices = SpotifyServices;
-
-                IsConnectionEsatblished = true;
-
-                await ShowMessage("Notification", "Succesfully authorized in Spotify!");
-
-                await HideConnectingMessage();
-
-                var myPublicProfile = await SpotifyServices.GetMyProfile();
-
-                isStartup = false;
-            }
-            else
-            {
-                await Task.Run(() => SpotifyProvider.Auth());
-            }
+            await _spotifyServices.GetAccess(accessToken?.Value, refreshToken?.Value);
         }
 
         private bool isStartup = true;
-        private async void OnAuthResponse(object sender, AuthorizationCode payload)
-        {
-            _logger.Info("Auth response...");
-
-            if (sender is AuthorizationCodeAuth authorization)
-            {
-                authorization.Stop();
-
-                Token token = await authorization.ExchangeCode(payload.Code);
-
-                SpotifyWebAPI api = new SpotifyWebAPI
-                {
-                    AccessToken = token.AccessToken,
-                    TokenType = token.TokenType
-                };
-
-                SpotifyServices = new SpotifyServices(api);
-
-                _monitoringViewModel.SpotifyServices = _groupManagingViewModel.SpotifyServices = SpotifyServices;
-
-                _settingUtility.SaveAccessToken(api.AccessToken);
-
-                IsConnectionEsatblished = true;
-
-                await HideConnectingMessage();
-                if (isStartup)
-                {
-                    await ShowMessage("Notification", "Succesfully authorized in Spotify!");
-                }
-
-                await FetchSpotifyData();
-            }
-            else
-            {
-                await HideConnectingMessage();
-                await ShowMessage("Notification", "Cant authorize to Spotify by given credentials.");
-
-                throw new Exception();
-            }
-
-            await HideConnectingMessage();
-        }
         #endregion
 
         #region private data metods
         private void ResetUI(object o)
         {
-            TargetGroup = new Group(); 
-            TargetAudios = new AudioCollection(); 
-            TargetPlaylists = new PlaylistCollection(); 
+            TargetGroup = new Group();
+            TargetAudios = new AudioCollection();
+            TargetPlaylists = new PlaylistCollection();
 
             if (ExplorePlaylists != null)
                 foreach (var playlist in ExplorePlaylists)
@@ -689,17 +636,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
 
-            var playlists = (await SpotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
+            var playlists = (await _spotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
 
             Playlists = new PlaylistCollection(playlists);
 
             IsPlaylistsAreaBusy = false;
 
-            likedSongs = (await SpotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
+            likedSongs = (await _spotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
 
             SavedTracks = new AudioCollection(likedSongs);
 
-            var foreignUserPlaylists = await SpotifyServices.GetForeignUserPlaylists();
+            var foreignUserPlaylists = await _spotifyServices.GetForeignUserPlaylists();
 
             IsSongsAreaBusy = false;
         }
@@ -708,7 +655,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsSongsAreaBusy = true;
 
-            var audios = await SpotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
+            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
             SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
 
             IsSongsAreaBusy = false;
@@ -726,7 +673,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 {
                     IsPlaylistsAreaBusy = true;
 
-                    var playlists = await SpotifyServices.GlobalPlaylistsSearch(_explorePlaylistsSearchText);
+                    var playlists = await _spotifyServices.GlobalPlaylistsSearch(_explorePlaylistsSearchText);
 
                     ExplorePlaylists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
                 }
@@ -784,7 +731,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             if (audio != null)
             {
-                var playback = await SpotifyServices.PlayTrack(audio.Uri);
+                var playback = await _spotifyServices.PlayTrack(audio.Uri);
 
                 if (playback.HasError())
                     await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
@@ -839,7 +786,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsPlaylistsAreaBusy = true;
 
-            var userPlaylists = (await SpotifyServices
+            var userPlaylists = (await _spotifyServices
                 .GetForeignUserPlaylists(_users
                 .Where(x => x.IsChecked)
                 .Select(x => x.Username)
@@ -883,7 +830,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
         private async void GetTrends()
         {
-            var monitoringItem = _monitoringService.Initiate(SpotifyServices, _targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
+            var monitoringItem = _monitoringService.Initiate(_spotifyServices, _targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
 
             if (monitoringItem.IsReady)
             {
@@ -909,7 +856,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private RelayCommand _saveSpotifyCredentialsCommand;
         public RelayCommand SaveSpotifyCredentialsCommand => _saveSpotifyCredentialsCommand ?? (_saveSpotifyCredentialsCommand = new RelayCommand(SaveSpotifyCredentials));
-        private void SaveSpotifyCredentials()
+        private async void SaveSpotifyCredentials()
         {
             try
             {
@@ -926,7 +873,16 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 IsSpotifyCredsEntered = LoadSettings();
 
                 if (IsSpotifyCredsEntered)
-                    SpotifyProvider.InitProvider(_userId, _secretId, _redirectUri, _serverUri);
+                {
+                    _logger.Info("Connecting to Spotify...");
+
+                    await ShowConnectingMessage();
+
+                    _spotifyServices.Init(userId, secretId, redirectUri, serverUri);
+
+                    await _spotifyServices.GetAccess();
+                }
+
             }
             catch
             {

@@ -1,16 +1,20 @@
-﻿using SpotifyAPI.Web;
+﻿using GalaSoft.MvvmLight.Messaging;
+using SpotifyAPI.Web;
 using SpotifyAPI.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.Messaging;
 using Enums = SpotifyAPI.Web.Enums;
 
 namespace TrendAudioFromSpotify.Service.Spotify
 {
     public interface ISpotifyServices
     {
+        Task GetAccess(string accessToken = null, string refreshToken = null);
+        void Init(string clientId, string secretId, string redirectUri, string serverUri);
         Task<IEnumerable<SimplePlaylist>> GetAllPlaylists();
         Task<IEnumerable<SavedTrack>> GetSongs();
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
@@ -19,20 +23,95 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids);
         Task<PublicProfile> GetMyProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
-        PrivateProfile PrivateProfile { get; }
         Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
     }
 
     public class SpotifyServices : ISpotifyServices
     {
+        private readonly ISpotifyProvider _spotifyProvider;
+
+        private bool authDataEntered = false;
+        private string _clientId;
+        private string _secretId;
+        private string _redirectUri;
+        private string _serverUri;
+
+        private Token _token;
+
         private SpotifyWebAPI _spotifyWebAPI;
 
-        public PrivateProfile PrivateProfile { get; private set; }
+        private PrivateProfile _privateProfile;
 
-        public SpotifyServices(SpotifyWebAPI spotifyWebAPI)
+        public SpotifyServices(ISpotifyProvider spotifyProvider)
+        {
+            _spotifyProvider = spotifyProvider;
+            Messenger.Default.Register<SpotifyWebAPI>(this, OnSpotifyAccessRecieved);
+            Messenger.Default.Register<Token>(this, OnSpotifyTokenRecieved);
+
+        }
+
+        public void Init(string clientId, string secretId, string redirectUri, string serverUri)
+        {
+            _clientId = clientId;
+            _secretId = secretId;
+            _redirectUri = redirectUri;
+            _serverUri = serverUri;
+
+            authDataEntered = true;
+        }
+
+        public async Task GetAccess(string accessToken = null, string refreshToken = null)
+        {
+            //if (string.IsNullOrWhiteSpace(accessToken) == false)
+            //{
+            //    AuthByToken(accessToken);
+
+            //    _privateProfile = await _spotifyWebAPI.GetPrivateProfileAsync();
+
+            //    if (_privateProfile.HasError() == false)
+            //    {
+            //        Messenger.Default.Send<AuthResponseMessage>(new AuthResponseMessage(accessToken));
+
+            //        return;
+            //    }
+            //}
+
+            if (string.IsNullOrWhiteSpace(refreshToken) == false)
+            {
+                await _spotifyProvider.GetAccess(_clientId, _secretId, _redirectUri, _serverUri, refreshToken);
+
+                _privateProfile = await _spotifyWebAPI.GetPrivateProfileAsync();
+
+                if (_privateProfile.HasError() == false)
+                    return;
+            }
+
+            if (authDataEntered)
+                _spotifyProvider.GetAccess(_clientId, _secretId, _redirectUri, _serverUri);
+        }
+
+        private void OnSpotifyAccessRecieved(SpotifyWebAPI spotifyWebAPI)
         {
             _spotifyWebAPI = spotifyWebAPI;
-            PrivateProfile = _spotifyWebAPI.GetPrivateProfile();
+
+            _privateProfile = _spotifyWebAPI.GetPrivateProfile();
+
+            Messenger.Default.Send<AuthResponseMessage>(new AuthResponseMessage(_spotifyWebAPI.AccessToken));
+        }
+
+        private void OnSpotifyTokenRecieved(Token token)
+        {
+            _token = token;
+        }
+
+        private void AuthByToken(string accessToken)
+        {
+            _spotifyWebAPI = new SpotifyWebAPI
+            {
+                AccessToken = accessToken,
+                UseAutoRetry = true,
+                TokenType = "Bearer"
+            };
         }
 
         public async Task<IEnumerable<SimplePlaylist>> GetAllPlaylists()
@@ -41,11 +120,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             int limit = 20;
 
-            var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id, limit: 1, offset: 0);
+            var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(_privateProfile.Id, limit: 1, offset: 0);
 
             if (playlists.Error != null)
             {
-                SpotifyProvider.Auth();
+
             }
 
             int total = playlists.Total;
@@ -54,7 +133,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             while (counter < total)
             {
-                var items = (await _spotifyWebAPI.GetUserPlaylistsAsync(PrivateProfile.Id, limit: limit, offset: counter))?.Items;
+                var items = (await _spotifyWebAPI.GetUserPlaylistsAsync(_privateProfile.Id, limit: limit, offset: counter))?.Items;
 
                 counter += items.Count;
 
@@ -73,7 +152,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             if (tracks.Error != null)
             {
-                SpotifyProvider.Auth();
+
             }
 
             int total = tracks.Total;
@@ -102,7 +181,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             if (tracks.Error != null)
             {
-                SpotifyProvider.Auth();
+
             }
 
             int total = tracks.Total;
@@ -130,7 +209,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             if (playlists.Error != null)
             {
-                SpotifyProvider.Auth();
+
             }
 
             int total = playlists.Total;
@@ -186,7 +265,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
         public Task<PublicProfile> GetMyProfile()
         {
-            return _spotifyWebAPI.GetPublicProfileAsync(PrivateProfile.Id);
+            return _spotifyWebAPI.GetPublicProfileAsync(_privateProfile.Id);
         }
 
         [Obsolete]
@@ -194,19 +273,19 @@ namespace TrendAudioFromSpotify.Service.Spotify
         {
             FullPlaylist playlist = null;
 
-            if(string.IsNullOrWhiteSpace(playlistUri) == false)
+            if (string.IsNullOrWhiteSpace(playlistUri) == false)
             {
-                playlist = await _spotifyWebAPI.GetPlaylistAsync(userId: PrivateProfile.Id, playlistId: playlistUri);
+                playlist = await _spotifyWebAPI.GetPlaylistAsync(userId: _privateProfile.Id, playlistId: playlistUri);
 
-                if(playlist.HasError() == true)
-                    playlist = await _spotifyWebAPI.CreatePlaylistAsync(PrivateProfile.Id, playlistName);
+                if (playlist.HasError() == true)
+                    playlist = await _spotifyWebAPI.CreatePlaylistAsync(_privateProfile.Id, playlistName);
             }
             else
             {
-                playlist = await _spotifyWebAPI.CreatePlaylistAsync(PrivateProfile.Id, playlistName);
+                playlist = await _spotifyWebAPI.CreatePlaylistAsync(_privateProfile.Id, playlistName);
             }
-            
-            var error = await _spotifyWebAPI.AddPlaylistTracksAsync(PrivateProfile.Id, playlist.Id, ids.ToList());
+
+            var error = await _spotifyWebAPI.AddPlaylistTracksAsync(_privateProfile.Id, playlist.Id, ids.ToList());
 
             return playlist;
         }
