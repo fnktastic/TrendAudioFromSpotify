@@ -10,6 +10,7 @@ namespace TrendAudioFromSpotify.UI.Enum
     {
         Spotify,
         Groups,
-        Monitoring
+        Monitoring,
+        Playlist
     }
 }

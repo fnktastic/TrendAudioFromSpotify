@@ -23,9 +23,17 @@ namespace TrendAudioFromSpotify.Data.Model
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 
+        public bool SelfMade { get; set; } = false;
+        public bool IsSeries { get; set; } = false;
+        public Guid SeriesKey { get; set; }
+        public int SeriesNo { get; set; }
+
         public PlaylistTypeEnum PlaylistType { get; set; }
 
         public virtual ICollection<PlaylistAudioDto> PlaylistAudios { get; set; }
+
+        [NotMapped]
+        public virtual ICollection<AudioDto> Audios => PlaylistAudios?.Select(x => x.Audio).ToList();
 
         public virtual ICollection<GroupPlaylistDto> GroupPlaylists { get; set; }
     }

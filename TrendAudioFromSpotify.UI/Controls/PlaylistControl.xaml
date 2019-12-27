@@ -19,10 +19,15 @@
                 <ColumnDefinition Width="100" MinWidth="100"></ColumnDefinition>
                 <ColumnDefinition Width="50" MinWidth="50"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <Image Width="40" Source="{Binding Cover}" Margin="0 0 10 0" HorizontalAlignment="Center">
+                    <Image.ToolTip>
+                        <Image Width="400" Source="{Binding Cover}" />
+                    </Image.ToolTip>
+                </Image>
                 <TextBlock
-                    Grid.Column="0"
                     TextAlignment="Left" FontWeight="DemiBold" TextWrapping="Wrap" 
+                    VerticalAlignment="Center"
                     MaxWidth="345" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" 
                     FontSize="12" 
                     Text="{Binding Name}">
@@ -38,9 +43,11 @@
             </StackPanel>
             <TextBlock Grid.Column="1"
                    TextAlignment="Center" FontWeight="Light" HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
                    FontSize="12" 
                    Text="{Binding Total, StringFormat={}0 track(s)}" />
             <TextBlock Grid.Column="2"
+                   VerticalAlignment="Center"
                    TextAlignment="Left" FontWeight="Light" 
                    FontSize="12" 
                    Text="{Binding Owner}" ToolTip="{Binding Owner}" />

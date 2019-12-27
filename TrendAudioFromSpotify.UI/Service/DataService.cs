@@ -26,7 +26,8 @@ namespace TrendAudioFromSpotify.UI.Service
         Task InsertPlaylistAudioRangeAsync(IEnumerable<Audio> audios);
         Task RemoveGroupAsync(Group group);
         Task RemoveMonitoringItemAsync(MonitoringItem monitoringItem);
-        Task AddSpotifyUriHrefToMonitoringItem(Guid id, string playlistId, string playlistHref);
+        Task AddSpotifyUriHrefToMonitoringItemAsync(Guid id, string playlistId, string playlistHref);
+        Task<List<Playlist>> GetAllPlaylistsAsync();
     }
 
     public class DataService : IDataService
@@ -176,9 +177,16 @@ namespace TrendAudioFromSpotify.UI.Service
             await _serialQueue.Enqueue(async () => await _monitoringItemRepository.RemoveAsync(monitoringItemDto));
         }
 
-        public async Task AddSpotifyUriHrefToMonitoringItem(Guid id, string playlistId, string playlistHref)
+        public async Task AddSpotifyUriHrefToMonitoringItemAsync(Guid id, string playlistId, string playlistHref)
         {
-            await _monitoringItemRepository.AddSpotifyUriHref(id, playlistId, playlistHref);
+            await _serialQueue.Enqueue(async () => await _monitoringItemRepository.AddSpotifyUriHrefAsync(id, playlistId, playlistHref));
+        }
+
+        public async Task<List<Playlist>> GetAllPlaylistsAsync()
+        {
+            var playlists = await _serialQueue.Enqueue(async () => await _playlistRepository.GetAllAsync());
+
+            return _mapper.Map<List<Playlist>>(playlists);
         }
     }
 }

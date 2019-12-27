@@ -25,6 +25,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             SimpleIoc.Default.Register<GroupManagingViewModel>();
 
+            SimpleIoc.Default.Register<PlaylistViewModel>();
+
             SimpleIoc.Default.Register<DbContext>();
 
             SimpleIoc.Default.Register<SerialQueue>();
@@ -75,7 +77,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 return ServiceLocator.Current.GetInstance<SpotifyViewModel>();
             }
         }
-        
+
         public MonitoringViewModel Monitoring
         {
             get
@@ -89,6 +91,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<GroupManagingViewModel>();
+            }
+        }
+
+        public PlaylistViewModel Playlist
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<PlaylistViewModel>();
             }
         }
 

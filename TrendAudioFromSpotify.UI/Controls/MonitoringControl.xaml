@@ -43,7 +43,7 @@
                         <ColumnDefinition Width="55" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TargetPlaylistName}"  FontSize="18" FontWeight="Thin" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Top, StringFormat=Top: {0}}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding MaxSize, StringFormat=Top: {0}}" />
                     <DockPanel Grid.Row="2" Grid.Column="0">
                         <TextBlock Text="{Binding HitTreshold, StringFormat=Hit treshold: {0} }"/>
                         <TextBlock Text=" " />

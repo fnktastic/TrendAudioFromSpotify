@@ -10,14 +10,14 @@ namespace TrendAudioFromSpotify.UI.Model
     {
         public Guid Id { get; set; }
 
-        private string _top;
+        private string _maxSize;
         public string Top
         {
-            get { return _top; }
+            get { return _maxSize; }
             set
             {
-                if (value == _top) return;
-                _top = value;
+                if (value == _maxSize) return;
+                _maxSize = value;
                 RaisePropertyChanged(nameof(Top));
             }
         }
@@ -136,7 +136,8 @@ namespace TrendAudioFromSpotify.UI.Model
         public DateTime UpdatedAt { get; set; }
         public bool IsReady { get; set; } = false;
 
-        public virtual AudioCollection Audios { get; set; }
+        [IgnoreMap]
+        public virtual AudioCollection SpecificAudios { get; set; }
         public virtual PlaylistCollection Playlists { get; set; }
         public virtual Group Group { get; set; }
 

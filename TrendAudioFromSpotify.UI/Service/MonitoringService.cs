@@ -56,7 +56,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
                 _monitoringItem.IsOverrideTrends = monitoringItem.IsOverrideTrends;
 
-                _monitoringItem.Audios = new AudioCollection(audios);
+                _monitoringItem.SpecificAudios = new AudioCollection(audios);
                 _monitoringItem.Playlists = new PlaylistCollection(playlists);
                 _monitoringItem.Group.Playlists = new PlaylistCollection(playlists);
 
@@ -132,13 +132,13 @@ namespace TrendAudioFromSpotify.UI.Service
                         var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList();
 
                         if (processingSpecificAudios == false)
-                            monitoringItem.Audios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList());
+                            monitoringItem.SpecificAudios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList());
 
                         var groupedAudios = audioBunch
                         .GroupBy(x => x.Id)
                         .Select(y =>
                         {
-                            var audio = monitoringItem.Audios.FirstOrDefault(z => z.Id == y.Key);
+                            var audio = monitoringItem.SpecificAudios.FirstOrDefault(z => z.Id == y.Key);
 
                             if (audio == null) return null;
 

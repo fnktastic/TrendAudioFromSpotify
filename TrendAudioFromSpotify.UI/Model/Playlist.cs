@@ -28,6 +28,14 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string Cover { get; set; }
 
+        public bool SelfMade { get; set; } = false;
+
+        public bool IsSeries { get; set; } = false;
+
+        public Guid SeriesKey { get; set; }
+
+        public int SeriesNo { get; set; }
+
         public virtual AudioCollection Audios { get; set; }
 
         private bool _isChecked;

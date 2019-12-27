@@ -171,7 +171,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             var syncedPalylist = await _monitoringService.RecreateOnSpotify(monitoringItem, SpotifyServices);
 
-            await _dataService.AddSpotifyUriHrefToMonitoringItem(monitoringItem.Id, syncedPalylist.Id, syncedPalylist.Href);
+            await _dataService.AddSpotifyUriHrefToMonitoringItemAsync(monitoringItem.Id, syncedPalylist.Id, syncedPalylist.Href);
 
             monitoringItem.SpotifyPlaylistId = syncedPalylist.Id;
             monitoringItem.SpotifyPlaylistHref = syncedPalylist.Href;

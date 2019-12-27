@@ -18,7 +18,8 @@
             Tag="{Binding RelativeSource={RelativeSource AncestorType={x:Type views:SpotifyUserControl}}}">
         <Grid Background="Black" x:Name="audioControl">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30"></ColumnDefinition>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="50"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="25"></ColumnDefinition>
                 <ColumnDefinition Width="50"></ColumnDefinition>
@@ -26,12 +27,17 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding No, Mode=OneTime}" VerticalAlignment="Center" /> 
-            <StackPanel MaxWidth="200" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding No, Mode=OneTime}" VerticalAlignment="Center" />
+            <Image Grid.Row="0" Width="40" Grid.Column="1" Source="{Binding Cover}" HorizontalAlignment="Center">
+                <Image.ToolTip>
+                    <Image Width="400" Source="{Binding Cover}" />
+                </Image.ToolTip>
+            </Image>
+            <StackPanel MaxWidth="200" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
                 <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="DemiBold" FontSize="10" Text="{Binding Title}" />
                 <TextBlock TextAlignment="Left" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" FontWeight="Light" FontSize="12" Text="{Binding Artist}" />
             </StackPanel>
-            <Button Grid.Row="0" Grid.Column="2" 
+            <Button Grid.Row="0" Grid.Column="3" 
                     FontWeight="Bold"
                     ToolTip="Add to target list"
                     CommandParameter="{Binding}" 
@@ -45,7 +51,7 @@
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource CustomButtonControl}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=audioControl, Path=IsMouseOver}" Value="True">
-                                <Setter Property="Visibility" Value="Visible" />
+                                <Setter Property="Visibility" Value="Hidden" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ElementName=audioControl, Path=IsMouseOver}" Value="False">
                                 <Setter Property="Visibility" Value="Hidden" />
@@ -54,12 +60,12 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <CheckBox Grid.Row="0" Grid.Column="3"
+            <CheckBox Grid.Row="0" Grid.Column="4"
                       Visibility="Collapsed"
                       HorizontalAlignment="Right"
                       IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Button Grid.Row="0" Grid.Column="3"
+            <Button Grid.Row="0" Grid.Column="4"
                 Width="40" Height="40"
                 HorizontalAlignment="Right"
                 Command="{Binding Path=DataContext.PlaySongCommand, RelativeSource={RelativeSource AncestorType={x:Type views:SpotifyUserControl}}}"

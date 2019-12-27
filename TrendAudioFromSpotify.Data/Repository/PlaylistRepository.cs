@@ -29,7 +29,9 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         public async Task<List<PlaylistDto>> GetAllAsync()
         {
-            return await _context.Playlists.ToListAsync();
+            return await _context.Playlists
+                .Include(x => x.PlaylistAudios.Select(y => y.Audio))
+                .ToListAsync();
         }
 
         public async Task InsertAsync(PlaylistDto playlist)

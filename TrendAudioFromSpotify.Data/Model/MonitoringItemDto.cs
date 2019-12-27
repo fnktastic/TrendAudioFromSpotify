@@ -14,7 +14,7 @@ namespace TrendAudioFromSpotify.Data.Model
         [Key]
         public Guid Id { get; set; }
 
-        public string Top { get; set; }
+        public string MaxSize { get; set; }
         public string HitTreshold { get; set; }
 
         public ComparisonEnum Comparison { get; set; }

@@ -17,7 +17,7 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         Task RemoveAsync(MonitoringItemDto monitoringItemDto);
 
-        Task AddSpotifyUriHref(Guid id, string playlistId, string playlistHref);
+        Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref);
     }
 
     public class MonitoringItemRepository : IMonitoringItemRepository
@@ -57,7 +57,7 @@ namespace TrendAudioFromSpotify.Data.Repository
                 dbEntry.UpdatedAt = monitoringItem.UpdatedAt;
                 dbEntry.HitTreshold = monitoringItem.HitTreshold;
                 dbEntry.RefreshPeriod = monitoringItem.RefreshPeriod;
-                dbEntry.Top = monitoringItem.Top;
+                dbEntry.MaxSize = monitoringItem.MaxSize;
                 dbEntry.TargetPlaylistName = monitoringItem.TargetPlaylistName;
                 dbEntry.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
                 dbEntry.PlaylistType = monitoringItem.PlaylistType;
@@ -83,7 +83,7 @@ namespace TrendAudioFromSpotify.Data.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task AddSpotifyUriHref(Guid id, string playlistId, string playlistHref)
+        public async Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref)
         {
             var monitoringItem = _context.MonitoringItems.Find(id);
 

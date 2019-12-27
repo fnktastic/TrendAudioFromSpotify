@@ -62,7 +62,7 @@
             HorizontalContentAlignment="Center"
             HorizontalAlignment="Stretch" />
         <TextBox Grid.Column="1" Grid.Row="2"
-                 Text="{Binding Top}"
+                 Text="{Binding MaxSize}"
                  Controls:TextBoxHelper.Watermark="max size" HorizontalContentAlignment="Center" />
         <ComboBox Grid.Column="1" Grid.Row="3"
                   ItemsSource="{Binding Source={StaticResource playlistTypeEnum}}"

@@ -85,6 +85,29 @@
                 </TabItem.Header>
                 <views:MonitoringUserControl HorizontalAlignment="Stretch" />
             </TabItem>
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="Playlists" 
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               FontSize="28">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground" Value="Black" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </TabItem.Header>
+                <views:PlaylistsUserControl HorizontalAlignment="Stretch" />
+            </TabItem>
         </TabControl>
     </Grid>
 </Controls:MetroWindow>

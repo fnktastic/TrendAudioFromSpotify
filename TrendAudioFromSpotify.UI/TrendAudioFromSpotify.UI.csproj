@@ -245,11 +245,15 @@
     <Compile Include="Utility\SettingUtility.cs" />
     <Compile Include="ViewModel\GroupManagingViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Compile Include="ViewModel\PlaylistViewModel.cs" />
     <Compile Include="ViewModel\SpotifyViewModel.cs" />
     <Compile Include="ViewModel\MonitoringViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="Views\GroupManagingUserControl.xaml.cs">
       <DependentUpon>GroupManagingUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PlaylistsUserControl.xaml.cs">
+      <DependentUpon>PlaylistsUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SpotifyUserControl.xaml.cs">
       <DependentUpon>SpotifyUserControl.xaml</DependentUpon>
@@ -322,6 +326,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\GroupManagingUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PlaylistsUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

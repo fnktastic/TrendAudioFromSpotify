@@ -21,7 +21,7 @@
                         <ColumnDefinition Width="125" MinWidth="125"></ColumnDefinition>
                         <ColumnDefinition Width="100" MinWidth="100"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" MinWidth="150" FontWeight="Thin" Padding="15 0 0 0" FontSize="14" HorizontalAlignment="Left">Playlist Name</TextBlock>
+                    <TextBlock Grid.Column="0" MinWidth="150" FontWeight="Thin" Padding="15 0 0 0" FontSize="14" HorizontalAlignment="Left">Playlist</TextBlock>
                     <TextBlock Grid.Column="1" MinWidth="125" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Center">Tracks Count</TextBlock>
                     <TextBlock Grid.Column="2" MinWidth="100" FontWeight="Thin" Padding="0" FontSize="14" HorizontalAlignment="Left">Owner</TextBlock>
                 </Grid>
