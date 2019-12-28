@@ -233,6 +233,7 @@
     <Compile Include="Enum\TabsEnum.cs" />
     <Compile Include="Messaging\AddMonitoringItemMessage.cs" />
     <Compile Include="Messaging\AddGroupMessage.cs" />
+    <Compile Include="Messaging\PlayAudioMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\MonitoringItem.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Service\GroupService.cs" />
     <Compile Include="Service\MonitoringService.cs" />
     <Compile Include="Service\PlaylistService.cs" />
+    <Compile Include="Sorter\PlaylistsSorter.cs" />
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />

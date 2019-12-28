@@ -42,6 +42,8 @@ namespace TrendAudioFromSpotify.UI.Model
         public string Uri { get; set; }
 
         public PlaylistTypeEnum PlaylistType { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public virtual AudioCollection Audios { get; set; }
 
@@ -53,6 +55,18 @@ namespace TrendAudioFromSpotify.UI.Model
             {
                 _isChecked = value;
                 RaisePropertyChanged(nameof(IsChecked));
+            }
+        }
+
+        private bool _isExpanded;
+        public bool IsExpanded
+        {
+            get { return _isExpanded; }
+            set
+            {
+                if (value == _isExpanded) return;
+                _isExpanded = value;
+                RaisePropertyChanged(nameof(IsExpanded));
             }
         }
 

@@ -1,4 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using SpotifyAPI.Web.Models;
 using System;
 using System.Collections.Generic;
@@ -6,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Messaging;
 
 namespace TrendAudioFromSpotify.UI.Model
 {
@@ -83,6 +86,13 @@ namespace TrendAudioFromSpotify.UI.Model
         public Audio()
         {
 
+        }
+
+        private RelayCommand<Audio> _playSongCommand;
+        public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
+        private void PlaySong(Audio audio)
+        {
+            Messenger.Default.Send<PlayAudioMessage>(new PlayAudioMessage(audio));
         }
     }
 }

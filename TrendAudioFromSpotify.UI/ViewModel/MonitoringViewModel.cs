@@ -22,7 +22,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     public class MonitoringViewModel : ViewModelBase
     {
         #region fields
-        public ISpotifyServices SpotifyServices = null;
+        private readonly ISpotifyServices _spotifyServices;
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly IDataService _dataService;
         private readonly IMonitoringService _monitoringService;
@@ -62,11 +62,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel(IDataService dataService, IMonitoringService monitoringService)
+        public MonitoringViewModel(IDataService dataService, IMonitoringService monitoringService, ISpotifyServices spotifyServices)
         {
             _dialogCoordinator = DialogCoordinator.Instance;
             _dataService = dataService;
             _monitoringService = monitoringService;
+            _spotifyServices = spotifyServices;
 
             FetchData().ConfigureAwait(true);
 
@@ -112,26 +113,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
-        private RelayCommand<Audio> _playSongCommand;
-        public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
-        private async void PlaySong(Audio audio)
-        {
-            try
-            {
-                if (audio != null)
-                {
-                    var playback = await SpotifyServices.PlayTrack(audio.Uri);
-
-                    if (playback.HasError())
-                        await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("Error in MonitoringViewModel.PlaySong", ex);
-            }
-        }
-
         private RelayCommand<MonitoringItem> _selectMonitoringItemCommand;
         public RelayCommand<MonitoringItem> SelectMonitoringItemCommand => _selectMonitoringItemCommand ?? (_selectMonitoringItemCommand = new RelayCommand<MonitoringItem>(SelectMonitoringItem));
         private void SelectMonitoringItem(MonitoringItem monitoringItem)

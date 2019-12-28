@@ -18,6 +18,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task InsertRangeAsync(List<PlaylistDto> playlists);
 
         Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref);
+
+        Task RemoveAsync(PlaylistDto playlist);
     }
 
     public class PlaylistRepository : IPlaylistRepository
@@ -72,6 +74,20 @@ namespace TrendAudioFromSpotify.Data.Repository
                 playlist.SpotifyId = playlistId;
                 playlist.Href = playlistHref;
                 playlist.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAsync(PlaylistDto playlist)
+        {
+            if (playlist.Id == Guid.Empty) throw new ArgumentException("Cant insert group with empty id.");
+
+            var dbEntry = await _context.Playlists.FindAsync(playlist.Id);
+
+            if (dbEntry != null)
+            {
+                dbEntry.IsDeleted = true;
             }
 
             await _context.SaveChangesAsync();

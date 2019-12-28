@@ -28,6 +28,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task RemoveMonitoringItemAsync(MonitoringItem monitoringItem);
         Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref);
         Task<List<Playlist>> GetAllPlaylistsAsync(bool madeByUser = true);
+        Task RemovePlaylistAsync(Playlist playlist);
     }
 
     public class DataService : IDataService
@@ -186,6 +187,13 @@ namespace TrendAudioFromSpotify.UI.Service
             var playlists = await _serialQueue.Enqueue(async () => await _playlistRepository.GetAllAsync(madeByUser));
 
             return _mapper.Map<List<Playlist>>(playlists);
+        }
+
+        public async Task RemovePlaylistAsync(Playlist playlist)
+        {
+            var playlistDto = _mapper.Map<PlaylistDto>(playlist);
+
+            await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveAsync(playlistDto));
         }
     }
 }

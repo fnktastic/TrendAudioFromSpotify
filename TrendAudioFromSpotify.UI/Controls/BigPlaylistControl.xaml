@@ -24,7 +24,7 @@
                   BorderThickness="0" FlowDirection="RightToLeft">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Expanded">
-                    <cmd:EventToCommand Command="{Binding Path=DataContext.SelectGroupCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                    <cmd:EventToCommand Command="{Binding Path=DataContext.SelectPlaylistCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
                                     CommandParameter="{Binding}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
@@ -56,7 +56,7 @@
                     </Button>
                     <Button 
                         Width="40" Height="40"
-                        Command="{Binding Path=DataContext.DeleteGroupCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                        Command="{Binding Path=DataContext.DeletePlaylistCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
                         CommandParameter="{Binding}"
                         ToolTip="Remove"
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
