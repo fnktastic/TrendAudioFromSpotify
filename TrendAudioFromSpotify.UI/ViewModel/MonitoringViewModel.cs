@@ -145,6 +145,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Messenger.Default.Send<TabsEnum>(TabsEnum.Groups);
         }
+
+        private RelayCommand<MonitoringItem> _buildPlaylistCommand;
+        public RelayCommand<MonitoringItem> BuildPlaylistCommand => _buildPlaylistCommand ?? (_buildPlaylistCommand = new RelayCommand<MonitoringItem>(BuildPlaylist));
+        private void BuildPlaylist(MonitoringItem monitoringItem)
+        {
+
+        }
         #endregion
     }
 }

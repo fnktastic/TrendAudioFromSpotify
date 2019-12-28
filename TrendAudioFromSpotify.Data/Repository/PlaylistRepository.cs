@@ -34,6 +34,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         public async Task<List<PlaylistDto>> GetAllAsync(bool madeByUser = true)
         {
             return await _context.Playlists
+                .Where(x => x.IsDeleted == false)
                 .Where(x => x.MadeByUser == madeByUser)
                 .Include(x => x.PlaylistAudios.Select(y => y.Audio))
                 .ToListAsync();

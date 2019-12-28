@@ -771,20 +771,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             await _dataService.InsertAudioAsync(audio);
         }
 
-
-        private RelayCommand<Audio> _playSongCommand;
-        public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
-        private async void PlaySong(Audio audio)
-        {
-            if (audio != null)
-            {
-                var playback = await _spotifyServices.PlayTrack(audio.Uri);
-
-                if (playback.HasError())
-                    await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}\n{2}", playback.Error.Status, playback.Error.Message, "Make sure Spotify Client is opened and playback is working."));
-            }
-        }
-
         private bool checkExplorePlaylists = true;
         private RelayCommand _selectExplorePlaylistsCommand;
         public RelayCommand SelectExplorePlaylistsCommand => _selectExplorePlaylistsCommand ?? (_selectExplorePlaylistsCommand = new RelayCommand(SelectExplorePlaylists));

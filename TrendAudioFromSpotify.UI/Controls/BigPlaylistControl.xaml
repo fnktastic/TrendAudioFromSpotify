@@ -50,7 +50,7 @@
                         Width="40" Height="40"
                         Command="{Binding Path=DataContext.SyncPlaylistCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
                         CommandParameter="{Binding}"
-                        ToolTip="Sync"
+                        ToolTip="Sync with Spotify"
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                         <icons:Material Kind="Sync" />
                     </Button>

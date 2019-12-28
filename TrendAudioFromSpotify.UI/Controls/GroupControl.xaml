@@ -52,7 +52,7 @@
                         Width="40" Height="40"
                         Command="{Binding Path=DataContext.RepeatGroupCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
                         CommandParameter="{Binding}"
-                        ToolTip="Repeat"
+                        ToolTip="Start monitoring"
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                         <icons:Material Kind="Repeat" />
                     </Button>
@@ -60,7 +60,7 @@
                         Width="40" Height="40"
                         Command="{Binding Path=DataContext.DeleteGroupCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
                         CommandParameter="{Binding}"
-                        ToolTip="Remove"
+                        ToolTip="Remove group"
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                         <icons:Material Kind="Delete" />
                     </Button>
