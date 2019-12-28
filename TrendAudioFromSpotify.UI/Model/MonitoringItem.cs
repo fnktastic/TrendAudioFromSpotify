@@ -11,14 +11,14 @@ namespace TrendAudioFromSpotify.UI.Model
         public Guid Id { get; set; }
 
         private string _maxSize;
-        public string Top
+        public string MaxSize
         {
             get { return _maxSize; }
             set
             {
                 if (value == _maxSize) return;
                 _maxSize = value;
-                RaisePropertyChanged(nameof(Top));
+                RaisePropertyChanged(nameof(MaxSize));
             }
         }
 

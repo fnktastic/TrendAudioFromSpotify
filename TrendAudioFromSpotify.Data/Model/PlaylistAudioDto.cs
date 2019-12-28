@@ -21,8 +21,6 @@ namespace TrendAudioFromSpotify.Data.Model
 
         public int Placement { get; set; }
 
-        public bool IsTrends { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }

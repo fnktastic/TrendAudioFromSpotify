@@ -47,7 +47,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.Group.Name = group.Name;
 
                 _monitoringItem.Id = Guid.NewGuid();
-                _monitoringItem.Top = monitoringItem.Top;
+                _monitoringItem.MaxSize = monitoringItem.MaxSize;
                 _monitoringItem.HitTreshold = monitoringItem.HitTreshold;
                 _monitoringItem.Comparison = monitoringItem.Comparison;
                 _monitoringItem.PlaylistType = monitoringItem.PlaylistType;
@@ -66,7 +66,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.CreatedAt = _monitoringItem.Group.CreatedAt = DateTime.UtcNow;
                 _monitoringItem.UpdatedAt = _monitoringItem.Group.UpdatedAt = DateTime.UtcNow;
 
-                if (playlists.Count > 0 && int.Parse(_monitoringItem.HitTreshold ?? "") > 0 && int.Parse(monitoringItem.Top ?? "") > 0)
+                if (playlists.Count > 0 && int.Parse(_monitoringItem.HitTreshold ?? "") > 0 && int.Parse(monitoringItem.MaxSize ?? "") > 0)
                     _monitoringItem.IsReady = true;
 
                 return _monitoringItem;
@@ -162,7 +162,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits == int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(monitoringItem.Top))
+                            .Take(int.Parse(monitoringItem.MaxSize))
                             .ToList();
                         }
 
@@ -171,7 +171,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits >= int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(monitoringItem.Top))
+                            .Take(int.Parse(monitoringItem.MaxSize))
                             .ToList();
                         }
 
@@ -180,7 +180,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits <= int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(monitoringItem.Top))
+                            .Take(int.Parse(monitoringItem.MaxSize))
                             .ToList();
                         }
 

@@ -154,7 +154,6 @@ namespace TrendAudioFromSpotify.UI.Service
                 {
                     AudioId = audio.Id,
                     PlaylistId = playlist.Id,
-                    IsTrends = true,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 }));
