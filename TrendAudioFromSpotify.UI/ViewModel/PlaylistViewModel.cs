@@ -86,7 +86,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             _logger.Info("Fetching Playlists Data...");
 
-            var playlists = await _dataService.GetAllPlaylistsAsync(false);
+            var playlists = await _dataService.GetAllPlaylistsAsync(true);
 
             Playlists = new PlaylistCollection(playlists);
         }

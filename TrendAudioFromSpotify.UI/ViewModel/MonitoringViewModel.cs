@@ -26,6 +26,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly IDataService _dataService;
         private readonly IMonitoringService _monitoringService;
+        private readonly IPlaylistService _playlistService;
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
@@ -62,12 +63,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel(IDataService dataService, IMonitoringService monitoringService, ISpotifyServices spotifyServices)
+        public MonitoringViewModel(IDataService dataService, IMonitoringService monitoringService, ISpotifyServices spotifyServices, IPlaylistService playlistService)
         {
             _dialogCoordinator = DialogCoordinator.Instance;
             _dataService = dataService;
             _monitoringService = monitoringService;
             _spotifyServices = spotifyServices;
+            _playlistService = playlistService;
 
             FetchData().ConfigureAwait(true);
 
@@ -148,9 +150,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private RelayCommand<MonitoringItem> _buildPlaylistCommand;
         public RelayCommand<MonitoringItem> BuildPlaylistCommand => _buildPlaylistCommand ?? (_buildPlaylistCommand = new RelayCommand<MonitoringItem>(BuildPlaylist));
-        private void BuildPlaylist(MonitoringItem monitoringItem)
+        private async void BuildPlaylist(MonitoringItem monitoringItem)
         {
-
+            await _playlistService.BuildPlaylistAsync(monitoringItem);
         }
         #endregion
     }

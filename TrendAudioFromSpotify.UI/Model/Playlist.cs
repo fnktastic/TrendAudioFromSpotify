@@ -47,6 +47,17 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public virtual AudioCollection Audios { get; set; }
 
+        public virtual string DisplayName
+        {
+            get
+            {
+                if (IsSeries)
+                    return string.Format("{0} {1}", Name, SeriesNo);
+
+                return Name;
+            }
+        }
+
         private bool _isChecked;
         public bool IsChecked
         {
@@ -87,7 +98,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public Playlist()
         {
-
+            Id = Guid.NewGuid();
         }
     }
 }

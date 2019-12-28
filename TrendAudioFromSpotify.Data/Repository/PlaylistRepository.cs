@@ -20,6 +20,10 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref);
 
         Task RemoveAsync(PlaylistDto playlist);
+
+        Task RemoveAsync(string playlistName);
+
+        Task RemoveSeriesAsync(string playlistName);
     }
 
     public class PlaylistRepository : IPlaylistRepository
@@ -82,13 +86,46 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         public async Task RemoveAsync(PlaylistDto playlist)
         {
-            if (playlist.Id == Guid.Empty) throw new ArgumentException("Cant insert group with empty id.");
+            if (playlist.Id == Guid.Empty) throw new ArgumentException("Cant delete playlist with empty id.");
 
             var dbEntry = await _context.Playlists.FindAsync(playlist.Id);
 
             if (dbEntry != null)
             {
                 dbEntry.IsDeleted = true;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveAsync(string playlistName)
+        {
+            if (string.IsNullOrEmpty(playlistName)) throw new ArgumentException("Cant delete playlist with empty name.");
+
+            var dbEntry = await _context.Playlists.FirstOrDefaultAsync(x => x.Name == playlistName && x.IsDeleted == false);
+
+            if (dbEntry != null)
+            {
+                dbEntry.IsDeleted = true;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveSeriesAsync(string playlistName)
+        {
+            if (string.IsNullOrEmpty(playlistName)) throw new ArgumentException("Cant delete playlist with empty name.");
+
+            var dbEntry = await _context.Playlists.FirstOrDefaultAsync(x => x.Name == playlistName && x.IsDeleted == false);
+
+            if (dbEntry != null)
+            {
+                var seriesKey = dbEntry.SeriesKey;
+
+                var series = _context.Playlists.Where(x => x.SeriesKey == seriesKey && x.IsDeleted == false);
+
+                foreach(var volume in series)
+                    volume.IsDeleted = true;
             }
 
             await _context.SaveChangesAsync();

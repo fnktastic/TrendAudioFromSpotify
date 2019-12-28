@@ -29,6 +29,9 @@ namespace TrendAudioFromSpotify.UI.Service
         Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref);
         Task<List<Playlist>> GetAllPlaylistsAsync(bool madeByUser = true);
         Task RemovePlaylistAsync(Playlist playlist);
+        Task RemovePlaylistAsync(string playlistName);
+        Task RemovePlaylistSeriesAsync(string seriesName);
+        Task InsertPlaylistAsync(Playlist playlist);
     }
 
     public class DataService : IDataService
@@ -194,6 +197,42 @@ namespace TrendAudioFromSpotify.UI.Service
             var playlistDto = _mapper.Map<PlaylistDto>(playlist);
 
             await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveAsync(playlistDto));
+        }
+
+        public async Task RemovePlaylistAsync(string playlistName)
+        {
+            await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveAsync(playlistName));
+        }
+
+        public async Task RemovePlaylistSeriesAsync(string seriesName)
+        {
+            await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveSeriesAsync(seriesName));
+        }
+
+        public async Task InsertPlaylistAsync(Playlist playlist)
+        {
+            var playlistDto = _mapper.Map<PlaylistDto>(playlist);
+
+            var audios = playlist.Audios;
+
+            var playlistAudioDtos = new List<PlaylistAudioDto>();
+
+            for(int i =0; i < audios.Count; i++)
+            {
+                playlistAudioDtos.Add(new PlaylistAudioDto()
+                {
+                    AudioId = audios.ElementAt(i).Id,
+                    PlaylistId = playlist.Id,
+                    Placement = i,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    IsDeleted = false,
+                });
+            }
+
+            await _playlistRepository.InsertAsync(playlistDto);
+
+            await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos);
         }
     }
 }
