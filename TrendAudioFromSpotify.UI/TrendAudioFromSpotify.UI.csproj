@@ -231,6 +231,7 @@
     <Compile Include="Enum\PlaylistTypeEnum.cs" />
     <Compile Include="Enum\RefreshActionEnum.cs" />
     <Compile Include="Enum\TabsEnum.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Messaging\AddMonitoringItemMessage.cs" />
     <Compile Include="Messaging\AddGroupMessage.cs" />
     <Compile Include="Messaging\PlayAudioMessage.cs" />

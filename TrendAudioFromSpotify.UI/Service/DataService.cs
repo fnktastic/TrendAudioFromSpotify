@@ -29,9 +29,11 @@ namespace TrendAudioFromSpotify.UI.Service
         Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref);
         Task<List<Playlist>> GetAllPlaylistsAsync(bool madeByUser = true);
         Task RemovePlaylistAsync(Playlist playlist);
-        Task RemovePlaylistAsync(string playlistName);
-        Task RemovePlaylistSeriesAsync(string seriesName);
+        Task RemovePlaylistPhysicallyAsync(string playlistName);
+        Task RemovePlaylistSeriesPhysicallyAsync(string seriesName);
         Task InsertPlaylistAsync(Playlist playlist);
+        Task<List<Playlist>> GetPlaylistSeriesAsync(string seriesName);
+        Task<Playlist> GetPlaylistAsync(string playlistName);
     }
 
     public class DataService : IDataService
@@ -199,14 +201,14 @@ namespace TrendAudioFromSpotify.UI.Service
             await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveAsync(playlistDto));
         }
 
-        public async Task RemovePlaylistAsync(string playlistName)
+        public async Task RemovePlaylistPhysicallyAsync(string playlistName)
         {
-            await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveAsync(playlistName));
+            await _serialQueue.Enqueue(async () => await _playlistRepository.RemovePhysicallyAsync(playlistName));
         }
 
-        public async Task RemovePlaylistSeriesAsync(string seriesName)
+        public async Task RemovePlaylistSeriesPhysicallyAsync(string seriesName)
         {
-            await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveSeriesAsync(seriesName));
+            await _serialQueue.Enqueue(async () => await _playlistRepository.RemoveSeriesPhysicallyAsync(seriesName));
         }
 
         public async Task InsertPlaylistAsync(Playlist playlist)
@@ -233,6 +235,20 @@ namespace TrendAudioFromSpotify.UI.Service
             await _playlistRepository.InsertAsync(playlistDto);
 
             await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos);
+        }
+
+        public async Task<List<Playlist>> GetPlaylistSeriesAsync(string seriesName)
+        {
+            var series = await _playlistRepository.GetSeriesAsync(seriesName);
+
+            return _mapper.Map<List<Playlist>>(series);
+        }
+
+        public async Task<Playlist> GetPlaylistAsync(string playlistName)
+        {
+            var playlist = await _playlistRepository.GetPlaylistAsync(playlistName);
+
+            return _mapper.Map<Playlist>(playlist);
         }
     }
 }

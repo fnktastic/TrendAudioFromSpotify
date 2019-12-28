@@ -21,9 +21,13 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         Task RemoveAsync(PlaylistDto playlist);
 
-        Task RemoveAsync(string playlistName);
+        Task RemovePhysicallyAsync(string playlistName);
 
-        Task RemoveSeriesAsync(string playlistName);
+        Task RemoveSeriesPhysicallyAsync(string playlistName);
+
+        Task<List<PlaylistDto>> GetSeriesAsync(string seriesName);
+
+        Task<PlaylistDto> GetPlaylistAsync(string playlistName);
     }
 
     public class PlaylistRepository : IPlaylistRepository
@@ -98,7 +102,7 @@ namespace TrendAudioFromSpotify.Data.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveAsync(string playlistName)
+        public async Task RemovePhysicallyAsync(string playlistName)
         {
             if (string.IsNullOrEmpty(playlistName)) throw new ArgumentException("Cant delete playlist with empty name.");
 
@@ -106,13 +110,18 @@ namespace TrendAudioFromSpotify.Data.Repository
 
             if (dbEntry != null)
             {
-                dbEntry.IsDeleted = true;
+                var playlistItems = _context.PlaylistAudios.Where(x => x.PlaylistId == dbEntry.Id);
+
+                foreach (var playlistItem in playlistItems)
+                    _context.Entry<PlaylistAudioDto>(playlistItem).State = EntityState.Deleted;
+
+                _context.Entry<PlaylistDto>(dbEntry).State = EntityState.Deleted;
             }
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveSeriesAsync(string playlistName)
+        public async Task RemoveSeriesPhysicallyAsync(string playlistName)
         {
             if (string.IsNullOrEmpty(playlistName)) throw new ArgumentException("Cant delete playlist with empty name.");
 
@@ -124,11 +133,40 @@ namespace TrendAudioFromSpotify.Data.Repository
 
                 var series = _context.Playlists.Where(x => x.SeriesKey == seriesKey && x.IsDeleted == false);
 
-                foreach(var volume in series)
-                    volume.IsDeleted = true;
+                foreach (var volume in series)
+                {
+                    var volumeItems = _context.PlaylistAudios.Where(x => x.PlaylistId == volume.Id);
+
+                    foreach(var volumeItem in volumeItems)
+                        _context.Entry<PlaylistAudioDto>(volumeItem).State = EntityState.Deleted; 
+
+                    _context.Entry<PlaylistDto>(volume).State = EntityState.Deleted;
+                }
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<PlaylistDto>> GetSeriesAsync(string seriesName)
+        {
+            var series = await _context.Playlists
+                .Where(x => x.IsDeleted == false)
+                .Where(x => x.Name == seriesName && x.IsSeries == true)
+                .Include(x => x.PlaylistAudios.Select(y => y.Audio))
+                .ToListAsync();
+
+            return series;
+        }
+
+        public async Task<PlaylistDto> GetPlaylistAsync(string playlistName)
+        {
+            var playlist = await _context.Playlists
+                .Where(x => x.IsDeleted == false)
+                .Where(x => x.Name == playlistName && x.IsSeries == false)
+                .Include(x => x.PlaylistAudios.Select(y => y.Audio))
+                .FirstOrDefaultAsync();
+
+            return playlist;
         }
     }
 }

@@ -40,7 +40,6 @@
                         <ColumnDefinition Width="55" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding DisplayName}" Grid.Row="0" Grid.Column="0" FontSize="18" FontWeight="Thin" />
-                    <TextBlock Text="{Binding SeriesNo}" FontSize="18" FontWeight="Thin" Visibility="{Binding IsSeries, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding CreatedAt, StringFormat=Created: {0}}" />
                     <TextBlock Grid.Row="2" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
                 </Grid>
