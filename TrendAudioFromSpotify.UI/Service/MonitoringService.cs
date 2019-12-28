@@ -17,7 +17,6 @@ namespace TrendAudioFromSpotify.UI.Service
     {
         MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
         Task<bool> ProcessAsync(MonitoringItem monitoringItem);
-        Task<FullPlaylist> RecreateOnSpotify(MonitoringItem monitoringItem, ISpotifyServices spotifyServices);
     }
 
     public class MonitoringService : IMonitoringService
@@ -54,6 +53,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.TargetPlaylistName = monitoringItem.TargetPlaylistName;
                 _monitoringItem.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
                 _monitoringItem.IsOverrideTrends = monitoringItem.IsOverrideTrends;
+                _monitoringItem.IsSeries = monitoringItem.IsSeries;
 
                 _monitoringItem.SpecificAudios = new AudioCollection(audios);
                 _monitoringItem.Playlists = new PlaylistCollection(playlists);
@@ -110,7 +110,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
                         foreach (var playlist in monitoringItem.Playlists)
                         {
-                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.Id))
+                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.SpotifyId))
                             .Where(x => x != null && x.Track != null)
                             .Select(x => new Audio(x.Track))
                             .Where(x => x.IsFilled)
@@ -118,10 +118,10 @@ namespace TrendAudioFromSpotify.UI.Service
 
                             playlist.Audios = new AudioCollection(audiosOfPlaylist);
 
-                            if (audiosOfPlaylists.ContainsKey(playlist.Id))
+                            if (audiosOfPlaylists.ContainsKey(playlist.SpotifyId))
                                 continue;
 
-                            audiosOfPlaylists.Add(playlist.Id, audiosOfPlaylist);
+                            audiosOfPlaylists.Add(playlist.SpotifyId, audiosOfPlaylist);
 
                             await Task.Delay(TimeSpan.FromSeconds(1));
                         }
@@ -190,8 +190,8 @@ namespace TrendAudioFromSpotify.UI.Service
 
                         await SaveTrends(groupedAudios, audioBunch, monitoringItem.Playlists, monitoringItem);
 
-                        if (monitoringItem.AutoRecreatePlaylisOnSpotify)
-                            await RecreateOnSpotify(monitoringItem, _spotifyServices);
+                        //if (monitoringItem.AutoRecreatePlaylisOnSpotify) //TODO: build plalist and only then do recreation on spotify
+                            //await RecreateOnSpotify(monitoringItem, _spotifyServices);
                     }
                     finally
                     {
@@ -208,34 +208,14 @@ namespace TrendAudioFromSpotify.UI.Service
         {
             if (trends == null || trends.Count() == 0) return;
 
-            await _dataService.InsertAudioRangeAsync(audios);
-            await _dataService.InsertPlaylistAudioRangeAsync(playlists);
+            await _dataService.InsertAudioRangeAsync(trends);
+            await _dataService.InsertPlaylistAudioRangeAsync(trends);
             await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
         }
 
         private void RunTimer(MonitoringItem monitoringItem)
         {
             timer = new Timer(async x => await GetTrends(monitoringItem), null, monitoringItem.RefreshPeriod, monitoringItem.RefreshPeriod);
-        }
-
-        public async Task<FullPlaylist> RecreateOnSpotify(MonitoringItem monitoringItem, ISpotifyServices spotifyServices)
-        {
-            //add override, add fifo / typical type
-
-            _spotifyServices = spotifyServices;
-
-            FullPlaylist playlist = null;
-
-            if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
-            {
-                playlist = await _spotifyServices.RecreatePlaylist(monitoringItem.SpotifyPlaylistId, monitoringItem.TargetPlaylistName, monitoringItem.Trends.Select(x => x.Uri));
-            }
-            if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
-            {
-                playlist = await _spotifyServices.RecreatePlaylist(monitoringItem.SpotifyPlaylistId, monitoringItem.TargetPlaylistName, monitoringItem.Trends.Select(x => x.Uri));
-            }
-
-            return playlist;
         }
     }
 }

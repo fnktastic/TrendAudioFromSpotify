@@ -16,7 +16,7 @@ namespace TrendAudioFromSpotify.Data.Model
         public GroupDto Group { get; set; }
 
         [Key]
-        public string PlaylistId { get; set; }
+        public Guid PlaylistId { get; set; }
         public PlaylistDto Playlist { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

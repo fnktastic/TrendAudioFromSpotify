@@ -12,7 +12,9 @@ namespace TrendAudioFromSpotify.Data.Model
     public class PlaylistDto
     {
         [Key]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
+
+        public string SpotifyId { get; set; }
         public string Href { get; set; }
         public string Name { get; set; }
         public string Owner { get; set; }
@@ -27,6 +29,7 @@ namespace TrendAudioFromSpotify.Data.Model
         public bool IsSeries { get; set; } = false;
         public Guid SeriesKey { get; set; }
         public int SeriesNo { get; set; }
+        public string Uri { get; set; }
 
         public PlaylistTypeEnum PlaylistType { get; set; }
 

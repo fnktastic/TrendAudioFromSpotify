@@ -130,8 +130,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
-        public string SpotifyPlaylistId { get; set; }
-        public string SpotifyPlaylistHref { get; set; }
+        private bool _isSeries;
+        public bool IsSeries
+        {
+            get { return _isSeries; }
+            set
+            {
+                if (value == _isSeries) return;
+                _isSeries = value;
+                RaisePropertyChanged(nameof(IsSeries));
+            }
+        }
+
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public bool IsReady { get; set; } = false;

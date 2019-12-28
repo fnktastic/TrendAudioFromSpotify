@@ -702,7 +702,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             IsSongsAreaBusy = true;
 
-            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.Id);
+            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.SpotifyId);
             SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
 
             IsSongsAreaBusy = false;

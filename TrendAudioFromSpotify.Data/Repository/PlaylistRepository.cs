@@ -11,11 +11,13 @@ namespace TrendAudioFromSpotify.Data.Repository
 {
     public interface IPlaylistRepository
     {
-        Task<List<PlaylistDto>> GetAllAsync();
+        Task<List<PlaylistDto>> GetAllAsync(bool madeByUser = true);
 
         Task InsertAsync(PlaylistDto playlist);
 
         Task InsertRangeAsync(List<PlaylistDto> playlists);
+
+        Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref);
     }
 
     public class PlaylistRepository : IPlaylistRepository
@@ -27,40 +29,52 @@ namespace TrendAudioFromSpotify.Data.Repository
             _context = context;
         }
 
-        public async Task<List<PlaylistDto>> GetAllAsync()
+        public async Task<List<PlaylistDto>> GetAllAsync(bool madeByUser = true)
         {
             return await _context.Playlists
+                .Where(x => x.MadeByUser == madeByUser)
                 .Include(x => x.PlaylistAudios.Select(y => y.Audio))
                 .ToListAsync();
         }
 
         public async Task InsertAsync(PlaylistDto playlist)
         {
-            if (string.IsNullOrEmpty(playlist.Id) == false)
+            var dbEntry = await _context.Playlists.FindAsync(playlist.Id);
+
+            if (dbEntry == null)
             {
-                var dbEntry = await _context.Playlists.FindAsync(playlist.Id);
-
-                if (dbEntry == null)
-                {
-                    playlist.CreatedAt = DateTime.UtcNow;
-                    playlist.UpdatedAt = DateTime.UtcNow;
-                    _context.Playlists.Add(playlist);
-                }
-                else
-                {
-                    dbEntry.Href = playlist.Href;
-                    dbEntry.Name = playlist.Name;
-                    dbEntry.UpdatedAt = DateTime.UtcNow;
-                }
-
-                await _context.SaveChangesAsync();
+                playlist.CreatedAt = DateTime.UtcNow;
+                playlist.UpdatedAt = DateTime.UtcNow;
+                _context.Playlists.Add(playlist);
             }
+            else
+            {
+                dbEntry.Href = playlist.Href;
+                dbEntry.Name = playlist.Name;
+                dbEntry.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task InsertRangeAsync(List<PlaylistDto> playlists)
         {
             foreach (var playlist in playlists)
                 await InsertAsync(playlist);
+        }
+
+        public async Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref)
+        {
+            var playlist = _context.Playlists.Find(id);
+
+            if (playlist != null)
+            {
+                playlist.SpotifyId = playlistId;
+                playlist.Href = playlistHref;
+                playlist.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

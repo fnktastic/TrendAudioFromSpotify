@@ -31,12 +31,11 @@ namespace TrendAudioFromSpotify.Data.Model
         public string TargetPlaylistName { get; set; }
         public bool AutoRecreatePlaylisOnSpotify { get; set; }
         public bool IsOverrideTrends { get; set; }
+        public bool IsSeries { get; set; }
 
         public Guid GroupId { get; set; }
         public GroupDto Group { get; set; }
 
-        public string SpotifyPlaylistId { get; set; }
-        public string SpotifyPlaylistHref { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }

@@ -277,7 +277,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
             {
                 playlist = await _spotifyWebAPI.GetPlaylistAsync(userId: _privateProfile.Id, playlistId: playlistUri);
 
-                if (playlist.HasError() == true)
+                if (playlist.HasError() == false)
                     playlist = await _spotifyWebAPI.CreatePlaylistAsync(_privateProfile.Id, playlistName);
             }
             else

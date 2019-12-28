@@ -23,7 +23,7 @@
                        ItemsSource="{Binding Playlists}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <local:PlaylistControl />
+                        <local:BigPlaylistControl />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

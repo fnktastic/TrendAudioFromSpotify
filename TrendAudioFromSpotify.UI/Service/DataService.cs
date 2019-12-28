@@ -23,11 +23,11 @@ namespace TrendAudioFromSpotify.UI.Service
         Task InsertAudioRangeAsync(IEnumerable<Audio> audios);
         Task<List<MonitoringItem>> GetAllMonitoringItemsAsync();
         Task<List<Audio>> GetAllMonitoringItemAudioByMonitoringItemIdAsync(Guid monitoringItemId);
-        Task InsertPlaylistAudioRangeAsync(IEnumerable<Playlist> playlists);
+        Task InsertPlaylistAudioRangeAsync(IEnumerable<Audio> audios);
         Task RemoveGroupAsync(Group group);
         Task RemoveMonitoringItemAsync(MonitoringItem monitoringItem);
-        Task AddSpotifyUriHrefToMonitoringItemAsync(Guid id, string playlistId, string playlistHref);
-        Task<List<Playlist>> GetAllPlaylistsAsync();
+        Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref);
+        Task<List<Playlist>> GetAllPlaylistsAsync(bool madeByUser = true);
     }
 
     public class DataService : IDataService
@@ -144,28 +144,19 @@ namespace TrendAudioFromSpotify.UI.Service
             return audios.OrderByDescending(x => x.Hits).ToList();
         }
 
-        public async Task InsertPlaylistAudioRangeAsync(IEnumerable<Playlist> playlists)
+        public async Task InsertPlaylistAudioRangeAsync(IEnumerable<Audio> audios)
         {
             var playlistAudioDtos = new List<PlaylistAudioDto>();
 
-            foreach(var playlist in playlists)
+            foreach (var audio in audios)
             {
-                int no = 1;
-                foreach (var audio in playlist.Audios)
+                playlistAudioDtos.AddRange(audio.Playlists.Select(playlist => new PlaylistAudioDto()
                 {
-                    if (playlistAudioDtos.Any(x => x.AudioId == audio.Id && x.PlaylistId == playlist.Id)) continue;
-
-                    playlistAudioDtos.Add(new PlaylistAudioDto()
-                    {
-                        AudioId = audio.Id,
-                        PlaylistId = playlist.Id,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                        Placement = no
-                    });
-
-                    no++;
-                }
+                    AudioId = audio.Id,
+                    PlaylistId = playlist.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                }));
             }
 
             await _serialQueue.Enqueue(async () => await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos));
@@ -185,14 +176,14 @@ namespace TrendAudioFromSpotify.UI.Service
             await _serialQueue.Enqueue(async () => await _monitoringItemRepository.RemoveAsync(monitoringItemDto));
         }
 
-        public async Task AddSpotifyUriHrefToMonitoringItemAsync(Guid id, string playlistId, string playlistHref)
+        public async Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref)
         {
-            await _serialQueue.Enqueue(async () => await _monitoringItemRepository.AddSpotifyUriHrefAsync(id, playlistId, playlistHref));
+            await _serialQueue.Enqueue(async () => await _playlistRepository.AddSpotifyUriHrefAsync(id, playlistId, playlistHref));
         }
 
-        public async Task<List<Playlist>> GetAllPlaylistsAsync()
+        public async Task<List<Playlist>> GetAllPlaylistsAsync(bool madeByUser = true)
         {
-            var playlists = await _serialQueue.Enqueue(async () => await _playlistRepository.GetAllAsync());
+            var playlists = await _serialQueue.Enqueue(async () => await _playlistRepository.GetAllAsync(madeByUser));
 
             return _mapper.Map<List<Playlist>>(playlists);
         }

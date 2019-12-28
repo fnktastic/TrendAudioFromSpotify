@@ -60,6 +60,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             SimpleIoc.Default.Register<ISpotifyServices, SpotifyServices>();
 
             SimpleIoc.Default.Register<ISettingUtility, SettingUtility>();
+
+            SimpleIoc.Default.Register<IPlaylistService, PlaylistService>();
         }
 
         public MainWindowViewModel Main

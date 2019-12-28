@@ -199,6 +199,9 @@
     <Compile Include="Controls\AudioHitsControl.xaml.cs">
       <DependentUpon>AudioHitsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\BigPlaylistControl.xaml.cs">
+      <DependentUpon>BigPlaylistControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MonitoringControl.xaml.cs">
       <DependentUpon>MonitoringControl.xaml</DependentUpon>
     </Compile>
@@ -240,6 +243,7 @@
     <Compile Include="Service\DataService.cs" />
     <Compile Include="Service\GroupService.cs" />
     <Compile Include="Service\MonitoringService.cs" />
+    <Compile Include="Service\PlaylistService.cs" />
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />
@@ -274,6 +278,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\AudioHitsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\BigPlaylistControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

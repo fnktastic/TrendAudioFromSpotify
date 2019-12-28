@@ -29,7 +29,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         {
             foreach (var monitoringItemAudioDto in monitoringItemAudioDtos)
             {
-                var dbEntry = await _context.GroupPlaylists.FindAsync(monitoringItemAudioDto.MonitoringItemId, monitoringItemAudioDto.AudioId);
+                var dbEntry = await _context.MonitoringItemAudios.FindAsync(monitoringItemAudioDto.MonitoringItemId, monitoringItemAudioDto.AudioId);
 
                 if (dbEntry == null)
                 {

@@ -12,7 +12,7 @@ namespace TrendAudioFromSpotify.Data.Model
     public class PlaylistAudioDto
     {
         [Key]
-        public string PlaylistId { get; set; }
+        public Guid PlaylistId { get; set; }
         public PlaylistDto Playlist { get; set; }
 
         [Key]

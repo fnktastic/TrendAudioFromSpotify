@@ -37,6 +37,7 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock Text="Hit treshold:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
         <TextBlock Text="Playlist name:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
@@ -81,5 +82,8 @@
         <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="6"
                   Content="Override Trends" VerticalAlignment="Center" 
                   IsChecked="{Binding IsOverrideTrends}"/>
+        <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7"
+                  Content="Make Series" VerticalAlignment="Center" 
+                  IsChecked="{Binding IsSeries}"/>
     </Grid>
 </UserControl>

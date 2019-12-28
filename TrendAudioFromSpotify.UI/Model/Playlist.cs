@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Enum;
 using TrendAudioFromSpotify.UI.ViewModel;
 
 namespace TrendAudioFromSpotify.UI.Model
@@ -14,7 +15,9 @@ namespace TrendAudioFromSpotify.UI.Model
     {
         private SimplePlaylist _simplePlaylist { get; set; }
 
-        public string Id { get; set; }
+        public Guid Id { get; set; }
+
+        public string SpotifyId { get; set; }
 
         public string Name { get; set; }
 
@@ -36,6 +39,10 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public int SeriesNo { get; set; }
 
+        public string Uri { get; set; }
+
+        public PlaylistTypeEnum PlaylistType { get; set; }
+
         public virtual AudioCollection Audios { get; set; }
 
         private bool _isChecked;
@@ -53,12 +60,14 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             _simplePlaylist = simplePlaylist;
 
-            Id = _simplePlaylist.Id;
+            Id = Guid.NewGuid();
+            SpotifyId = _simplePlaylist.Id;
             Name = _simplePlaylist.Name;
             Total = _simplePlaylist.Tracks.Total;
             Owner = _simplePlaylist.Owner.DisplayName;
             OwnerProfileUrl = _simplePlaylist.Owner.Href;
             Href = _simplePlaylist.Href;
+            Uri = _simplePlaylist.Uri;
             Cover = _simplePlaylist.Images != null && _simplePlaylist.Images.Count > 0 ? _simplePlaylist.Images.First().Url : "null";
         }
 

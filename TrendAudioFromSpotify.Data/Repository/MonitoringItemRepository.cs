@@ -16,8 +16,6 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task InsertAsync(MonitoringItemDto monitoringItem);
 
         Task RemoveAsync(MonitoringItemDto monitoringItemDto);
-
-        Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref);
     }
 
     public class MonitoringItemRepository : IMonitoringItemRepository
@@ -78,19 +76,6 @@ namespace TrendAudioFromSpotify.Data.Repository
             if(dbEntry != null)
             {
                 dbEntry.IsDeleted = true;
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref)
-        {
-            var monitoringItem = _context.MonitoringItems.Find(id);
-
-            if(monitoringItem != null)
-            {
-                monitoringItem.SpotifyPlaylistId = playlistId;
-                monitoringItem.SpotifyPlaylistHref = playlistHref;
             }
 
             await _context.SaveChangesAsync();
