@@ -21,6 +21,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
     public class MonitoringService : IMonitoringService
     {
+        private const int MAX_SIZE = 150;
         private ISpotifyServices _spotifyServices;
         private IDataService _dataService;
         private bool processingSpecificAudios = false;
@@ -161,7 +162,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits == int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(monitoringItem.MaxSize))
+                            .Take(MAX_SIZE)
                             .ToList();
                         }
 
@@ -170,7 +171,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits >= int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(monitoringItem.MaxSize))
+                            .Take(MAX_SIZE)
                             .ToList();
                         }
 
@@ -179,7 +180,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits <= int.Parse(monitoringItem.HitTreshold))
                             .OrderByDescending(x => x.Hits)
-                            .Take(int.Parse(monitoringItem.MaxSize))
+                            .Take(MAX_SIZE)
                             .ToList();
                         }
 
