@@ -28,7 +28,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string Cover { get; set; }
 
-        public bool SelfMade { get; set; } = false;
+        public bool MadeByUser { get; set; }
 
         public bool IsSeries { get; set; } = false;
 

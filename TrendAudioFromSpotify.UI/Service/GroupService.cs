@@ -30,7 +30,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public async Task MonitorGroupAsync(ISpotifyServices spotifyServices, Group group)
         {
-            var monitoringItem = _monitoringService.Initiate(spotifyServices, group, group.GroupSourceMonitoringItem, new AudioCollection(), group.Playlists);
+            var monitoringItem = _monitoringService.Initiate(group, group.GroupSourceMonitoringItem, new AudioCollection(), group.Playlists);
 
             if (monitoringItem != null && monitoringItem.IsReady)
             {

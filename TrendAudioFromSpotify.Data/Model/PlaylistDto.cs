@@ -23,7 +23,7 @@ namespace TrendAudioFromSpotify.Data.Model
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; }
 
-        public bool SelfMade { get; set; } = false;
+        public bool MadeByUser { get; set; }
         public bool IsSeries { get; set; } = false;
         public Guid SeriesKey { get; set; }
         public int SeriesNo { get; set; }
@@ -33,7 +33,7 @@ namespace TrendAudioFromSpotify.Data.Model
         public virtual ICollection<PlaylistAudioDto> PlaylistAudios { get; set; }
 
         [NotMapped]
-        public virtual ICollection<AudioDto> Audios => PlaylistAudios?.Select(x => x.Audio).ToList();
+        public virtual ICollection<AudioDto> Audios => PlaylistAudios?.OrderBy(x => x.Placement).Select(x => x.Audio).ToList();
 
         public virtual ICollection<GroupPlaylistDto> GroupPlaylists { get; set; }
     }

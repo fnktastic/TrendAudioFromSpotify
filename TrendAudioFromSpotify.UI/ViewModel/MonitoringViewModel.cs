@@ -143,7 +143,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<MonitoringItem> ProcessMonitoringItemCommand => _processMonitoringItemCommand ?? (_processMonitoringItemCommand = new RelayCommand<MonitoringItem>(ProcessMonitoringItem));
         private void ProcessMonitoringItem(MonitoringItem monitoringItem)
         {
-            var _monitoringItem = _monitoringService.Initiate(SpotifyServices, monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
+            var _monitoringItem = _monitoringService.Initiate(monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
             _monitoringService.ProcessAsync(_monitoringItem);
         }
 

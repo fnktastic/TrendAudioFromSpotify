@@ -23,7 +23,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task InsertAudioRangeAsync(IEnumerable<Audio> audios);
         Task<List<MonitoringItem>> GetAllMonitoringItemsAsync();
         Task<List<Audio>> GetAllMonitoringItemAudioByMonitoringItemIdAsync(Guid monitoringItemId);
-        Task InsertPlaylistAudioRangeAsync(IEnumerable<Audio> audios);
+        Task InsertPlaylistAudioRangeAsync(IEnumerable<Playlist> playlists);
         Task RemoveGroupAsync(Group group);
         Task RemoveMonitoringItemAsync(MonitoringItem monitoringItem);
         Task AddSpotifyUriHrefToMonitoringItemAsync(Guid id, string playlistId, string playlistHref);
@@ -144,19 +144,28 @@ namespace TrendAudioFromSpotify.UI.Service
             return audios.OrderByDescending(x => x.Hits).ToList();
         }
 
-        public async Task InsertPlaylistAudioRangeAsync(IEnumerable<Audio> audios)
+        public async Task InsertPlaylistAudioRangeAsync(IEnumerable<Playlist> playlists)
         {
             var playlistAudioDtos = new List<PlaylistAudioDto>();
 
-            foreach(var audio in audios)
+            foreach(var playlist in playlists)
             {
-                playlistAudioDtos.AddRange(audio.Playlists.Select(playlist => new PlaylistAudioDto()
+                int no = 1;
+                foreach (var audio in playlist.Audios)
                 {
-                    AudioId = audio.Id,
-                    PlaylistId = playlist.Id,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                }));
+                    if (playlistAudioDtos.Any(x => x.AudioId == audio.Id && x.PlaylistId == playlist.Id)) continue;
+
+                    playlistAudioDtos.Add(new PlaylistAudioDto()
+                    {
+                        AudioId = audio.Id,
+                        PlaylistId = playlist.Id,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        Placement = no
+                    });
+
+                    no++;
+                }
             }
 
             await _serialQueue.Enqueue(async () => await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos));

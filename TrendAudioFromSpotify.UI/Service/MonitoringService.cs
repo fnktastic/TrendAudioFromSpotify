@@ -15,7 +15,7 @@ namespace TrendAudioFromSpotify.UI.Service
 {
     public interface IMonitoringService
     {
-        MonitoringItem Initiate(ISpotifyServices spotifyServices, Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
+        MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
         Task<bool> ProcessAsync(MonitoringItem monitoringItem);
         Task<FullPlaylist> RecreateOnSpotify(MonitoringItem monitoringItem, ISpotifyServices spotifyServices);
     }
@@ -27,19 +27,18 @@ namespace TrendAudioFromSpotify.UI.Service
         private bool processingSpecificAudios = false;
         private Timer timer;
 
-        public MonitoringService(IDataService dataService)
+        public MonitoringService(IDataService dataService, ISpotifyServices spotifyServices)
         {
             _dataService = dataService;
+            _spotifyServices = spotifyServices;
         }
 
-        public MonitoringItem Initiate(ISpotifyServices spotifyServices, Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists)
+        public MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists)
         {
             MonitoringItem _monitoringItem = new MonitoringItem();
 
             try
             {
-                _spotifyServices = spotifyServices;
-
                 _monitoringItem = new MonitoringItem();
                 _monitoringItem.Group = new Group();
 
@@ -189,7 +188,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             monitoringItem.Trends = new AudioCollection(groupedAudios);
                         });
 
-                        await SaveTrends(groupedAudios, monitoringItem);
+                        await SaveTrends(groupedAudios, audioBunch, monitoringItem.Playlists, monitoringItem);
 
                         if (monitoringItem.AutoRecreatePlaylisOnSpotify)
                             await RecreateOnSpotify(monitoringItem, _spotifyServices);
@@ -205,12 +204,12 @@ namespace TrendAudioFromSpotify.UI.Service
             }
         }
 
-        private async Task SaveTrends(IEnumerable<Audio> audios, MonitoringItem monitoringItem)
+        private async Task SaveTrends(IEnumerable<Audio> trends, IEnumerable<Audio> audios, IEnumerable<Playlist> playlists, MonitoringItem monitoringItem)
         {
-            if (audios == null || audios.Count() == 0) return;
+            if (trends == null || trends.Count() == 0) return;
 
             await _dataService.InsertAudioRangeAsync(audios);
-            await _dataService.InsertPlaylistAudioRangeAsync(audios);
+            await _dataService.InsertPlaylistAudioRangeAsync(playlists);
             await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
         }
 
