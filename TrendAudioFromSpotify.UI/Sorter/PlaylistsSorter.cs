@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,16 +7,20 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.UI.Model;
 
+
 namespace TrendAudioFromSpotify.UI.Sorter
 {
-    public class PlaylistsSorter : IComparer<Playlist>
+    public class PlaylistsSorter : IComparer
     {
         private static readonly Regex numTextSplitRegex = new Regex(@"(?<=\D)(?=\d)|(?<=\d)(?=\D)", RegexOptions.Compiled);
 
-        public int Compare(Playlist o1, Playlist o2)
+        public int Compare(object o1, object o2)
         {
-            string x = o2.Name;
-            string y = o2.Name;
+            var pl1 = o1 as Playlist;
+            var pl2 = o2 as Playlist;
+
+            string x = pl1.Name + " " + pl1.SeriesNo;
+            string y = pl2.Name + " " + pl2.SeriesNo;
             x = x ?? "";
             y = y ?? "";
             string[] xParts = numTextSplitRegex.Split(x);

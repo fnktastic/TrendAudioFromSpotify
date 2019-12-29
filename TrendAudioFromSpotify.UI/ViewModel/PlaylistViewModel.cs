@@ -8,10 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
+using TrendAudioFromSpotify.UI.Sorter;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
@@ -48,9 +50,25 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             get { return _playlists; }
             set
             {
-                if (value ==_playlists) return;
+                if (value == _playlists) return;
                 _playlists = value;
                 RaisePropertyChanged(nameof(Playlists));
+            }
+        }
+
+        private string _playlistSearchText;
+        public string PlaylistSearchText
+        {
+            get { return _playlistSearchText; }
+            set
+            {
+                if (value == _playlistSearchText) return;
+                _playlistSearchText = value;
+
+                if (FilteredPlaylistCollection != null)
+                    FilteredPlaylistCollection.Refresh();
+
+                RaisePropertyChanged(nameof(PlaylistSearchText));
             }
         }
         #endregion
@@ -67,6 +85,25 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
+        #region filters
+        private bool FilteredPlaylistCollection_Filter(object obj)
+        {
+            var playlist = obj as Playlist;
+
+            if (string.IsNullOrWhiteSpace(_playlistSearchText))
+            {
+                return true;
+            }
+
+            if (playlist.Name.ToUpper().Contains(_playlistSearchText.ToUpper()))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
+
         #region dialogs
         private async Task ShowMessage(string header, string message)
         {
@@ -79,6 +116,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _logger.Error("Error in MonitoringViewModel.ShowMessage", ex);
             }
         }
+
+        private ListCollectionView _filteredPlaylistCollection;
+        public ListCollectionView FilteredPlaylistCollection
+        {
+            get => _filteredPlaylistCollection;
+            set
+            {
+                if (Equals(_filteredPlaylistCollection, value)) return;
+                _filteredPlaylistCollection = value;
+                RaisePropertyChanged(nameof(FilteredPlaylistCollection));
+            }
+        }
         #endregion
 
         #region methods
@@ -89,6 +138,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             var playlists = await _dataService.GetAllPlaylistsAsync(true);
 
             Playlists = new PlaylistCollection(playlists);
+
+            FilteredPlaylistCollection = GetAudiosCollectionView(_playlists);
+
+            FilteredPlaylistCollection.Filter += FilteredPlaylistCollection_Filter;
+
+            FilteredPlaylistCollection.CustomSort = new PlaylistsSorter();
+        }
+
+        public ListCollectionView GetAudiosCollectionView(IEnumerable<Playlist> playlists)
+        {
+            return (ListCollectionView)CollectionViewSource.GetDefaultView(playlists);
         }
         #endregion
 

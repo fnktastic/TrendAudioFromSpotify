@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              mc:Ignorable="d" 
              DataContext="{Binding Playlist, Source={StaticResource Locator}}"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -19,14 +20,28 @@
 
         <GroupBox Header="Stored Playlists" Background="Black" BorderBrush="Black"
                   Grid.Column="0" Grid.Row="0">
-            <ListBox   SelectedItem="{Binding SelectedPlaylist}"
-                       ItemsSource="{Binding Playlists}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <local:BigPlaylistControl />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding PlaylistSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="7 2 2 2"
+                                 VerticalContentAlignment="Center"
+                                 Grid.Row="0"
+                                 Style="{DynamicResource SearchMetroTextBox}"
+                                 Controls:TextBoxHelper.Watermark="filter playlists" />
+
+                <ListBox SelectedItem="{Binding SelectedPlaylist}" Grid.Row="2"
+                         ItemsSource="{Binding FilteredPlaylistCollection}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:BigPlaylistControl />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
         </GroupBox>
         <GridSplitter 
                     ResizeDirection="Columns" Grid.Column="1" Grid.Row="0"
