@@ -159,10 +159,16 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             var syncedPalylist = await _playlistService.RecreateOnSpotify(playlist);
 
-            await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, syncedPalylist.Id, syncedPalylist.Href);
-
             playlist.SpotifyId = syncedPalylist.Id;
             playlist.Href = syncedPalylist.Href;
+            playlist.Uri = syncedPalylist.Uri;
+
+            playlist.Owner = syncedPalylist.Owner.DisplayName;
+            playlist.OwnerProfileUrl = syncedPalylist.Owner.Href;
+            playlist.Cover = syncedPalylist.Images != null && syncedPalylist.Images.Count > 0 ? syncedPalylist.Images.First().Url : "null";
+
+            await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, playlist.SpotifyId, playlist.Href, playlist.Uri,
+                                                                playlist.Owner, playlist.OwnerProfileUrl, playlist.Cover);
         }
 
         private RelayCommand<Playlist> _selectPlaylistCommand;

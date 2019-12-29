@@ -39,8 +39,6 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public int SeriesNo { get; set; }
 
-        public string Uri { get; set; }
-
         public PlaylistTypeEnum PlaylistType { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -55,6 +53,30 @@ namespace TrendAudioFromSpotify.UI.Model
                     return string.Format("{0} {1}", Name, SeriesNo);
 
                 return Name;
+            }
+        }
+
+        public virtual bool IsExported
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Uri) == false)
+                    return true;
+
+                return false;
+            }
+        }
+
+        private string _uri;
+        public string Uri
+        {
+            get { return _uri; }
+            set
+            {
+                if (value == _uri) return;
+                _uri = value;
+                RaisePropertyChanged(nameof(Uri));
+                RaisePropertyChanged(nameof(IsExported));
             }
         }
 

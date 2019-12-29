@@ -17,7 +17,7 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         Task InsertRangeAsync(List<PlaylistDto> playlists);
 
-        Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref);
+        Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref, string uri, string owner, string ownerProfileUrl, string cover);
 
         Task RemoveAsync(PlaylistDto playlist);
 
@@ -74,7 +74,7 @@ namespace TrendAudioFromSpotify.Data.Repository
                 await InsertAsync(playlist);
         }
 
-        public async Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref)
+        public async Task AddSpotifyUriHrefAsync(Guid id, string playlistId, string playlistHref, string uri, string owner, string ownerProfileUrl, string cover)
         {
             var playlist = _context.Playlists.Find(id);
 
@@ -82,6 +82,10 @@ namespace TrendAudioFromSpotify.Data.Repository
             {
                 playlist.SpotifyId = playlistId;
                 playlist.Href = playlistHref;
+                playlist.Uri = uri;
+                playlist.Owner = owner;
+                playlist.OwnerProfileUrl = ownerProfileUrl;
+                playlist.Cover = cover;
                 playlist.UpdatedAt = DateTime.UtcNow;
             }
 

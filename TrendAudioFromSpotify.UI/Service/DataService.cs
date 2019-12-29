@@ -26,7 +26,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task InsertPlaylistAudioRangeAsync(IEnumerable<Audio> audios);
         Task RemoveGroupAsync(Group group);
         Task RemoveMonitoringItemAsync(MonitoringItem monitoringItem);
-        Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref);
+        Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref, string playlistUri, string playlistOwner, string playlistOwnerProfileUrl, string playlistCover);
         Task<List<Playlist>> GetAllPlaylistsAsync(bool madeByUser = true);
         Task RemovePlaylistAsync(Playlist playlist);
         Task RemovePlaylistPhysicallyAsync(string playlistName);
@@ -182,9 +182,9 @@ namespace TrendAudioFromSpotify.UI.Service
             await _serialQueue.Enqueue(async () => await _monitoringItemRepository.RemoveAsync(monitoringItemDto));
         }
 
-        public async Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref)
+        public async Task AddSpotifyUriHrefToPlaylistAsync(Guid id, string playlistId, string playlistHref, string playlistUri, string playlistOwner, string  playlistOwnerProfileUrl, string playlistCover)
         {
-            await _serialQueue.Enqueue(async () => await _playlistRepository.AddSpotifyUriHrefAsync(id, playlistId, playlistHref));
+            await _serialQueue.Enqueue(async () => await _playlistRepository.AddSpotifyUriHrefAsync(id, playlistId, playlistHref, playlistUri, playlistOwner, playlistOwnerProfileUrl, playlistCover));
         }
 
         public async Task<List<Playlist>> GetAllPlaylistsAsync(bool madeByUser = true)

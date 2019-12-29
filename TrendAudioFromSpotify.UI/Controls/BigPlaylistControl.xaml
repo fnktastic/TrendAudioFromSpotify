@@ -39,7 +39,27 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="55" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding DisplayName}" Grid.Row="0" Grid.Column="0" FontSize="18" FontWeight="Thin" />
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock Text="{Binding DisplayName}" FontSize="18" FontWeight="Thin" VerticalAlignment="Center" />
+                        <icons:PackIconBoxIcons Kind="LogosSpotify" Width="18" Height="18"  
+                                                Margin="5 0 0 0"
+                                            HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <icons:PackIconBoxIcons.Style>
+                                <Style TargetType="{x:Type icons:PackIconBoxIcons}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsExported}" Value="True">
+                                            <Setter Property="Foreground" Value="SpringGreen" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsExported}" Value="False">
+                                            <Setter Property="Foreground" Value="White" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </icons:PackIconBoxIcons.Style>
+                        </icons:PackIconBoxIcons>
+                    </StackPanel>
+                    
                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding CreatedAt, StringFormat=Created: {0}}" />
                     <TextBlock Grid.Row="2" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
                 </Grid>
@@ -52,7 +72,7 @@
                         CommandParameter="{Binding}"
                         ToolTip="Sync with Spotify"
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
-                        <icons:Material Kind="Sync" />
+                        <icons:Material Kind="Send" />
                     </Button>
                     <Button 
                         Width="40" Height="40"
