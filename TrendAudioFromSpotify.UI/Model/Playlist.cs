@@ -23,8 +23,6 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public int Total { get; set; }
 
-        public string Owner { get; set; }
-
         public string OwnerProfileUrl { get; set; }
 
         public string Href { get; set; }
@@ -64,6 +62,18 @@ namespace TrendAudioFromSpotify.UI.Model
                     return true;
 
                 return false;
+            }
+        }
+
+        private string _owner;
+        public string Owner
+        {
+            get { return _owner; }
+            set
+            {
+                if (value == _owner) return;
+                _owner = value;
+                RaisePropertyChanged(nameof(Owner));
             }
         }
 

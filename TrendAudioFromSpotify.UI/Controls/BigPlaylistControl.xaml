@@ -59,10 +59,10 @@
                                 </Style>
                             </icons:PackIconBoxIcons.Style>
                         </icons:PackIconBoxIcons>
-                        <Border CornerRadius="3" Background="#383838" Margin="5 5 0 0" Padding="3 1" VerticalAlignment="Top">
+                        <Border CornerRadius="3" Background="#383838" Margin="5 5 0 0" Padding="3 1" VerticalAlignment="Top"
+                                Visibility="{Binding IsSeries, Converter={StaticResource BoolToVisibleOrCollapsed}}">
                             <TextBlock Text="SERIES" FontWeight="Light" Foreground="LightCyan"
-                                       HorizontalAlignment="Right"
-                                       Visibility="{Binding IsSeries, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
+                                       HorizontalAlignment="Right" />
                         </Border>
                     </StackPanel>
                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding CreatedAt, StringFormat=Created: {0}}" />
