@@ -40,6 +40,22 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
+        private string _playlistSearchText;
+        public string PlaylistSearchText
+        {
+            get { return _playlistSearchText; }
+            set
+            {
+                if (value == _playlistSearchText) return;
+                _playlistSearchText = value;
+
+                if (FilteredPlaylistCollection != null)
+                    FilteredPlaylistCollection.Refresh();
+
+                RaisePropertyChanged(nameof(PlaylistSearchText));
+            }
+        }
+
         private Playlist _selectedPlaylist;
         public Playlist SelectedPlaylist
         {
@@ -65,22 +81,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (value == _playlists) return;
                 _playlists = value;
                 RaisePropertyChanged(nameof(Playlists));
-            }
-        }
-
-        private string _playlistSearchText;
-        public string PlaylistSearchText
-        {
-            get { return _playlistSearchText; }
-            set
-            {
-                if (value == _playlistSearchText) return;
-                _playlistSearchText = value;
-
-                if (FilteredPlaylistCollection != null)
-                    FilteredPlaylistCollection.Refresh();
-
-                RaisePropertyChanged(nameof(PlaylistSearchText));
             }
         }
         #endregion

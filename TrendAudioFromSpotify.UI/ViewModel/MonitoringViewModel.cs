@@ -9,12 +9,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
+using TrendAudioFromSpotify.UI.Sorter;
 using TrendAudioFromSpotify.UI.Utility;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
@@ -31,6 +33,36 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region properties
+        private ListCollectionView _filteredMonitoringItemCollection;
+        public ListCollectionView FilteredMonitoringItemCollection
+        {
+            get => _filteredMonitoringItemCollection;
+            set
+            {
+                if (Equals(_filteredMonitoringItemCollection, value)) return;
+                _filteredMonitoringItemCollection = value;
+                RaisePropertyChanged(nameof(FilteredMonitoringItemCollection));
+            }
+        }
+
+        private string _monitoringItemSearchText;
+        public string MonitoringItemSearchText
+        {
+            get { return _monitoringItemSearchText; }
+            set
+            {
+                if (value == _monitoringItemSearchText) return;
+                _monitoringItemSearchText = value;
+
+                if (FilteredMonitoringItemCollection != null)
+                    FilteredMonitoringItemCollection.Refresh();
+
+                RaisePropertyChanged(nameof(MonitoringItemSearchText));
+            }
+        }
+
+
+
         private MonitoringItemCollection _monitoringItems;
         public MonitoringItemCollection MonitoringItems
         {
@@ -77,6 +109,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
 
         #region private methods
+        public ListCollectionView GetAudiosCollectionView(IEnumerable<MonitoringItem> monitoringItems)
+        {
+            return (ListCollectionView)CollectionViewSource.GetDefaultView(monitoringItems);
+        }
+
         private void AddMonitoringItemMessage(AddMonitoringItemMessage addMonitoringItemMessage)
         {
             if (addMonitoringItemMessage != null && addMonitoringItemMessage.MonitoringItem != null)
@@ -97,6 +134,31 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             var monitoringItems = await _dataService.GetAllMonitoringItemsAsync();
 
             MonitoringItems = new MonitoringItemCollection(monitoringItems);
+
+            FilteredMonitoringItemCollection = GetAudiosCollectionView(_monitoringItems);
+
+            FilteredMonitoringItemCollection.Filter += FilteredMonitoringItemCollection_Filter;
+
+            FilteredMonitoringItemCollection.CustomSort = new MonitoringItemSorter();
+        }
+        #endregion
+
+        #region filters
+        private bool FilteredMonitoringItemCollection_Filter(object obj)
+        {
+            var monitoringItem = obj as MonitoringItem;
+
+            if (string.IsNullOrWhiteSpace(_monitoringItemSearchText))
+            {
+                return true;
+            }
+
+            if (monitoringItem.TargetPlaylistName.ToUpper().Contains(_monitoringItemSearchText.ToUpper()))
+            {
+                return true;
+            }
+
+            return false;
         }
         #endregion
 

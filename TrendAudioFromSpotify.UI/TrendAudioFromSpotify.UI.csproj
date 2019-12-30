@@ -246,6 +246,8 @@
     <Compile Include="Service\GroupService.cs" />
     <Compile Include="Service\MonitoringService.cs" />
     <Compile Include="Service\PlaylistService.cs" />
+    <Compile Include="Sorter\GroupSorter.cs" />
+    <Compile Include="Sorter\MonitoringItemSorter.cs" />
     <Compile Include="Sorter\PlaylistsSorter.cs" />
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />

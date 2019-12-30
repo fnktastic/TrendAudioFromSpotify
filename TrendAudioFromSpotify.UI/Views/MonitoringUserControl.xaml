@@ -7,6 +7,7 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              mc:Ignorable="d" 
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              Dialog:DialogParticipation.Register="{Binding}"
              xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
              xmlns:customControls="clr-namespace:TrendAudioFromSpotify.UI.Controls"
@@ -24,14 +25,29 @@
 
         <GroupBox Header="Monitoring Tasks" Background="Black" BorderBrush="Black"
                   Grid.Column="0" Grid.Row="0">
-            <ListBox   SelectedItem="{Binding SelectedMonitoringItem}"
-                       ItemsSource="{Binding MonitoringItems}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <local:MonitoringControl />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBox Text="{Binding MonitoringItemSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                 Margin="7 2 2 2"
+                                 VerticalContentAlignment="Center"
+                                 Grid.Row="0"
+                                 Style="{DynamicResource SearchMetroTextBox}"
+                                 Controls:TextBoxHelper.Watermark="filter monitoring items" />
+
+                <ListBox SelectedItem="{Binding SelectedMonitoringItem}" Grid.Row="2"
+                       ItemsSource="{Binding FilteredMonitoringItemCollection}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <local:MonitoringControl />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
         </GroupBox>
         <GridSplitter 
                     ResizeDirection="Columns" Grid.Column="1" Grid.Row="0"

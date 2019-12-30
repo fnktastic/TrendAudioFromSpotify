@@ -8,12 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
+using TrendAudioFromSpotify.UI.Sorter;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
@@ -28,6 +30,34 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region properties
+        private ListCollectionView _filteredGroupCollection;
+        public ListCollectionView FilteredGroupCollection
+        {
+            get => _filteredGroupCollection;
+            set
+            {
+                if (Equals(_filteredGroupCollection, value)) return;
+                _filteredGroupCollection = value;
+                RaisePropertyChanged(nameof(FilteredGroupCollection));
+            }
+        }
+
+        private string _groupSearchText;
+        public string GroupSearchText
+        {
+            get { return _groupSearchText; }
+            set
+            {
+                if (value == _groupSearchText) return;
+                _groupSearchText = value;
+
+                if (FilteredGroupCollection != null)
+                    FilteredGroupCollection.Refresh();
+
+                RaisePropertyChanged(nameof(GroupSearchText));
+            }
+        }
+
         private GroupCollection _groups;
         public GroupCollection Groups
         {
@@ -75,14 +105,44 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             var groups = await _dataService.GetAllGroupsAsync();
 
             Groups = new GroupCollection(groups);
+
+            FilteredGroupCollection = GetAudiosCollectionView(_groups);
+
+            FilteredGroupCollection.Filter += FilteredGroupCollection_Filter;
+
+            FilteredGroupCollection.CustomSort = new GroupSorter();
         }
         #endregion
 
         #region private methods
+        public ListCollectionView GetAudiosCollectionView(IEnumerable<Group> groups)
+        {
+            return (ListCollectionView)CollectionViewSource.GetDefaultView(groups);
+        }
+
         private void AddGroupMessage(AddGroupMessage addGroupMessage)
         {
             if (addGroupMessage != null && addGroupMessage.Group != null)
                 _groups.Add(addGroupMessage.Group);
+        }
+        #endregion
+
+        #region filters
+        private bool FilteredGroupCollection_Filter(object obj)
+        {
+            var group = obj as Group;
+
+            if (string.IsNullOrWhiteSpace(_groupSearchText))
+            {
+                return true;
+            }
+
+            if (group.Name.ToUpper().Contains(_groupSearchText.ToUpper()))
+            {
+                return true;
+            }
+
+            return false;
         }
         #endregion
 
