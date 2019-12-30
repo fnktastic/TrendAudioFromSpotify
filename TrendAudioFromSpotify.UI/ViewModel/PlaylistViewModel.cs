@@ -107,7 +107,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 return true;
             }
 
-            if (playlist.Name.ToUpper().Contains(_playlistSearchText.ToUpper()))
+            if (playlist.DisplayName.ToUpper().Contains(_playlistSearchText.ToUpper()))
             {
                 return true;
             }
