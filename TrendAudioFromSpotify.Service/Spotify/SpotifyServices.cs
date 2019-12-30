@@ -24,6 +24,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<PublicProfile> GetMyProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
         Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
+        Task RemovePlaylistAsync(string playlistId);
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -320,6 +321,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
             }
 
             return foundPlaylists;
+        }
+
+        public async Task RemovePlaylistAsync(string playlistId)
+        {
+            var error = await _spotifyWebAPI.UnfollowPlaylistAsync(_privateProfile.Id, playlistId);
         }
     }
 }

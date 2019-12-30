@@ -28,6 +28,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region properties
+        private ListCollectionView _filteredPlaylistCollection;
+        public ListCollectionView FilteredPlaylistCollection
+        {
+            get => _filteredPlaylistCollection;
+            set
+            {
+                if (Equals(_filteredPlaylistCollection, value)) return;
+                _filteredPlaylistCollection = value;
+                RaisePropertyChanged(nameof(FilteredPlaylistCollection));
+            }
+        }
+
         private Playlist _selectedPlaylist;
         public Playlist SelectedPlaylist
         {
@@ -117,15 +129,17 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private ListCollectionView _filteredPlaylistCollection;
-        public ListCollectionView FilteredPlaylistCollection
+        private async Task<string> RemoveFromSpotifyConfirmation(string header, string message)
         {
-            get => _filteredPlaylistCollection;
-            set
+            try
             {
-                if (Equals(_filteredPlaylistCollection, value)) return;
-                _filteredPlaylistCollection = value;
-                RaisePropertyChanged(nameof(FilteredPlaylistCollection));
+                return await _dialogCoordinator.ShowInputAsync(this, header, message);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error in MonitoringViewModel.ShowMessage", ex);
+
+                return string.Empty;
             }
         }
         #endregion
@@ -182,6 +196,16 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Playlist> DeletePlaylistCommand => _deletePlaylistCommand ?? (_deletePlaylistCommand = new RelayCommand<Playlist>(DeletePlaylist));
         private async void DeletePlaylist(Playlist playlist)
         {
+            if (playlist.IsExported)
+            {
+                string confirmMessage = await RemoveFromSpotifyConfirmation("Confirmation", string.Format("Also remove {0} from Spotify? Type 'yes' to confirm.", playlist.DisplayName));
+
+                if (string.Equals(confirmMessage, "yes", StringComparison.OrdinalIgnoreCase))
+                {
+                    await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
+                }
+            }
+
             _playlists.Remove(playlist);
 
             await _dataService.RemovePlaylistAsync(playlist);

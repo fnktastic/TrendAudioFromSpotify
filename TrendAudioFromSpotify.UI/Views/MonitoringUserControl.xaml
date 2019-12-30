@@ -7,6 +7,8 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              mc:Ignorable="d" 
+             Dialog:DialogParticipation.Register="{Binding}"
+             xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
              xmlns:customControls="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              DataContext="{Binding Monitoring, Source={StaticResource Locator}}"
              d:DesignHeight="450" d:DesignWidth="800">
