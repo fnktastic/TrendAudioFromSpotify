@@ -17,20 +17,24 @@ namespace TrendAudioFromSpotify.UI.Service
     {
         MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
         Task<bool> ProcessAsync(MonitoringItem monitoringItem);
+        Task BuildPlaylistAndRecreateOnSpotify(MonitoringItem monitoringItem);
     }
 
     public class MonitoringService : IMonitoringService
     {
         private const int MAX_SIZE = 150;
-        private ISpotifyServices _spotifyServices;
-        private IDataService _dataService;
+        private readonly ISchedulingService _schedulingService;
+        private readonly ISpotifyServices _spotifyServices;
+        private readonly IDataService _dataService;
+        private readonly IPlaylistService _playlistService;
         private bool processingSpecificAudios = false;
-        private Timer timer;
 
-        public MonitoringService(IDataService dataService, ISpotifyServices spotifyServices)
+        public MonitoringService(IDataService dataService, ISpotifyServices spotifyServices, ISchedulingService schedulingService, IPlaylistService playlistService)
         {
             _dataService = dataService;
             _spotifyServices = spotifyServices;
+            _schedulingService = schedulingService;
+            _playlistService = playlistService;
         }
 
         public MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists)
@@ -86,7 +90,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 await GetTrends(monitoringItem);
 
                 if (monitoringItem.RefreshPeriod > TimeSpan.Zero)
-                    RunTimer(monitoringItem);
+                    await StartSchedulingTimer(monitoringItem);
 
                 return true;
             }
@@ -191,8 +195,8 @@ namespace TrendAudioFromSpotify.UI.Service
 
                         await SaveTrends(groupedAudios, audioBunch, monitoringItem.Playlists, monitoringItem);
 
-                        //if (monitoringItem.AutoRecreatePlaylisOnSpotify) //TODO: build plalist and only then do recreation on spotify
-                            //await RecreateOnSpotify(monitoringItem, _spotifyServices);
+                        if (monitoringItem.AutoRecreatePlaylisOnSpotify) 
+                            await BuildPlaylistAndRecreateOnSpotify(monitoringItem);
                     }
                     finally
                     {
@@ -214,9 +218,14 @@ namespace TrendAudioFromSpotify.UI.Service
             await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
         }
 
-        private void RunTimer(MonitoringItem monitoringItem)
+        private async Task StartSchedulingTimer(MonitoringItem monitoringItem)
         {
-            timer = new Timer(async x => await GetTrends(monitoringItem), null, monitoringItem.RefreshPeriod, monitoringItem.RefreshPeriod);
+            await _schedulingService.ScheduleMonitoringItem();
+        }
+
+        public async Task BuildPlaylistAndRecreateOnSpotify(MonitoringItem monitoringItem)
+        {
+
         }
     }
 }

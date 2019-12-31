@@ -143,6 +143,9 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Quartz, Version=3.0.7.0, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Quartz.3.0.7\lib\net452\Quartz.dll</HintPath>
+    </Reference>
     <Reference Include="SpotifyAPI.Web, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SpotifyAPI.Web.4.2.2\lib\netstandard2.0\SpotifyAPI.Web.dll</HintPath>
     </Reference>
@@ -151,10 +154,12 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -232,6 +237,7 @@
     <Compile Include="Enum\RefreshActionEnum.cs" />
     <Compile Include="Enum\TabsEnum.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Job\MonitorItemJob.cs" />
     <Compile Include="Messaging\AddMonitoringItemMessage.cs" />
     <Compile Include="Messaging\AddGroupMessage.cs" />
     <Compile Include="Messaging\PlayAudioMessage.cs" />
@@ -246,6 +252,7 @@
     <Compile Include="Service\GroupService.cs" />
     <Compile Include="Service\MonitoringService.cs" />
     <Compile Include="Service\PlaylistService.cs" />
+    <Compile Include="Service\SchedulingService.cs" />
     <Compile Include="Sorter\GroupSorter.cs" />
     <Compile Include="Sorter\MonitoringItemSorter.cs" />
     <Compile Include="Sorter\PlaylistsSorter.cs" />
