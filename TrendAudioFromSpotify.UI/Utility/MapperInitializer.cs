@@ -27,11 +27,13 @@ namespace TrendAudioFromSpotify.UI.Utility
                                 cfg.CreateMap<Playlist, PlaylistDto>();
                                 cfg.CreateMap<Group, GroupDto>();
                                 cfg.CreateMap<MonitoringItem, MonitoringItemDto>().ForMember(x => x.Trends, opt => opt.Ignore());
+                                cfg.CreateMap<Schedule, ScheduleDto>();
 
                                 cfg.CreateMap<GroupDto, Group>();
                                 cfg.CreateMap<PlaylistDto, Playlist>();
                                 cfg.CreateMap<AudioDto, Audio>();
                                 cfg.CreateMap<MonitoringItemDto, MonitoringItem>();
+                                cfg.CreateMap<ScheduleDto, Schedule>();
                             })
         {
 

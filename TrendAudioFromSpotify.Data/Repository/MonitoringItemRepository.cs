@@ -54,7 +54,7 @@ namespace TrendAudioFromSpotify.Data.Repository
                 dbEntry.Comparison = monitoringItem.Comparison;
                 dbEntry.UpdatedAt = monitoringItem.UpdatedAt;
                 dbEntry.HitTreshold = monitoringItem.HitTreshold;
-                dbEntry.RefreshPeriod = monitoringItem.RefreshPeriod;
+                dbEntry.ScheduleId = monitoringItem.ScheduleId;
                 dbEntry.MaxSize = monitoringItem.MaxSize;
                 dbEntry.TargetPlaylistName = monitoringItem.TargetPlaylistName;
                 dbEntry.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;

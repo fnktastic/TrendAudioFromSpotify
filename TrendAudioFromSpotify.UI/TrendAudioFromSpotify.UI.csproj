@@ -228,6 +228,9 @@
     <Compile Include="Controls\PlaylistsCollectionControl.xaml.cs">
       <DependentUpon>PlaylistsCollectionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ScheduleControl.xaml.cs">
+      <DependentUpon>ScheduleControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
     <Compile Include="Converter\InverseBoolToVisibilityConverter.cs" />
@@ -245,6 +248,7 @@
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\MonitoringItem.cs" />
     <Compile Include="Model\Playlist.cs" />
+    <Compile Include="Model\Schedule.cs" />
     <Compile Include="Model\Setting.cs" />
     <Compile Include="Model\Audio.cs" />
     <Compile Include="Model\User.cs" />
@@ -322,6 +326,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\PlaylistsCollectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ScheduleControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -20,21 +20,18 @@ namespace TrendAudioFromSpotify.Data.Model
         public ComparisonEnum Comparison { get; set; }
         public PlaylistTypeEnum PlaylistType { get; set; }
 
-        public long RefreshPeriodTicks { get; set; }
-        [NotMapped]
-        public TimeSpan RefreshPeriod
-        {
-            get { return TimeSpan.FromTicks(RefreshPeriodTicks); }
-            set { RefreshPeriodTicks = value.Ticks; }
-        }
-
         public string TargetPlaylistName { get; set; }
         public bool AutoRecreatePlaylisOnSpotify { get; set; }
         public bool IsOverrideTrends { get; set; }
         public bool IsSeries { get; set; }
 
+        [Key]
         public Guid GroupId { get; set; }
         public GroupDto Group { get; set; }
+
+        [Key]
+        public Guid ScheduleId { get; set; }
+        public ScheduleDto Schedule { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

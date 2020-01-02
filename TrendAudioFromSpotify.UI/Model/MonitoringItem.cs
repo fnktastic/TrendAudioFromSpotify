@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
@@ -55,18 +56,6 @@ namespace TrendAudioFromSpotify.UI.Model
                 if (value == _playlistType) return;
                 _playlistType = value;
                 RaisePropertyChanged(nameof(PlaylistType));
-            }
-        }
-
-        private TimeSpan _refreshPeriod;
-        public TimeSpan RefreshPeriod
-        {
-            get { return _refreshPeriod; }
-            set
-            {
-                if (value == _refreshPeriod) return;
-                _refreshPeriod = value;
-                RaisePropertyChanged(nameof(RefreshPeriod));
             }
         }
 
@@ -150,6 +139,7 @@ namespace TrendAudioFromSpotify.UI.Model
         public virtual AudioCollection SpecificAudios { get; set; }
         public virtual PlaylistCollection Playlists { get; set; }
         public virtual Group Group { get; set; }
+        public virtual Schedule Schedule { get; set; }
 
         private AudioCollection _trends;
         [IgnoreMap]
@@ -163,5 +153,14 @@ namespace TrendAudioFromSpotify.UI.Model
                 RaisePropertyChanged(nameof(Trends));
             }
         }
+
+        #region commands
+        private RelayCommand _setSchesuleCommand;
+        public RelayCommand SetSchesuleCommand => _setSchesuleCommand ?? (_setSchesuleCommand = new RelayCommand(SetSchesule));
+        private void SetSchesule()
+        {
+            Schedule = new Schedule();
+        }
+        #endregion
     }
 }

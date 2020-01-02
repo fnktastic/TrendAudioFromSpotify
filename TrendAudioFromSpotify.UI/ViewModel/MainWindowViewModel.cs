@@ -63,6 +63,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             catch (Exception ex)
             {
                 _logger.Error("Error in MonitoringViewModel.PlaySong", ex);
+                await ShowMessage("Playback Error", string.Format("Error code: {0}\n{1}", ex.Message, "Make sure Spotify Client is opened and playback is working."));
             }
         }
 

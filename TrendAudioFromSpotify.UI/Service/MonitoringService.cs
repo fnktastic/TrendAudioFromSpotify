@@ -54,7 +54,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.HitTreshold = monitoringItem.HitTreshold;
                 _monitoringItem.Comparison = monitoringItem.Comparison;
                 _monitoringItem.PlaylistType = monitoringItem.PlaylistType;
-                _monitoringItem.RefreshPeriod = monitoringItem.RefreshPeriod;
+                _monitoringItem.Schedule = monitoringItem.Schedule;
                 _monitoringItem.TargetPlaylistName = monitoringItem.TargetPlaylistName;
                 _monitoringItem.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
                 _monitoringItem.IsOverrideTrends = monitoringItem.IsOverrideTrends;
@@ -89,7 +89,7 @@ namespace TrendAudioFromSpotify.UI.Service
             {
                 await GetTrends(monitoringItem);
 
-                if (monitoringItem.RefreshPeriod > TimeSpan.Zero)
+                if (monitoringItem.Schedule.RepeatOn == true)
                     await StartSchedulingTimer(monitoringItem);
 
                 return true;
