@@ -228,8 +228,8 @@
     <Compile Include="Controls\PlaylistsCollectionControl.xaml.cs">
       <DependentUpon>PlaylistsCollectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ScheduleControl.xaml.cs">
-      <DependentUpon>ScheduleControl.xaml</DependentUpon>
+    <Compile Include="Controls\ScheduleControlDialog.xaml.cs">
+      <DependentUpon>ScheduleControlDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
@@ -329,7 +329,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\ScheduleControl.xaml">
+    <Page Include="Controls\ScheduleControlDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

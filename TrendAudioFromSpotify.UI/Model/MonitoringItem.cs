@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Controls;
 using TrendAudioFromSpotify.UI.Enum;
 
 namespace TrendAudioFromSpotify.UI.Model
@@ -157,9 +160,15 @@ namespace TrendAudioFromSpotify.UI.Model
         #region commands
         private RelayCommand _setSchesuleCommand;
         public RelayCommand SetSchesuleCommand => _setSchesuleCommand ?? (_setSchesuleCommand = new RelayCommand(SetSchesule));
-        private void SetSchesule()
+        private async void SetSchesule()
         {
             Schedule = new Schedule();
+
+            var schedulingDialog = new ScheduleControlDialog();
+
+            var dialogCoordinator = DialogCoordinator.Instance;
+
+            await dialogCoordinator.ShowMetroDialogAsync(this, schedulingDialog);
         }
         #endregion
     }

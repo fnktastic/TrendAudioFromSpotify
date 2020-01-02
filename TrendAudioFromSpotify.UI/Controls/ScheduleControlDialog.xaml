@@ -1,0 +1,14 @@
+﻿<Dialog:CustomDialog  Title="Scheduling settings"
+                      x:Class="TrendAudioFromSpotify.UI.Controls.ScheduleControlDialog"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
+                      xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      Dialog:DialogParticipation.Register="{Binding}"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
+    <StackPanel>
+        <TextBox IsReadOnly="True" Text="xxx"/>
+        <Button Content="Save"/>
+    </StackPanel>
+</Dialog:CustomDialog>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,11 +17,11 @@ using System.Windows.Shapes;
 namespace TrendAudioFromSpotify.UI.Controls
 {
     /// <summary>
-    /// Логика взаимодействия для ScheduleControl.xaml
+    /// Логика взаимодействия для ScheduleControlDialog.xaml
     /// </summary>
-    public partial class ScheduleControl : UserControl
+    public partial class ScheduleControlDialog : CustomDialog
     {
-        public ScheduleControl()
+        public ScheduleControlDialog()
         {
             InitializeComponent();
         }
