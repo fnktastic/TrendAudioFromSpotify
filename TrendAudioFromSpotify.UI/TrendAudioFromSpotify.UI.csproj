@@ -234,10 +234,12 @@
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
     <Compile Include="Converter\InverseBoolToVisibilityConverter.cs" />
+    <Compile Include="Converter\RepeatModeToVisibilityConverter.cs" />
     <Compile Include="Converter\TabsConverter.cs" />
     <Compile Include="Enum\ComparisonEnum.cs" />
     <Compile Include="Enum\PlaylistTypeEnum.cs" />
     <Compile Include="Enum\RefreshActionEnum.cs" />
+    <Compile Include="Enum\RepeatModeEnum.cs" />
     <Compile Include="Enum\TabsEnum.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Job\MonitorItemJob.cs" />
@@ -263,9 +265,11 @@
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />
+    <Compile Include="Utility\SimpleCommand.cs" />
     <Compile Include="ViewModel\GroupManagingViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PlaylistViewModel.cs" />
+    <Compile Include="ViewModel\SchedulingViewModelDialog.cs" />
     <Compile Include="ViewModel\SpotifyViewModel.cs" />
     <Compile Include="ViewModel\MonitoringViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />

@@ -29,6 +29,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IDataService _dataService;
         private readonly IMonitoringService _monitoringService;
         private readonly IPlaylistService _playlistService;
+        private readonly ISchedulingService _schedulingService;
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
 
@@ -95,13 +96,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public MonitoringViewModel(IDataService dataService, IMonitoringService monitoringService, ISpotifyServices spotifyServices, IPlaylistService playlistService)
+        public MonitoringViewModel(ISchedulingService schedulingService, IDataService dataService, IMonitoringService monitoringService, ISpotifyServices spotifyServices, IPlaylistService playlistService)
         {
             _dialogCoordinator = DialogCoordinator.Instance;
             _dataService = dataService;
             _monitoringService = monitoringService;
             _spotifyServices = spotifyServices;
             _playlistService = playlistService;
+            _schedulingService = schedulingService;
 
             FetchData().ConfigureAwait(true);
 
@@ -140,6 +142,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FilteredMonitoringItemCollection.Filter += FilteredMonitoringItemCollection_Filter;
 
             FilteredMonitoringItemCollection.CustomSort = new MonitoringItemSorter();
+
+            foreach(var monitoringItem in monitoringItems)
+            {
+                await _schedulingService.ScheduleMonitoringItem(monitoringItem);
+            }
         }
         #endregion
 

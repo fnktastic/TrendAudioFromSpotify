@@ -49,7 +49,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.Group.Id = group.Id == Guid.Empty ? Guid.NewGuid() : group.Id;
                 _monitoringItem.Group.Name = group.Name;
 
-                _monitoringItem.Id = Guid.NewGuid();
+                _monitoringItem.Id = monitoringItem.Id == Guid.Empty ? Guid.NewGuid() : monitoringItem.Id;
                 _monitoringItem.MaxSize = monitoringItem.MaxSize;
                 _monitoringItem.HitTreshold = monitoringItem.HitTreshold;
                 _monitoringItem.Comparison = monitoringItem.Comparison;
@@ -220,7 +220,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
         private async Task StartSchedulingTimer(MonitoringItem monitoringItem)
         {
-            await _schedulingService.ScheduleMonitoringItem();
+            await _schedulingService.ScheduleMonitoringItem(monitoringItem);
         }
 
         public async Task BuildPlaylistAndRecreateOnSpotify(MonitoringItem monitoringItem)

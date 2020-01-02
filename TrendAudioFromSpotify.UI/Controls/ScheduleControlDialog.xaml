@@ -4,11 +4,75 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
+                      xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
+                      xmlns:System="clr-namespace:System;assembly=mscorlib"
+                      xmlns:enums="clr-namespace:TrendAudioFromSpotify.UI.Enum"
                       xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       Dialog:DialogParticipation.Register="{Binding}"
+                      Height="250"
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
-    <StackPanel>
-        <TextBox IsReadOnly="True" Text="xxx"/>
-        <Button Content="Save"/>
+    <Dialog:CustomDialog.Resources>
+        <converter:RepeatModeToVisibilityConverter x:Key="repeatModeToVisibilityConverter" />
+        <ObjectDataProvider x:Key="comparisonEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:RepeatModeEnum"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="dayOfWeekEnum" MethodName="GetValues"
+                            ObjectType="{x:Type System:DayOfWeek}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="System:DayOfWeek"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Dialog:CustomDialog.Resources>
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="350">
+        <Grid Margin=" 0 15 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.25*" />
+                <ColumnDefinition Width="0.75*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Text="Start at:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" />
+            <TextBlock Text="Repeat mode:" Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" />
+            <TextBlock Text="Day of week:" 
+                       Visibility="{Binding Schedule.RepeatMode, Converter={StaticResource repeatModeToVisibilityConverter}, ConverterParameter=0}"
+                       Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" />
+            <TextBlock Text="Repeat interval:" 
+                       Visibility="{Binding Schedule.RepeatMode, Converter={StaticResource repeatModeToVisibilityConverter}, ConverterParameter=1}"
+                       Foreground="White" FontWeight="Thin" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" />
+
+            <Controls:DateTimePicker 
+                Grid.Column="1" Grid.Row="0"
+                SelectedDate="{Binding Schedule.StartDateTime}" />
+            <ComboBox Grid.Column="1" Grid.Row="1"
+                      ItemsSource="{Binding Source={StaticResource comparisonEnum}}"
+                      SelectedItem="{Binding Schedule.RepeatMode}"
+                      Controls:TextBoxHelper.Watermark="select repeat mode"
+                      HorizontalContentAlignment="Center"
+                      HorizontalAlignment="Stretch" />
+            <ComboBox Grid.Column="1" Grid.Row="2"
+                      ItemsSource="{Binding Source={StaticResource dayOfWeekEnum}}"
+                      Visibility="{Binding Schedule.RepeatMode, Converter={StaticResource repeatModeToVisibilityConverter}, ConverterParameter=0}"
+                      SelectedItem="{Binding Schedule.DayOfWeek}"
+                      Controls:TextBoxHelper.Watermark="select day"
+                      HorizontalContentAlignment="Center"
+                      HorizontalAlignment="Stretch">
+            </ComboBox>
+            <TextBox Text="{Binding Schedule.RepeatInterval}" 
+                     Visibility="{Binding Schedule.RepeatMode, Converter={StaticResource repeatModeToVisibilityConverter}, ConverterParameter=1}"
+                     Grid.Column="1" Grid.Row="3"
+                     Controls:TextBoxHelper.Watermark="repeat interval"/>
+        </Grid>
+        <StackPanel Margin="0 20 0 0" Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Right">
+            <Button Width="125" Content="Cancel" Command="{Binding IsCanceledCommand}" Margin="0 0 10 0"/>
+            <Button Width="125" Content="Save" Command="{Binding CloseCommand}"/>
+        </StackPanel>
     </StackPanel>
 </Dialog:CustomDialog>

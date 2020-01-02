@@ -20,7 +20,9 @@ namespace TrendAudioFromSpotify.UI.Job
 
         public async Task Execute(IJobExecutionContext context)
         {
-            Console.WriteLine("QUARTZ MonitorItemJob");
+            string monitoringItemId = context.JobDetail.JobDataMap.FirstOrDefault(x => x.Key == "monitoringItemId").Value.ToString();
+
+            Console.WriteLine("QUARTZ MonitorItemJob {0}", monitoringItemId);
         }
     }
 }

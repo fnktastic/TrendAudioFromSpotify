@@ -31,6 +31,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         {
             return await _context.MonitoringItems
                 .Where(x => x.IsDeleted == getDeleted)
+                .Include(x => x.Schedule)
                 .Include(x => x.Group.GroupPlaylists.Select(y => y.Playlist))
                 .Include(y => y.Trends)
                 .ToListAsync();

@@ -4,14 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+             xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
              Dialog:DialogParticipation.Register="{Binding}"
+             xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:enums="clr-namespace:TrendAudioFromSpotify.UI.Enum"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
         <ObjectDataProvider x:Key="comparisonEnum" MethodName="GetValues"
                             ObjectType="{x:Type System:Enum}">
             <ObjectDataProvider.MethodParameters>
@@ -73,9 +76,19 @@
                   HorizontalContentAlignment="Center"
                   HorizontalAlignment="Stretch"
                   SelectedItem="{Binding PlaylistType}" />
-        <Button Grid.Column="1" Grid.Row="4"
-                Content="set"
-                Command="{Binding SetSchesuleCommand}" />
+        <Button Grid.Column="1" Grid.Row="4" Command="{Binding SetScheduleCommand}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="SET" />
+                <icons:PackIconBoxIcons Kind="RegularCheckCircle" Foreground="SpringGreen"
+                                        Visibility="{Binding Schedule.RepeatOn, Converter={StaticResource BoolToVisibleOrCollapsed}}"
+                                        />
+            </StackPanel>
+            <Button.ToolTip>
+                <Grid>
+                    <TextBlock Text="X" />
+                </Grid>
+            </Button.ToolTip>
+        </Button>
         <CheckBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" Margin="0 5 0 0"
                   Content="Automatically recreate on Spotify" VerticalAlignment="Center" 
                   IsChecked="{Binding AutoRecreatePlaylisOnSpotify}"/>

@@ -4,9 +4,12 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using System;
+using System.Windows.Input;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Controls;
 using TrendAudioFromSpotify.UI.Enum;
+using TrendAudioFromSpotify.UI.Utility;
+using TrendAudioFromSpotify.UI.ViewModel;
 
 namespace TrendAudioFromSpotify.UI.Model
 {
@@ -142,7 +145,18 @@ namespace TrendAudioFromSpotify.UI.Model
         public virtual AudioCollection SpecificAudios { get; set; }
         public virtual PlaylistCollection Playlists { get; set; }
         public virtual Group Group { get; set; }
-        public virtual Schedule Schedule { get; set; }
+
+        private Schedule _schedule;
+        public virtual Schedule Schedule
+        {
+            get { return _schedule; }
+            set
+            {
+                if (_schedule == value) return;
+                _schedule = value;
+                RaisePropertyChanged(nameof(Schedule));
+            }
+        }
 
         private AudioCollection _trends;
         [IgnoreMap]
@@ -157,16 +171,35 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
-        #region commands
-        private RelayCommand _setSchesuleCommand;
-        public RelayCommand SetSchesuleCommand => _setSchesuleCommand ?? (_setSchesuleCommand = new RelayCommand(SetSchesule));
-        private async void SetSchesule()
+        public MonitoringItem()
         {
             Schedule = new Schedule();
+        }
+
+        #region commands
+        private RelayCommand _setScheduleCommand;
+        public RelayCommand SetScheduleCommand => _setScheduleCommand ?? (_setScheduleCommand = new RelayCommand(SetSchedule));
+        private async void SetSchedule()
+        {
+            var dialogCoordinator = DialogCoordinator.Instance;
 
             var schedulingDialog = new ScheduleControlDialog();
 
-            var dialogCoordinator = DialogCoordinator.Instance;
+            var schedulingViewModelDialog = new SchedulingViewModelDialog(instance =>
+            {
+                dialogCoordinator.HideMetroDialogAsync(this, schedulingDialog);
+                if (!instance.IsCanceled)
+                {
+                    Schedule = instance.Schedule;
+                    Schedule.RepeatOn = true;
+                }
+                if (instance.IsCanceled)
+                {
+                    Schedule.RepeatOn = false;
+                }
+            });
+
+            schedulingDialog.DataContext = schedulingViewModelDialog;
 
             await dialogCoordinator.ShowMetroDialogAsync(this, schedulingDialog);
         }

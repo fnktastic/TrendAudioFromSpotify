@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.UI.Enum;
 
 namespace TrendAudioFromSpotify.UI.Model
 {
@@ -75,14 +76,5 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             Id = Guid.NewGuid();
         }
-    }
-
-    public enum RepeatModeEnum
-    {
-        SpecificDay,
-        Hourly,
-        Daily,
-        Weekly,
-        Monthly
     }
 }
