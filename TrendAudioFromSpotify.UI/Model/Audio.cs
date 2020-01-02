@@ -62,6 +62,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private bool _isNew;
+        public bool IsNew
+        {
+            get { return _isNew; }
+            set
+            {
+                if (_isNew == value) return;
+                _isNew = value;
+                RaisePropertyChanged(nameof(IsNew));
+            }
+        }
+
         public Audio(FullTrack track)
         {
             _track = track;
@@ -76,6 +88,8 @@ namespace TrendAudioFromSpotify.UI.Model
             Popularity = _track.Popularity;
             Duration = _track.DurationMs;
             Album = _track.Album.Name;
+
+            IsNew = false;
 
             if (_track.Album != null && _track.Album.Images != null && _track.Album.Images.Count > 0)
             {

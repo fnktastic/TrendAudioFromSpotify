@@ -174,7 +174,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             if(message.MonitoringItem.AutoRecreatePlaylisOnSpotify)
             {
-                foreach (var playlist in Playlists)
+                var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
+
+                foreach (var playlist in targetPlaylists)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {

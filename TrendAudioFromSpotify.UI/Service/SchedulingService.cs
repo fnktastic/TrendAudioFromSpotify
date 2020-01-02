@@ -38,16 +38,10 @@ namespace TrendAudioFromSpotify.UI.Service
 
                 if (monitoringItem.Schedule.RepeatMode == RepeatModeEnum.SpecificDay)
                 {
-                    string calendarName = string.Format("includedDays_{0}", monitoringItem.Id);
-                    WeeklyCalendar cal = new WeeklyCalendar();
-                    cal.SetDayExcluded(monitoringItem.Schedule.DayOfWeek.Value, false);
-                    await scheduler.AddCalendar(calendarName, cal, false, false);
-
-
                     trigger = TriggerBuilder.Create()
                        .WithIdentity(monitoringItem.Id.ToString(), "monitorItemGroup")
                        .StartAt(monitoringItem.Schedule.StartDateTime.Value)
-                       .ModifiedByCalendar(calendarName)
+                       .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(monitoringItem.Schedule.DayOfWeek.Value, monitoringItem.Schedule.StartDateTime.Value.Hour, monitoringItem.Schedule.StartDateTime.Value.Minute))
                        .Build();
                 }
                 else
