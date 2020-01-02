@@ -78,7 +78,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 {
                     if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
                     {
-                        seriesAudios.InsertRange(0, newAudios); 
+                        seriesAudios.InsertRange(0, newAudios);
                     }
 
                     if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
@@ -124,6 +124,12 @@ namespace TrendAudioFromSpotify.UI.Service
             if (monitoringItem.IsSeries == false)
             {
                 var playlist = await _dataService.GetPlaylistAsync(monitoringItem.TargetPlaylistName);
+
+                if (playlist == null) // new playlist
+                {
+                    await BuildPlaylistWithOverridingAsync(monitoringItem);
+                    return;
+                }
 
                 var playlistAudios = playlist.Audios.Select(x => x).ToList();
 

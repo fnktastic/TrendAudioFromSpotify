@@ -247,6 +247,7 @@
     <Compile Include="Messaging\AddGroupMessage.cs" />
     <Compile Include="Messaging\ConnectionEstablishedMessage.cs" />
     <Compile Include="Messaging\PlayAudioMessage.cs" />
+    <Compile Include="Messaging\PlaylistBuiltMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\MonitoringItem.cs" />

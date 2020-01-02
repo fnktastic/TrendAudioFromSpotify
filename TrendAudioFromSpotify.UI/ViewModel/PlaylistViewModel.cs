@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using log4net;
 using log4net.Core;
 using MahApps.Metro.Controls.Dialogs;
@@ -8,9 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Sorter;
@@ -94,6 +97,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _spotifyServices = spotifyServices;
 
             FetchData().ConfigureAwait(true);
+
+            Messenger.Default.Register<PlaylistBuiltMessage>(this, PlaylistBuiltMessageRecieved);
         }
         #endregion
 
@@ -145,6 +150,40 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region methods
+        private async void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)
+        {
+            var playlistsToRemove = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName).ToList();
+
+            foreach(var playlistToRemove in playlistsToRemove)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Playlists.Remove(playlistToRemove);
+                });
+            }
+
+            var playlists = await _dataService.GetPlaylistsByMonitoringItemAsync(message.MonitoringItem);
+
+            foreach (var playlist in playlists)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Playlists.Add(playlist);
+                });
+            }
+
+            if(message.MonitoringItem.AutoRecreatePlaylisOnSpotify)
+            {
+                foreach (var playlist in Playlists)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        SyncPlaylistCommand.Execute(playlist);
+                    });
+                }
+            }
+        }
+
         private async Task FetchData()
         {
             _logger.Info("Fetching Playlists Data...");
@@ -163,6 +202,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public ListCollectionView GetAudiosCollectionView(IEnumerable<Playlist> playlists)
         {
             return (ListCollectionView)CollectionViewSource.GetDefaultView(playlists);
+        }
+
+        private void GetPlaylists(Playlist playlist)
+        {
+            SelectedPlaylist = playlist;
         }
         #endregion
 
@@ -183,6 +227,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, playlist.SpotifyId, playlist.Href, playlist.Uri,
                                                                 playlist.Owner, playlist.OwnerProfileUrl, playlist.Cover);
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         private RelayCommand<Playlist> _selectPlaylistCommand;

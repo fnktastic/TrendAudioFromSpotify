@@ -226,6 +226,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private async void BuildPlaylist(MonitoringItem monitoringItem)
         {
             await _playlistService.BuildPlaylistAsync(monitoringItem);
+
+            Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem));
         }
         #endregion
     }

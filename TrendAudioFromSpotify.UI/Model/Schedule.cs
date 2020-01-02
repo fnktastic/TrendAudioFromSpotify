@@ -24,8 +24,8 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
-        private DateTime _startDateTime;
-        public DateTime StartDateTime
+        private DateTime? _startDateTime;
+        public DateTime? StartDateTime
         {
             get { return _startDateTime; }
             set
@@ -74,7 +74,11 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public Schedule()
         {
-            Id = Guid.NewGuid();
+            if (Id == Guid.Empty)
+                Id = Guid.NewGuid();
+
+            if (StartDateTime.HasValue == false || StartDateTime.Value == DateTime.MinValue)
+                StartDateTime = DateTime.Now;
         }
     }
 }

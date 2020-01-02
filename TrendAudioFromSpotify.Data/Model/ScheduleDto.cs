@@ -14,7 +14,7 @@ namespace TrendAudioFromSpotify.Data.Model
         [Key]
         public Guid Id { get; set; }
         public bool RepeatOn { get; set; }
-        public DateTime StartDateTime { get; set; }
+        public DateTime? StartDateTime { get; set; }
         public int RepeatInterval { get; set; }
         public RepeatModeEnum RepeatMode { get; set; }
         public DayOfWeek? DayOfWeek { get; set; }

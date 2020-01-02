@@ -48,6 +48,7 @@ namespace TrendAudioFromSpotify.Data.Repository
                 monitoringItem.CreatedAt = DateTime.UtcNow;
                 monitoringItem.UpdatedAt = DateTime.UtcNow;
                 monitoringItem.Group = null;
+                //monitoringItem.Schedule = null;
                 _context.MonitoringItems.Add(monitoringItem);
             }
             else

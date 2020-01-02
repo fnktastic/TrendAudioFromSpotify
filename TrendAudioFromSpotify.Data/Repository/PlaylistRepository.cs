@@ -28,6 +28,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task<List<PlaylistDto>> GetSeriesAsync(string seriesName);
 
         Task<PlaylistDto> GetPlaylistAsync(string playlistName);
+
+        Task<List<PlaylistDto>> GetByTargetPlaylistNameAsync(string targetPlaylistName);
     }
 
     public class PlaylistRepository : IPlaylistRepository
@@ -62,7 +64,9 @@ namespace TrendAudioFromSpotify.Data.Repository
             {
                 dbEntry.Href = playlist.Href;
                 dbEntry.Name = playlist.Name;
+                dbEntry.IsDeleted = false;
                 dbEntry.UpdatedAt = DateTime.UtcNow;
+                _context.Entry<PlaylistDto>(dbEntry).State = EntityState.Modified;
             }
 
             await _context.SaveChangesAsync();
@@ -171,6 +175,17 @@ namespace TrendAudioFromSpotify.Data.Repository
                 .FirstOrDefaultAsync();
 
             return playlist;
+        }
+
+        public async Task<List<PlaylistDto>> GetByTargetPlaylistNameAsync(string targetPlaylistName)
+        {
+            var playlists = await _context.Playlists
+                .Where(x => x.IsDeleted == false)
+                .Where(x => x.MadeByUser == true && x.Name == targetPlaylistName)
+                .Include(x => x.PlaylistAudios.Select(y => y.Audio))
+                .ToListAsync();
+
+            return playlists;
         }
     }
 }

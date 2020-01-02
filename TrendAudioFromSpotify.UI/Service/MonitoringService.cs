@@ -10,6 +10,8 @@ using TrendAudioFromSpotify.UI.Collections;
 using System.Windows;
 using TrendAudioFromSpotify.UI.Enum;
 using SpotifyAPI.Web.Models;
+using GalaSoft.MvvmLight.Messaging;
+using TrendAudioFromSpotify.UI.Messaging;
 
 namespace TrendAudioFromSpotify.UI.Service
 {
@@ -17,7 +19,6 @@ namespace TrendAudioFromSpotify.UI.Service
     {
         MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
         Task<bool> ProcessAsync(MonitoringItem monitoringItem);
-        Task BuildPlaylistAndRecreateOnSpotify(MonitoringItem monitoringItem);
     }
 
     public class MonitoringService : IMonitoringService
@@ -194,9 +195,6 @@ namespace TrendAudioFromSpotify.UI.Service
                         });
 
                         await SaveTrends(groupedAudios, audioBunch, monitoringItem.Playlists, monitoringItem);
-
-                        if (monitoringItem.AutoRecreatePlaylisOnSpotify) 
-                            await BuildPlaylistAndRecreateOnSpotify(monitoringItem);
                     }
                     finally
                     {
@@ -216,16 +214,15 @@ namespace TrendAudioFromSpotify.UI.Service
             await _dataService.InsertAudioRangeAsync(trends);
             await _dataService.InsertPlaylistAudioRangeAsync(trends);
             await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
+
+            await _playlistService.BuildPlaylistAsync(monitoringItem);
+
+            Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem));
         }
 
         private async Task StartSchedulingTimer(MonitoringItem monitoringItem)
         {
             await _schedulingService.ScheduleMonitoringItem(monitoringItem);
-        }
-
-        public async Task BuildPlaylistAndRecreateOnSpotify(MonitoringItem monitoringItem)
-        {
-
         }
     }
 }
