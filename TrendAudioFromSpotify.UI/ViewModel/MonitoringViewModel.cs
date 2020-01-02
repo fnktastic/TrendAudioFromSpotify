@@ -108,6 +108,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FetchData().ConfigureAwait(true);
 
             Messenger.Default.Register<AddMonitoringItemMessage>(this, AddMonitoringItemMessage);
+            Messenger.Default.Register<ConnectionEstablishedMessage>(this, StartScheduling);
         }
 
         #region private methods
@@ -142,8 +143,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FilteredMonitoringItemCollection.Filter += FilteredMonitoringItemCollection_Filter;
 
             FilteredMonitoringItemCollection.CustomSort = new MonitoringItemSorter();
+        }
 
-            foreach(var monitoringItem in monitoringItems)
+        private async void StartScheduling(ConnectionEstablishedMessage message)
+        {
+            foreach (var monitoringItem in MonitoringItems)
             {
                 await _schedulingService.ScheduleMonitoringItem(monitoringItem);
             }

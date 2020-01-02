@@ -245,6 +245,7 @@
     <Compile Include="Job\MonitorItemJob.cs" />
     <Compile Include="Messaging\AddMonitoringItemMessage.cs" />
     <Compile Include="Messaging\AddGroupMessage.cs" />
+    <Compile Include="Messaging\ConnectionEstablishedMessage.cs" />
     <Compile Include="Messaging\PlayAudioMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Model\Group.cs" />

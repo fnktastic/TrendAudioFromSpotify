@@ -495,6 +495,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 await FetchSpotifyData();
 
                 isStartup = false;
+
+                Messenger.Default.Send<ConnectionEstablishedMessage>(new ConnectionEstablishedMessage());
             }
         }
 
