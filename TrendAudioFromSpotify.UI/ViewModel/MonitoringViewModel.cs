@@ -121,7 +121,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 foreach (var monitoringItem in _monitoringItems)
                 {
                     if (monitoringItem != null)
-                        monitoringItem.NextFireDateTime = monitoringItem.NextFireDateTime.Add(TimeSpan.FromSeconds(-1));
+                        monitoringItem.NextFireDateTime = monitoringItem.NextFireDateTime.Add(TimeSpan.FromSeconds(-15));
                 }
             }
         }
