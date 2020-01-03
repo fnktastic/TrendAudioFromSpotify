@@ -34,7 +34,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 var detail = await _scheduler.GetJobDetail(jobKey);
                 var triggers = (await _scheduler.GetTriggersOfJob(jobKey)).Select(x => x);
 
-                foreach(var trigger in triggers)
+                foreach (var trigger in triggers)
                 {
                     DateTimeOffset? nextFireTime = trigger.GetNextFireTimeUtc();
                     if (nextFireTime.HasValue)
@@ -58,41 +58,44 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public async Task ScheduleMonitoringItem(MonitoringItem monitoringItem)
         {
-            if (_scheduler.IsStarted == false)
-                await _scheduler.Start();
-
-            var jobKey = new JobKey(monitoringItem.Id.ToString(), "monitorItemGroup");
-            if (await _scheduler.CheckExists(jobKey) == false)
+            if (monitoringItem.Schedule.RepeatOn)
             {
-                IJobDetail job = JobBuilder.Create<MonitorItemJob>()
-                .WithIdentity(monitoringItem.Id.ToString(), "monitorItemGroup")
-                .UsingJobData("monitoringItemId", monitoringItem.Id.ToString())
-                .Build();
+                if (_scheduler.IsStarted == false)
+                    await _scheduler.Start();
 
-                ITrigger trigger = null;
-
-                if (monitoringItem.Schedule.RepeatMode == RepeatModeEnum.SpecificDay)
+                var jobKey = new JobKey(monitoringItem.Id.ToString(), "monitorItemGroup");
+                if (await _scheduler.CheckExists(jobKey) == false)
                 {
-                    trigger = TriggerBuilder.Create()
-                       .WithIdentity(monitoringItem.Id.ToString(), "monitorItemGroup")
-                       .StartAt(monitoringItem.Schedule.StartDateTime.Value)
-                       .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(monitoringItem.Schedule.DayOfWeek.Value, monitoringItem.Schedule.StartDateTime.Value.Hour, monitoringItem.Schedule.StartDateTime.Value.Minute))
-                       .Build();
-                }
-                else
-                {
-                    int interval = ConvertToSeconds(monitoringItem.Schedule);
+                    IJobDetail job = JobBuilder.Create<MonitorItemJob>()
+                    .WithIdentity(monitoringItem.Id.ToString(), "monitorItemGroup")
+                    .UsingJobData("monitoringItemId", monitoringItem.Id.ToString())
+                    .Build();
 
-                    trigger = TriggerBuilder.Create()
-                        .WithIdentity(monitoringItem.Id.ToString(), "monitorItemGroup")
-                        .StartAt(monitoringItem.Schedule.StartDateTime.Value)
-                        .WithSimpleSchedule(x => x
-                            .WithIntervalInHours(interval)
-                            .RepeatForever())
-                        .Build();
-                }
+                    ITrigger trigger = null;
 
-                await _scheduler.ScheduleJob(job, trigger);
+                    if (monitoringItem.Schedule.RepeatMode == RepeatModeEnum.SpecificDay)
+                    {
+                        trigger = TriggerBuilder.Create()
+                           .WithIdentity(monitoringItem.Id.ToString(), "monitorItemGroup")
+                           .StartAt(monitoringItem.Schedule.StartDateTime.Value)
+                           .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(monitoringItem.Schedule.DayOfWeek.Value, monitoringItem.Schedule.StartDateTime.Value.Hour, monitoringItem.Schedule.StartDateTime.Value.Minute))
+                           .Build();
+                    }
+                    else
+                    {
+                        int interval = ConvertToSeconds(monitoringItem.Schedule);
+
+                        trigger = TriggerBuilder.Create()
+                            .WithIdentity(monitoringItem.Id.ToString(), "monitorItemGroup")
+                            .StartAt(monitoringItem.Schedule.StartDateTime.Value)
+                            .WithSimpleSchedule(x => x
+                                .WithIntervalInHours(interval)
+                                .RepeatForever())
+                            .Build();
+                    }
+
+                    await _scheduler.ScheduleJob(job, trigger);
+                }
             }
         }
 

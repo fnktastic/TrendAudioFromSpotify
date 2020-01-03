@@ -169,7 +169,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             _logger.Info("Fetching Monitoring Data...");
 
-            var monitoringItems = await _dataService.GetAllMonitoringItemsAsync();
+           var monitoringItems = await _dataService.GetAllMonitoringItemsAsync();
 
             MonitoringItems = new MonitoringItemCollection(monitoringItems);
 
@@ -199,7 +199,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             _updateFireDisplayTimer = new DispatcherTimer()
             {
-                Interval = TimeSpan.FromSeconds(1)
+                Interval = TimeSpan.FromSeconds(10)
             };
             _updateFireDisplayTimer.Tick += UpdateFireDisplayTimer_Tick;
             _updateFireDisplayTimer.Start();

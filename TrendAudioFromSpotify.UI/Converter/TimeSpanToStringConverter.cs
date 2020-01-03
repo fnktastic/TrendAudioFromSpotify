@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Humanizer;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace TrendAudioFromSpotify.UI.Converter
         {
             if(value is TimeSpan timeSpan)
             {
-                
+                if (TimeSpan.Zero == timeSpan) return "Next fire in <no data>";
+
+                return string.Format("Next fire in {0}", timeSpan.Humanize(culture: CultureInfo.InvariantCulture));
             }
 
-            return "";
+            return "Next fire in <no data>";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
