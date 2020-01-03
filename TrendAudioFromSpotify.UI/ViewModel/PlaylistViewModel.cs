@@ -270,6 +270,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             playlist.ProcessingInProgress = false;
         }
+
+        private RelayCommand<Playlist> _openPlaylistInBrowserCommand;
+        public RelayCommand<Playlist> OpenPlaylistInBrowserCommand => _openPlaylistInBrowserCommand ?? (_openPlaylistInBrowserCommand = new RelayCommand<Playlist>(OpenPlaylistInBrowser));
+        private void OpenPlaylistInBrowser(Playlist playlist)
+        {
+            if (playlist.IsExported)
+                System.Diagnostics.Process.Start(playlist.PublicUrl);
+        }
         #endregion
     }
 }

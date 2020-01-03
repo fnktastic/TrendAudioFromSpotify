@@ -54,6 +54,8 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        public virtual string PublicUrl => string.Format("https://open.spotify.com/playlist/{0}", SpotifyId);
+
         public virtual bool IsExported
         {
             get

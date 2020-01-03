@@ -35,15 +35,13 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30" />
                         <RowDefinition Height="10" />
-                        <RowDefinition Height="10" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="55" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontSize="18" FontWeight="Thin" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding CreatedAt, StringFormat=Created: {0}}" />
-                    <TextBlock Grid.Row="2" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
                 </Grid>
             </Expander.Header>
             <StackPanel FlowDirection="LeftToRight">

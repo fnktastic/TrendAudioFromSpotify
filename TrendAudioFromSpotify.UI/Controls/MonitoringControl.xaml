@@ -36,23 +36,21 @@
                         <RowDefinition Height="20" />
                         <RowDefinition Height="20" />
                         <RowDefinition Height="10" />
-                        <RowDefinition Height="10" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="55" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding TargetPlaylistName}"  FontSize="18" FontWeight="Thin" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding MaxSize, StringFormat=Top: {0}}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding MaxSize, StringFormat=Max Size: {0}}" />
                     <DockPanel Grid.Row="2" Grid.Column="0">
                         <TextBlock Text="{Binding HitTreshold, StringFormat=Hit treshold: {0} }"/>
                         <TextBlock Text=" " />
                         <TextBlock Text="{Binding Comparison, StringFormat=({0})}" />
                     </DockPanel>
-                    <TextBlock Grid.Row="3" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding CreatedAt, StringFormat=Created: {0}}" />
-                    <TextBlock Grid.Row="4" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
+                    <TextBlock Grid.Row="3" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
 
-                    <StackPanel Grid.Row="0" Grid.RowSpan="5"
+                    <StackPanel Grid.Row="0" Grid.RowSpan="4"
                                 VerticalAlignment="Center"
                                 Visibility="{Binding ProcessingInProgress, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"
                                 HorizontalAlignment="Center" Grid.Column="1">
