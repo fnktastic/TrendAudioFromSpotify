@@ -171,6 +171,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private TimeSpan _nextFireDateTime;
+        public TimeSpan NextFireDateTime
+        {
+            get { return _nextFireDateTime; }
+            set
+            {
+                if (value == _nextFireDateTime) return;
+                _nextFireDateTime = value;
+                RaisePropertyChanged(nameof(NextFireDateTime));
+            }
+        }
+
         public MonitoringItem()
         {
             Schedule = new Schedule();

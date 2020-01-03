@@ -237,6 +237,7 @@
     <Compile Include="Converter\IsNewToColorConverter.cs" />
     <Compile Include="Converter\RepeatModeToVisibilityConverter.cs" />
     <Compile Include="Converter\TabsConverter.cs" />
+    <Compile Include="Converter\TimeSpanToStringConverter.cs" />
     <Compile Include="Enum\ComparisonEnum.cs" />
     <Compile Include="Enum\PlaylistTypeEnum.cs" />
     <Compile Include="Enum\RefreshActionEnum.cs" />

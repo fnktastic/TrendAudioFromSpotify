@@ -15,6 +15,7 @@
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
         <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
         <converter:AudiosContextNameConverter x:Key="AudiosContextNameConverter" />
+        <converter:TimeSpanToStringConverter x:Key="TimeSpanToStringConverter" />
     </UserControl.Resources>
     <Border BorderThickness="1"
             CornerRadius="5"
@@ -35,6 +36,7 @@
                         <RowDefinition Height="30" />
                         <RowDefinition Height="20" />
                         <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
                         <RowDefinition Height="10" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
@@ -48,9 +50,11 @@
                         <TextBlock Text=" " />
                         <TextBlock Text="{Binding Comparison, StringFormat=({0})}" />
                     </DockPanel>
-                    <TextBlock Grid.Row="3" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
-
+                    <TextBlock Grid.Row="3" Grid.Column="0" 
+                               Text="{Binding NextFireDateTime, Converter={StaticResource TimeSpanToStringConverter}}" HorizontalAlignment="Left" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
                     <StackPanel Grid.Row="0" Grid.RowSpan="4"
+                                Margin="0 5 0 0"
                                 VerticalAlignment="Center"
                                 Visibility="{Binding ProcessingInProgress, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BoolToVisibleOrCollapsed}}"
                                 HorizontalAlignment="Center" Grid.Column="1">
@@ -91,7 +95,7 @@
                 </StackPanel>
                 <Expander Header="info" Background="Black" Margin="0 5 0 0" BorderThickness="0" FlowDirection="RightToLeft">
                     <StackPanel Margin="0 5 0 0">
-                        <Grid FlowDirection="LeftToRight">
+                        <Grid FlowDirection="LeftToRight" Margin="0 10 0 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="135" />
                                 <ColumnDefinition />

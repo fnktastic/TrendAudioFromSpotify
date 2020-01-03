@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Threading;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
@@ -24,6 +25,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     public class MonitoringViewModel : ViewModelBase
     {
         #region fields
+        private DispatcherTimer _nextFireDisplayTimer;
+        private DispatcherTimer _updateFireDisplayTimer;
         private readonly ISpotifyServices _spotifyServices;
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly IDataService _dataService;
@@ -111,7 +114,39 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             Messenger.Default.Register<ConnectionEstablishedMessage>(this, StartScheduling);
         }
 
+        private void UpdateFireDisplayTimer_Tick(object sender, EventArgs e)
+        {
+            if (_monitoringItems != null)
+            {
+                foreach (var monitoringItem in _monitoringItems)
+                {
+                    if (monitoringItem != null)
+                        monitoringItem.NextFireDateTime = monitoringItem.NextFireDateTime.Add(TimeSpan.FromSeconds(-1));
+                }
+            }
+        }
+
         #region private methods
+        private async void NextFireDisplayTimer_Tick(object sender, EventArgs e)
+        {
+            await NextFireDisplayTimer();
+        }
+
+        private async Task NextFireDisplayTimer()
+        {
+            var schedules = await _schedulingService.GetActiveSchedulings();
+
+            foreach (var schedule in schedules)
+            {
+                var target = _monitoringItems.FirstOrDefault(x => x.Id == schedule.Key);
+
+                if (target != null)
+                {
+                    target.NextFireDateTime = schedule.Value.LocalDateTime - DateTime.Now;
+                }
+            }
+        }
+
         public ListCollectionView GetAudiosCollectionView(IEnumerable<MonitoringItem> monitoringItems)
         {
             return (ListCollectionView)CollectionViewSource.GetDefaultView(monitoringItems);
@@ -152,6 +187,22 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (monitoringItem.Schedule.RepeatOn)
                     await _schedulingService.ScheduleMonitoringItem(monitoringItem);
             }
+
+            await NextFireDisplayTimer();
+
+            _nextFireDisplayTimer = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMinutes(15)
+            };
+            _nextFireDisplayTimer.Tick += NextFireDisplayTimer_Tick;
+            _nextFireDisplayTimer.Start();
+
+            _updateFireDisplayTimer = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            _updateFireDisplayTimer.Tick += UpdateFireDisplayTimer_Tick;
+            _updateFireDisplayTimer.Start();
         }
         #endregion
 
