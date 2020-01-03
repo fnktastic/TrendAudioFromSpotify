@@ -31,8 +31,6 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public async Task<FullPlaylist> RecreateOnSpotify(Playlist sourcePlaylist)
         {
-            //add override, add fifo / typical type
-
             FullPlaylist playlist = null;
 
             if (sourcePlaylist.PlaylistType == PlaylistTypeEnum.Fifo)
@@ -47,8 +45,34 @@ namespace TrendAudioFromSpotify.UI.Service
             return playlist;
         }
 
+        private async Task ClearPlaylists(MonitoringItem monitoringItem)
+        {
+            if (monitoringItem.IsSeries)
+            {
+                var playlists = await _dataService.GetPlaylistSeriesAsync(monitoringItem.TargetPlaylistName);
+
+                foreach (var playlist in playlists)
+                {
+                    if (playlist.IsExported)
+                        await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
+                }
+            }
+
+            if (monitoringItem.IsSeries == false)
+            {
+                var playlist = await _dataService.GetPlaylistAsync(monitoringItem.TargetPlaylistName);
+                if (playlist != null)
+                {
+                    if (playlist.IsExported)
+                        await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
+                }
+            }
+        }
+
         public async Task<List<Playlist>> BuildPlaylistAsync(MonitoringItem monitoringItem)
         {
+            await ClearPlaylists(monitoringItem);
+
             if (monitoringItem.IsOverrideTrends == true) // override: remove existed playlists
             {
                 return await BuildPlaylistWithOverridingAsync(monitoringItem);

@@ -231,7 +231,8 @@ namespace TrendAudioFromSpotify.UI.Service
 
         private async Task StartSchedulingTimer(MonitoringItem monitoringItem)
         {
-            await _schedulingService.ScheduleMonitoringItem(monitoringItem);
+            if (monitoringItem.Schedule.RepeatOn)
+                await _schedulingService.ScheduleMonitoringItem(monitoringItem);
         }
     }
 }

@@ -177,7 +177,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 });
             }
 
-            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify)// || playlistsToRemove.Any(x => x.IsExported))
+            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify || playlistsToRemove.Any(x => x.IsExported))
             {
                 var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
 

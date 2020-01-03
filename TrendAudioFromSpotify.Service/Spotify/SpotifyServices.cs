@@ -282,10 +282,10 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
                 await _spotifyWebAPI.RemovePlaylistTracksAsync(_privateProfile.Id, playlist.Id, deleteTrackUries);
 
-                //await RemovePlaylistAsync(playlist.Id);
+                await RemovePlaylistAsync(playlist.Id);
 
-                //if (playlist.HasError() == false)
-                //    playlist = await _spotifyWebAPI.CreatePlaylistAsync(_privateProfile.Id, playlistName);
+                if (playlist.HasError() == false)
+                    playlist = await _spotifyWebAPI.CreatePlaylistAsync(_privateProfile.Id, playlistName);
             }
             else
             {

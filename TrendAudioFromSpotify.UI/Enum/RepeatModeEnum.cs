@@ -12,6 +12,6 @@ namespace TrendAudioFromSpotify.UI.Enum
         Hourly,
         Daily,
         Weekly,
-        Monthly
+        Monthly,
     }
 }

@@ -149,7 +149,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             foreach (var monitoringItem in MonitoringItems)
             {
-                await _schedulingService.ScheduleMonitoringItem(monitoringItem);
+                if (monitoringItem.Schedule.RepeatOn)
+                    await _schedulingService.ScheduleMonitoringItem(monitoringItem);
             }
         }
         #endregion
@@ -197,12 +198,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private RelayCommand<MonitoringItem> _processMonitoringItemCommand;
         public RelayCommand<MonitoringItem> ProcessMonitoringItemCommand => _processMonitoringItemCommand ?? (_processMonitoringItemCommand = new RelayCommand<MonitoringItem>(ProcessMonitoringItem));
-        private void ProcessMonitoringItem(MonitoringItem monitoringItem)
+        private async void ProcessMonitoringItem(MonitoringItem monitoringItem)
         {
             monitoringItem.ProcessingInProgress = true;
 
             var _monitoringItem = _monitoringService.Initiate(monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
-            _monitoringService.ProcessAsync(_monitoringItem);
+            await _monitoringService.ProcessAsync(_monitoringItem);
 
             monitoringItem.ProcessingInProgress = false;
         }
