@@ -80,50 +80,47 @@ namespace TrendAudioFromSpotify.UI.Service
 
                 series.Clear();
 
-                //if (newAudios.Count > 0) // if we have new items
+                if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
                 {
-                    if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
+                    seriesAudios.InsertRange(0, newAudios);
+                }
+
+                if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
+                {
+                    seriesAudios.AddRange(newAudios);
+                }
+
+                Guid seriesKey = Guid.NewGuid();
+                int seriesNo = 1;
+                int chunk = int.Parse(monitoringItem.MaxSize);
+                int capacity = seriesAudios.Count;
+                int counter = 0;
+
+                while (counter < capacity)
+                {
+                    var volumeAudios = seriesAudios.Skip(counter).Take(chunk).ToList();
+
+                    var volume = new Playlist
                     {
-                        seriesAudios.InsertRange(0, newAudios);
-                    }
+                        Name = monitoringItem.TargetPlaylistName,
+                        IsSeries = monitoringItem.IsSeries,
+                        SeriesKey = seriesKey,
+                        SeriesNo = seriesNo,
+                        MadeByUser = true,
+                        Total = volumeAudios.Count,
+                        PlaylistType = monitoringItem.PlaylistType,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
 
-                    if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
-                    {
-                        seriesAudios.AddRange(newAudios);
-                    }
+                    volume.Audios = new AudioCollection(volumeAudios);
 
-                    Guid seriesKey = Guid.NewGuid();
-                    int seriesNo = 1;
-                    int chunk = int.Parse(monitoringItem.MaxSize);
-                    int capacity = seriesAudios.Count;
-                    int counter = 0;
+                    series.Add(volume);
 
-                    while (counter < capacity)
-                    {
-                        var volumeAudios = seriesAudios.Skip(counter).Take(chunk).ToList();
+                    await _dataService.InsertPlaylistAsync(volume);
 
-                        var volume = new Playlist
-                        {
-                            Name = monitoringItem.TargetPlaylistName,
-                            IsSeries = monitoringItem.IsSeries,
-                            SeriesKey = seriesKey,
-                            SeriesNo = seriesNo,
-                            MadeByUser = true,
-                            Total = volumeAudios.Count,
-                            PlaylistType = monitoringItem.PlaylistType,
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow
-                        };
-
-                        volume.Audios = new AudioCollection(volumeAudios);
-
-                        series.Add(volume);
-
-                        await _dataService.InsertPlaylistAsync(volume);
-
-                        seriesNo++;
-                        counter += chunk;
-                    }
+                    seriesNo++;
+                    counter += chunk;
                 }
 
                 return series;
@@ -146,38 +143,35 @@ namespace TrendAudioFromSpotify.UI.Service
 
                 await _dataService.RemovePlaylistPhysicallyAsync(monitoringItem.TargetPlaylistName);
 
-                //if (newAudios.Count > 0)
+                if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
                 {
-                    if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
-                    {
-                        playlistAudios.InsertRange(0, newAudios);
-                    }
-                    if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
-                    {
-                        playlistAudios.AddRange(newAudios);
-                    }
-
-                    var newPlaylist = new Playlist
-                    {
-                        Name = monitoringItem.TargetPlaylistName,
-                        IsSeries = monitoringItem.IsSeries,
-                        MadeByUser = true,
-                        SeriesKey = Guid.NewGuid(),
-                        SeriesNo = 0,
-                        Total = int.Parse(monitoringItem.MaxSize),
-                        PlaylistType = monitoringItem.PlaylistType,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
-                    };
-
-                    var newPlaylistAudios = playlistAudios.Take(playlist.Total).ToList();
-
-                    playlist.Audios = new AudioCollection(playlistAudios);
-
-                    await _dataService.InsertPlaylistAsync(playlist);
-
-                    return new List<Playlist> { playlist };
+                    playlistAudios.InsertRange(0, newAudios);
                 }
+                if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
+                {
+                    playlistAudios.AddRange(newAudios);
+                }
+
+                var newPlaylist = new Playlist
+                {
+                    Name = monitoringItem.TargetPlaylistName,
+                    IsSeries = monitoringItem.IsSeries,
+                    MadeByUser = true,
+                    SeriesKey = Guid.NewGuid(),
+                    SeriesNo = 0,
+                    Total = int.Parse(monitoringItem.MaxSize),
+                    PlaylistType = monitoringItem.PlaylistType,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                var newPlaylistAudios = playlistAudios.Take(playlist.Total).ToList();
+
+                playlist.Audios = new AudioCollection(playlistAudios);
+
+                await _dataService.InsertPlaylistAsync(playlist);
+
+                return new List<Playlist> { playlist };
             }
 
             return new List<Playlist>();

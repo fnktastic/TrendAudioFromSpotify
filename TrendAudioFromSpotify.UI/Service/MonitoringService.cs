@@ -36,6 +36,15 @@ namespace TrendAudioFromSpotify.UI.Service
             _spotifyServices = spotifyServices;
             _schedulingService = schedulingService;
             _playlistService = playlistService;
+
+            Messenger.Default.Register<StartMonitoringMessage>(this, StartMonitoringMessageReciever);
+        }
+
+        public async void StartMonitoringMessageReciever(StartMonitoringMessage message)
+        {
+            var monitoringItem = await _dataService.GetMonitoringItemByIdAsync(message.MonitoringItemId);
+
+            var success = await ProcessAsync(monitoringItem);
         }
 
         public MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists)

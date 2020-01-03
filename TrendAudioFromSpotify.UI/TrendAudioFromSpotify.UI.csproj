@@ -250,6 +250,7 @@
     <Compile Include="Messaging\PlayAudioMessage.cs" />
     <Compile Include="Messaging\PlaylistBuiltMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
+    <Compile Include="Messaging\StartMonitoringMessage.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\MonitoringItem.cs" />
     <Compile Include="Model\Playlist.cs" />

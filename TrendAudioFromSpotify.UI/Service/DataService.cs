@@ -35,6 +35,8 @@ namespace TrendAudioFromSpotify.UI.Service
         Task<List<Playlist>> GetPlaylistSeriesAsync(string seriesName);
         Task<Playlist> GetPlaylistAsync(string playlistName);
         Task<List<Playlist>> GetPlaylistsByMonitoringItemAsync(MonitoringItem monitoringItem);
+        Task<MonitoringItem> GetMonitoringItemByIdAsync(Guid monitoringItemId);
+
     }
 
     public class DataService : IDataService
@@ -257,6 +259,13 @@ namespace TrendAudioFromSpotify.UI.Service
             var playlists = await _playlistRepository.GetByTargetPlaylistNameAsync(monitoringItem.TargetPlaylistName);
 
             return _mapper.Map<List<Playlist>>(playlists);
+        }
+
+        public async Task<MonitoringItem> GetMonitoringItemByIdAsync(Guid monitoringItemId)
+        {
+            var monitoringItem = await _monitoringItemRepository.GetByIdAsync(monitoringItemId);
+
+            return _mapper.Map<MonitoringItem>(monitoringItem);
         }
     }
 }

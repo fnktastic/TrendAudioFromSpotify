@@ -16,6 +16,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task InsertAsync(MonitoringItemDto monitoringItem);
 
         Task RemoveAsync(MonitoringItemDto monitoringItemDto);
+
+        Task<MonitoringItemDto> GetByIdAsync(Guid monitoringItemId);
     }
 
     public class MonitoringItemRepository : IMonitoringItemRepository
@@ -81,6 +83,18 @@ namespace TrendAudioFromSpotify.Data.Repository
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<MonitoringItemDto> GetByIdAsync(Guid monitoringItemId)
+        {
+            var dbEntry = await _context.MonitoringItems.FindAsync(monitoringItemId);
+
+            if (dbEntry != null)
+            {
+                return dbEntry;
+            }
+
+            return null;
         }
     }
 }

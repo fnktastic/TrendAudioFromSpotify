@@ -1,4 +1,5 @@
 ﻿using CommonServiceLocator;
+using GalaSoft.MvvmLight.Messaging;
 using Quartz;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Service.Spotify;
+using TrendAudioFromSpotify.UI.Messaging;
 
 namespace TrendAudioFromSpotify.UI.Job
 {
@@ -22,7 +24,7 @@ namespace TrendAudioFromSpotify.UI.Job
         {
             string monitoringItemId = context.JobDetail.JobDataMap.FirstOrDefault(x => x.Key == "monitoringItemId").Value.ToString();
 
-            Console.WriteLine("QUARTZ MonitorItemJob {0}", monitoringItemId);
+            Messenger.Default.Send<StartMonitoringMessage>(new StartMonitoringMessage(monitoringItemId));
         }
     }
 }

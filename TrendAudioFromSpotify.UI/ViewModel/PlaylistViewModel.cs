@@ -177,7 +177,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 });
             }
 
-            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify || playlistsToRemove.Any(x => x.IsExported))
+            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify)// || playlistsToRemove.Any(x => x.IsExported))
             {
                 var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
 
@@ -222,6 +222,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Playlist> SyncPlaylistCommand => _syncPlaylistCommand ?? (_syncPlaylistCommand = new RelayCommand<Playlist>(SyncPlaylist));
         private async void SyncPlaylist(Playlist playlist)
         {
+            playlist.ProcessingInProgress = true;
+
             var syncedPalylist = await _playlistService.RecreateOnSpotify(playlist);
 
             playlist.SpotifyId = syncedPalylist.Id;
@@ -235,6 +237,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, playlist.SpotifyId, playlist.Href, playlist.Uri,
                                                                 playlist.Owner, playlist.OwnerProfileUrl, playlist.Cover);
             await Task.Delay(TimeSpan.FromSeconds(2));
+
+            playlist.ProcessingInProgress = false;
         }
 
         private RelayCommand<Playlist> _selectPlaylistCommand;
@@ -248,6 +252,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Playlist> DeletePlaylistCommand => _deletePlaylistCommand ?? (_deletePlaylistCommand = new RelayCommand<Playlist>(DeletePlaylist));
         private async void DeletePlaylist(Playlist playlist)
         {
+            playlist.ProcessingInProgress = true;
+
             if (playlist.IsExported)
             {
                 string confirmMessage = await RemoveFromSpotifyConfirmation("Confirmation", string.Format("Also remove {0} from Spotify? Type 'yes' to confirm.", playlist.DisplayName));
@@ -261,6 +267,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             _playlists.Remove(playlist);
 
             await _dataService.RemovePlaylistAsync(playlist);
+
+            playlist.ProcessingInProgress = false;
         }
         #endregion
     }

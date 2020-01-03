@@ -113,6 +113,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private bool _processingInProgress;
+        public bool ProcessingInProgress
+        {
+            get { return _processingInProgress; }
+            set
+            {
+                if (value == _processingInProgress) return;
+                _processingInProgress = value;
+                RaisePropertyChanged(nameof(ProcessingInProgress));
+            }
+        }
+
         public Playlist(SimplePlaylist simplePlaylist)
         {
             _simplePlaylist = simplePlaylist;

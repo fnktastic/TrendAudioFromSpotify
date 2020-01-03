@@ -199,17 +199,25 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<MonitoringItem> ProcessMonitoringItemCommand => _processMonitoringItemCommand ?? (_processMonitoringItemCommand = new RelayCommand<MonitoringItem>(ProcessMonitoringItem));
         private void ProcessMonitoringItem(MonitoringItem monitoringItem)
         {
+            monitoringItem.ProcessingInProgress = true;
+
             var _monitoringItem = _monitoringService.Initiate(monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
             _monitoringService.ProcessAsync(_monitoringItem);
+
+            monitoringItem.ProcessingInProgress = false;
         }
 
         private RelayCommand<MonitoringItem> _deleteMonitoringItemCommand;
         public RelayCommand<MonitoringItem> DeleteMonitoringItemCommand => _deleteMonitoringItemCommand ?? (_deleteMonitoringItemCommand = new RelayCommand<MonitoringItem>(DeleteMonitoringItem));
         private async void DeleteMonitoringItem(MonitoringItem monitoringItem)
         {
+            monitoringItem.ProcessingInProgress = true;
+
             _monitoringItems.Remove(monitoringItem);
 
             await _dataService.RemoveMonitoringItemAsync(monitoringItem);
+
+            monitoringItem.ProcessingInProgress = false;
         }
 
         private RelayCommand<MonitoringItem> _goToBaseGoupCommand;
@@ -225,9 +233,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<MonitoringItem> BuildPlaylistCommand => _buildPlaylistCommand ?? (_buildPlaylistCommand = new RelayCommand<MonitoringItem>(BuildPlaylist));
         private async void BuildPlaylist(MonitoringItem monitoringItem)
         {
+            monitoringItem.ProcessingInProgress = true;
+
             var playlists = await _playlistService.BuildPlaylistAsync(monitoringItem);
 
             Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem, playlists));
+
+            monitoringItem.ProcessingInProgress = false;
         }
         #endregion
     }
