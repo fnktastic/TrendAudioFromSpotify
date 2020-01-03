@@ -11,9 +11,12 @@ namespace TrendAudioFromSpotify.UI.Messaging
     {
         public MonitoringItem MonitoringItem { get; set; }
 
-        public PlaylistBuiltMessage(MonitoringItem monitoringItem)
+        public List<Playlist> Playlists { get; set; }
+
+        public PlaylistBuiltMessage(MonitoringItem monitoringItem, List<Playlist> playlists)
         {
             MonitoringItem = monitoringItem;
+            Playlists = playlists;
         }
     }
 }

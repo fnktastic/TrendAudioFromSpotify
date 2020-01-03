@@ -15,7 +15,7 @@ namespace TrendAudioFromSpotify.UI.Service
     public interface IPlaylistService
     {
         Task<FullPlaylist> RecreateOnSpotify(Playlist sourcePlaylist);
-        Task BuildPlaylistAsync(MonitoringItem monitoringItem);
+        Task<List<Playlist>> BuildPlaylistAsync(MonitoringItem monitoringItem);
     }
 
     public class PlaylistService : IPlaylistService
@@ -47,20 +47,22 @@ namespace TrendAudioFromSpotify.UI.Service
             return playlist;
         }
 
-        public async Task BuildPlaylistAsync(MonitoringItem monitoringItem)
+        public async Task<List<Playlist>> BuildPlaylistAsync(MonitoringItem monitoringItem)
         {
             if (monitoringItem.IsOverrideTrends == true) // override: remove existed playlists
             {
-                await BuildPlaylistWithOverridingAsync(monitoringItem);
+                return await BuildPlaylistWithOverridingAsync(monitoringItem);
             }
 
             if (monitoringItem.IsOverrideTrends == false)
             {
-                await BuildPlaylistWithoutOverridingAsync(monitoringItem);
+                return await BuildPlaylistWithoutOverridingAsync(monitoringItem);
             }
+
+            return new List<Playlist>();
         }
 
-        private async Task BuildPlaylistWithoutOverridingAsync(MonitoringItem monitoringItem)
+        private async Task<List<Playlist>> BuildPlaylistWithoutOverridingAsync(MonitoringItem monitoringItem)
         {
             var trends = monitoringItem.Trends;
 
@@ -72,7 +74,11 @@ namespace TrendAudioFromSpotify.UI.Service
 
                 var newAudios = trends.ExceptBy(seriesAudios, x => x.Id).ToList();
 
+                newAudios.ForEach(x => x.IsNew = true);
+
                 await _dataService.RemovePlaylistSeriesPhysicallyAsync(monitoringItem.TargetPlaylistName);
+
+                series.Clear();
 
                 //if (newAudios.Count > 0) // if we have new items
                 {
@@ -119,6 +125,8 @@ namespace TrendAudioFromSpotify.UI.Service
                         counter += chunk;
                     }
                 }
+
+                return series;
             }
 
             if (monitoringItem.IsSeries == false)
@@ -127,13 +135,14 @@ namespace TrendAudioFromSpotify.UI.Service
 
                 if (playlist == null) // new playlist
                 {
-                    await BuildPlaylistWithOverridingAsync(monitoringItem);
-                    return;
+                    return await BuildPlaylistWithOverridingAsync(monitoringItem);
                 }
 
                 var playlistAudios = playlist.Audios.Select(x => x).ToList();
 
                 var newAudios = trends.ExceptBy(playlistAudios, x => x.Id).ToList();
+
+                newAudios.ForEach(x => x.IsNew = true);
 
                 await _dataService.RemovePlaylistPhysicallyAsync(monitoringItem.TargetPlaylistName);
 
@@ -166,11 +175,15 @@ namespace TrendAudioFromSpotify.UI.Service
                     playlist.Audios = new AudioCollection(playlistAudios);
 
                     await _dataService.InsertPlaylistAsync(playlist);
+
+                    return new List<Playlist> { playlist };
                 }
             }
+
+            return new List<Playlist>();
         }
 
-        private async Task BuildPlaylistWithOverridingAsync(MonitoringItem monitoringItem)
+        private async Task<List<Playlist>> BuildPlaylistWithOverridingAsync(MonitoringItem monitoringItem)
         {
             var trends = monitoringItem.Trends;
 
@@ -207,6 +220,8 @@ namespace TrendAudioFromSpotify.UI.Service
                         UpdatedAt = DateTime.UtcNow
                     };
 
+                    volumeAudios.ForEach(x => x.IsNew = true);
+
                     volume.Audios = new AudioCollection(volumeAudios);
 
                     series.Add(volume);
@@ -216,6 +231,8 @@ namespace TrendAudioFromSpotify.UI.Service
                     seriesNo++;
                     counter += chunk;
                 }
+
+                return series;
             }
 
             if (monitoringItem.IsSeries == false)
@@ -235,10 +252,16 @@ namespace TrendAudioFromSpotify.UI.Service
 
                 var playlistAudios = trends.Take(playlist.Total).ToList();
 
+                playlistAudios.ForEach(x => x.IsNew = true);
+
                 playlist.Audios = new AudioCollection(playlistAudios);
 
                 await _dataService.InsertPlaylistAsync(playlist);
+
+                return new List<Playlist> { playlist };
             }
+
+            return new List<Playlist>();
         }
     }
 }

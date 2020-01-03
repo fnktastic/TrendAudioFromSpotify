@@ -150,19 +150,24 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region methods
-        private async void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)
+        private void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)
         {
             var playlistsToRemove = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName).ToList();
 
-            foreach(var playlistToRemove in playlistsToRemove)
+            foreach (var playlistToRemove in playlistsToRemove)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    Playlists.Remove(playlistToRemove);
+                    var targetPlaylist = Playlists.FirstOrDefault(x => x.Id == playlistToRemove.Id);
+
+                    if (targetPlaylist != null)
+                    {
+                        Playlists.Remove(targetPlaylist);
+                    }
                 });
             }
 
-            var playlists = await _dataService.GetPlaylistsByMonitoringItemAsync(message.MonitoringItem);
+            var playlists = message.Playlists;
 
             foreach (var playlist in playlists)
             {
@@ -172,7 +177,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 });
             }
 
-            if(message.MonitoringItem.AutoRecreatePlaylisOnSpotify)
+            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify || playlistsToRemove.Any(x => x.IsExported))
             {
                 var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
 

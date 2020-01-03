@@ -215,9 +215,9 @@ namespace TrendAudioFromSpotify.UI.Service
             await _dataService.InsertPlaylistAudioRangeAsync(trends);
             await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
 
-            await _playlistService.BuildPlaylistAsync(monitoringItem);
+            var builtPlaylists = await _playlistService.BuildPlaylistAsync(monitoringItem);
 
-            Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem));
+            Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem, builtPlaylists));
         }
 
         private async Task StartSchedulingTimer(MonitoringItem monitoringItem)

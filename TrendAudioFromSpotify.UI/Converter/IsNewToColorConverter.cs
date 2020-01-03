@@ -17,10 +17,10 @@ namespace TrendAudioFromSpotify.UI.Converter
             {
                 if (isNew) return Brushes.SpringGreen;
 
-                return Brushes.DarkGray;
+                return Brushes.Transparent;
             }
 
-            return Brushes.DarkGray;
+            return Brushes.Transparent;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

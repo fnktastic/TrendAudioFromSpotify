@@ -225,9 +225,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<MonitoringItem> BuildPlaylistCommand => _buildPlaylistCommand ?? (_buildPlaylistCommand = new RelayCommand<MonitoringItem>(BuildPlaylist));
         private async void BuildPlaylist(MonitoringItem monitoringItem)
         {
-            await _playlistService.BuildPlaylistAsync(monitoringItem);
+            var playlists = await _playlistService.BuildPlaylistAsync(monitoringItem);
 
-            Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem));
+            Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem, playlists));
         }
         #endregion
     }
