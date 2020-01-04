@@ -34,7 +34,18 @@ namespace TrendAudioFromSpotify.UI.Model
         }
 
         public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+
+        private DateTime _updateAt;
+        public DateTime UpdatedAt
+        {
+            get { return _updateAt; }
+            set
+            {
+                if (value == _updateAt) return;
+                _updateAt = value;
+                RaisePropertyChanged(nameof(UpdatedAt));
+            }
+        }
 
         public virtual PlaylistCollection Playlists { get; set; }
 

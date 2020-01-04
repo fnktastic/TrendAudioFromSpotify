@@ -34,6 +34,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IPlaylistService _playlistService;
         private readonly ISchedulingService _schedulingService;
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private const int UI_FIRE_PERIOD_REFRESH = 10;
         #endregion
 
         #region properties
@@ -112,6 +113,25 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Messenger.Default.Register<AddMonitoringItemMessage>(this, AddMonitoringItemMessage);
             Messenger.Default.Register<ConnectionEstablishedMessage>(this, StartScheduling);
+            Messenger.Default.Register<StartMonitoringMessage>(this, StartMonitoringMessageReciever);
+        }
+
+        #region private methods
+        public async void StartMonitoringMessageReciever(StartMonitoringMessage message)
+        {
+            var monitoringItem = _monitoringItems.FirstOrDefault(x => x.Id == message.MonitoringItemId); // await _dataService.GetMonitoringItemByIdAsync(message.MonitoringItemId);
+
+            if (monitoringItem != null)
+            {
+                monitoringItem.Playlists = monitoringItem.Group.Playlists;
+
+                monitoringItem.IsReady = true;
+
+                var success = await _monitoringService.ProcessAsync(monitoringItem);
+
+                if (success)
+                    monitoringItem.UpdatedAt = DateTime.UtcNow.ToLocalTime();
+            }
         }
 
         private void UpdateFireDisplayTimer_Tick(object sender, EventArgs e)
@@ -121,12 +141,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 foreach (var monitoringItem in _monitoringItems)
                 {
                     if (monitoringItem != null)
-                        monitoringItem.NextFireDateTime = monitoringItem.NextFireDateTime.Add(TimeSpan.FromSeconds(-15));
+                        monitoringItem.NextFireDateTime = monitoringItem.NextFireDateTime.Subtract(TimeSpan.FromSeconds(UI_FIRE_PERIOD_REFRESH));
                 }
             }
         }
 
-        #region private methods
         private async void NextFireDisplayTimer_Tick(object sender, EventArgs e)
         {
             await NextFireDisplayTimer();
@@ -188,18 +207,25 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     await _schedulingService.ScheduleMonitoringItem(monitoringItem);
             }
 
+            await InitTimers();
+              
+            //Messenger.Default.Send<StartMonitoringMessage>(new StartMonitoringMessage("59c89500-c766-43ad-b297-44485878621c"));
+        }
+
+        private async Task InitTimers()
+        {
             await NextFireDisplayTimer();
 
             _nextFireDisplayTimer = new DispatcherTimer()
             {
-                Interval = TimeSpan.FromMinutes(15)
+                Interval = TimeSpan.FromMinutes(1)
             };
             _nextFireDisplayTimer.Tick += NextFireDisplayTimer_Tick;
             _nextFireDisplayTimer.Start();
 
             _updateFireDisplayTimer = new DispatcherTimer()
             {
-                Interval = TimeSpan.FromSeconds(10)
+                Interval = TimeSpan.FromSeconds(UI_FIRE_PERIOD_REFRESH)
             };
             _updateFireDisplayTimer.Tick += UpdateFireDisplayTimer_Tick;
             _updateFireDisplayTimer.Start();

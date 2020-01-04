@@ -87,7 +87,12 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         public async Task<MonitoringItemDto> GetByIdAsync(Guid monitoringItemId)
         {
-            var dbEntry = await _context.MonitoringItems.FindAsync(monitoringItemId);
+            var dbEntry = await _context.MonitoringItems
+                                .Where(x => x.IsDeleted == false)
+                                .Where(x => x.Id == monitoringItemId)
+                                .Include(x => x.Schedule)
+                                .Include(x => x.Group.GroupPlaylists.Select(y => y.Playlist))
+                                .FirstOrDefaultAsync();
 
             if (dbEntry != null)
             {
