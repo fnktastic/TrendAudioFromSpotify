@@ -18,7 +18,7 @@ namespace TrendAudioFromSpotify.UI.Controls
     /// <summary>
     /// Логика взаимодействия для PlaylistsCollectionControl.xaml
     /// </summary>
-    public partial class PlaylistsCollectionControl : ListBox
+    public partial class PlaylistsCollectionControl : DataGrid
     {
         public PlaylistsCollectionControl()
         {
