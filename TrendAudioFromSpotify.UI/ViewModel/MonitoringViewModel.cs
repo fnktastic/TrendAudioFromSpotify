@@ -119,50 +119,78 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region private methods
         public async void StartMonitoringMessageReciever(StartMonitoringMessage message)
         {
-            var monitoringItem = _monitoringItems.FirstOrDefault(x => x.Id == message.MonitoringItemId); // await _dataService.GetMonitoringItemByIdAsync(message.MonitoringItemId);
-
-            if (monitoringItem != null)
+            try
             {
-                monitoringItem.Playlists = monitoringItem.Group.Playlists;
+                var monitoringItem = _monitoringItems.FirstOrDefault(x => x.Id == message.MonitoringItemId); // await _dataService.GetMonitoringItemByIdAsync(message.MonitoringItemId);
 
-                monitoringItem.IsReady = true;
+                if (monitoringItem != null)
+                {
+                    monitoringItem.Playlists = monitoringItem.Group.Playlists;
 
-                var success = await _monitoringService.ProcessAsync(monitoringItem);
+                    monitoringItem.IsReady = true;
 
-                if (success)
-                    monitoringItem.UpdatedAt = DateTime.UtcNow.ToLocalTime();
+                    var success = await _monitoringService.ProcessAsync(monitoringItem);
+
+                    if (success)
+                        monitoringItem.UpdatedAt = DateTime.UtcNow.ToLocalTime();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
         private void UpdateFireDisplayTimer_Tick(object sender, EventArgs e)
         {
-            if (_monitoringItems != null)
+            try
             {
-                foreach (var monitoringItem in _monitoringItems)
+                if (_monitoringItems != null)
                 {
-                    if (monitoringItem != null)
-                        monitoringItem.NextFireDateTime = monitoringItem.NextFireDateTime.Subtract(TimeSpan.FromSeconds(UI_FIRE_PERIOD_REFRESH));
+                    foreach (var monitoringItem in _monitoringItems)
+                    {
+                        if (monitoringItem != null)
+                            monitoringItem.NextFireDateTime = monitoringItem.NextFireDateTime.Subtract(TimeSpan.FromSeconds(UI_FIRE_PERIOD_REFRESH));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
         private async void NextFireDisplayTimer_Tick(object sender, EventArgs e)
         {
-            await NextFireDisplayTimer();
+            try
+            {
+                await NextFireDisplayTimer();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async Task NextFireDisplayTimer()
         {
-            var schedules = await _schedulingService.GetActiveSchedulings();
-
-            foreach (var schedule in schedules)
+            try
             {
-                var target = _monitoringItems.FirstOrDefault(x => x.Id == schedule.Key);
+                var schedules = await _schedulingService.GetActiveSchedulings();
 
-                if (target != null)
+                foreach (var schedule in schedules)
                 {
-                    target.NextFireDateTime = schedule.Value.LocalDateTime - DateTime.Now;
+                    var target = _monitoringItems.FirstOrDefault(x => x.Id == schedule.Key);
+
+                    if (target != null)
+                    {
+                        target.NextFireDateTime = schedule.Value.LocalDateTime - DateTime.Now;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
@@ -173,81 +201,124 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private void AddMonitoringItemMessage(AddMonitoringItemMessage addMonitoringItemMessage)
         {
-            if (addMonitoringItemMessage != null && addMonitoringItemMessage.MonitoringItem != null)
-                _monitoringItems.Add(addMonitoringItemMessage.MonitoringItem);
+            try
+            {
+                if (addMonitoringItemMessage != null && addMonitoringItemMessage.MonitoringItem != null)
+                    _monitoringItems.Add(addMonitoringItemMessage.MonitoringItem);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async Task FetchTrends()
         {
-            var audios = await _dataService.GetAllMonitoringItemAudioByMonitoringItemIdAsync(_selectedMonitoringItem.Id);
+            try
+            {
+                var audios = await _dataService.GetAllMonitoringItemAudioByMonitoringItemIdAsync(_selectedMonitoringItem.Id);
 
-            SelectedMonitoringItem.Trends = new AudioCollection(audios);
+                SelectedMonitoringItem.Trends = new AudioCollection(audios);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async Task FetchData()
         {
-            _logger.Info("Fetching Monitoring Data...");
+            try
+            {
+                _logger.Info("Fetching Monitoring Data...");
 
-           var monitoringItems = await _dataService.GetAllMonitoringItemsAsync();
+                var monitoringItems = await _dataService.GetAllMonitoringItemsAsync();
 
-            MonitoringItems = new MonitoringItemCollection(monitoringItems);
+                MonitoringItems = new MonitoringItemCollection(monitoringItems);
 
-            FilteredMonitoringItemCollection = GetAudiosCollectionView(_monitoringItems);
+                FilteredMonitoringItemCollection = GetAudiosCollectionView(_monitoringItems);
 
-            FilteredMonitoringItemCollection.Filter += FilteredMonitoringItemCollection_Filter;
+                FilteredMonitoringItemCollection.Filter += FilteredMonitoringItemCollection_Filter;
 
-            FilteredMonitoringItemCollection.CustomSort = new MonitoringItemSorter();
+                FilteredMonitoringItemCollection.CustomSort = new MonitoringItemSorter();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async void StartScheduling(ConnectionEstablishedMessage message)
         {
-            foreach (var monitoringItem in MonitoringItems)
+            try
             {
-                if (monitoringItem.Schedule.RepeatOn)
-                    await _schedulingService.ScheduleMonitoringItem(monitoringItem);
-            }
+                foreach (var monitoringItem in MonitoringItems)
+                {
+                    if (monitoringItem.Schedule.RepeatOn)
+                        await _schedulingService.ScheduleMonitoringItem(monitoringItem);
+                }
 
-            await InitTimers();
-              
-            //Messenger.Default.Send<StartMonitoringMessage>(new StartMonitoringMessage("59c89500-c766-43ad-b297-44485878621c"));
+                await InitTimers();
+
+                //Messenger.Default.Send<StartMonitoringMessage>(new StartMonitoringMessage("59c89500-c766-43ad-b297-44485878621c"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async Task InitTimers()
         {
-            await NextFireDisplayTimer();
-
-            _nextFireDisplayTimer = new DispatcherTimer()
+            try
             {
-                Interval = TimeSpan.FromMinutes(1)
-            };
-            _nextFireDisplayTimer.Tick += NextFireDisplayTimer_Tick;
-            _nextFireDisplayTimer.Start();
+                await NextFireDisplayTimer();
 
-            _updateFireDisplayTimer = new DispatcherTimer()
+                _nextFireDisplayTimer = new DispatcherTimer()
+                {
+                    Interval = TimeSpan.FromMinutes(1)
+                };
+                _nextFireDisplayTimer.Tick += NextFireDisplayTimer_Tick;
+                _nextFireDisplayTimer.Start();
+
+                _updateFireDisplayTimer = new DispatcherTimer()
+                {
+                    Interval = TimeSpan.FromSeconds(UI_FIRE_PERIOD_REFRESH)
+                };
+                _updateFireDisplayTimer.Tick += UpdateFireDisplayTimer_Tick;
+                _updateFireDisplayTimer.Start();
+            }
+            catch (Exception ex)
             {
-                Interval = TimeSpan.FromSeconds(UI_FIRE_PERIOD_REFRESH)
-            };
-            _updateFireDisplayTimer.Tick += UpdateFireDisplayTimer_Tick;
-            _updateFireDisplayTimer.Start();
+                _logger.Error(ex);
+            }
         }
         #endregion
 
         #region filters
         private bool FilteredMonitoringItemCollection_Filter(object obj)
         {
-            var monitoringItem = obj as MonitoringItem;
-
-            if (string.IsNullOrWhiteSpace(_monitoringItemSearchText))
+            try
             {
-                return true;
-            }
+                var monitoringItem = obj as MonitoringItem;
 
-            if (monitoringItem.TargetPlaylistName.ToUpper().Contains(_monitoringItemSearchText.ToUpper()))
+                if (string.IsNullOrWhiteSpace(_monitoringItemSearchText))
+                {
+                    return true;
+                }
+
+                if (monitoringItem.TargetPlaylistName.ToUpper().Contains(_monitoringItemSearchText.ToUpper()))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
             {
-                return true;
+                _logger.Error(ex);
+                return false;
             }
-
-            return false;
         }
         #endregion
 
@@ -270,54 +341,89 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<MonitoringItem> SelectMonitoringItemCommand => _selectMonitoringItemCommand ?? (_selectMonitoringItemCommand = new RelayCommand<MonitoringItem>(SelectMonitoringItem));
         private void SelectMonitoringItem(MonitoringItem monitoringItem)
         {
-            SelectedMonitoringItem = monitoringItem;
+            try
+            {
+                SelectedMonitoringItem = monitoringItem;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<MonitoringItem> _processMonitoringItemCommand;
         public RelayCommand<MonitoringItem> ProcessMonitoringItemCommand => _processMonitoringItemCommand ?? (_processMonitoringItemCommand = new RelayCommand<MonitoringItem>(ProcessMonitoringItem));
         private async void ProcessMonitoringItem(MonitoringItem monitoringItem)
         {
-            monitoringItem.ProcessingInProgress = true;
+            try
+            {
+                monitoringItem.ProcessingInProgress = true;
 
-            var _monitoringItem = _monitoringService.Initiate(monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
-            await _monitoringService.ProcessAsync(_monitoringItem);
+                var _monitoringItem = _monitoringService.Initiate(monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
+                await _monitoringService.ProcessAsync(_monitoringItem);
 
-            monitoringItem.ProcessingInProgress = false;
+                monitoringItem.ProcessingInProgress = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<MonitoringItem> _deleteMonitoringItemCommand;
         public RelayCommand<MonitoringItem> DeleteMonitoringItemCommand => _deleteMonitoringItemCommand ?? (_deleteMonitoringItemCommand = new RelayCommand<MonitoringItem>(DeleteMonitoringItem));
         private async void DeleteMonitoringItem(MonitoringItem monitoringItem)
         {
-            monitoringItem.ProcessingInProgress = true;
+            try
+            {
+                monitoringItem.ProcessingInProgress = true;
 
-            _monitoringItems.Remove(monitoringItem);
+                _monitoringItems.Remove(monitoringItem);
 
-            await _dataService.RemoveMonitoringItemAsync(monitoringItem);
+                await _dataService.RemoveMonitoringItemAsync(monitoringItem);
 
-            monitoringItem.ProcessingInProgress = false;
+                monitoringItem.ProcessingInProgress = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<MonitoringItem> _goToBaseGoupCommand;
         public RelayCommand<MonitoringItem> GoToBaseGoupCommand => _goToBaseGoupCommand ?? (_goToBaseGoupCommand = new RelayCommand<MonitoringItem>(GoToBaseGoup));
         private void GoToBaseGoup(MonitoringItem monitoringItem)
         {
-            Messenger.Default.Send<Group>(monitoringItem.Group);
+            try
+            {
+                Messenger.Default.Send<Group>(monitoringItem.Group);
 
-            Messenger.Default.Send<TabsEnum>(TabsEnum.Groups);
+                Messenger.Default.Send<TabsEnum>(TabsEnum.Groups);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<MonitoringItem> _buildPlaylistCommand;
         public RelayCommand<MonitoringItem> BuildPlaylistCommand => _buildPlaylistCommand ?? (_buildPlaylistCommand = new RelayCommand<MonitoringItem>(BuildPlaylist));
         private async void BuildPlaylist(MonitoringItem monitoringItem)
         {
-            monitoringItem.ProcessingInProgress = true;
+            try
+            {
+                monitoringItem.ProcessingInProgress = true;
 
-            var playlists = await _playlistService.BuildPlaylistAsync(monitoringItem);
+                var playlists = await _playlistService.BuildPlaylistAsync(monitoringItem);
 
-            Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem, playlists));
+                Messenger.Default.Send<PlaylistBuiltMessage>(new PlaylistBuiltMessage(monitoringItem, playlists));
 
-            monitoringItem.ProcessingInProgress = false;
+                monitoringItem.ProcessingInProgress = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
         #endregion
     }

@@ -122,27 +122,43 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private void AddGroupMessage(AddGroupMessage addGroupMessage)
         {
-            if (addGroupMessage != null && addGroupMessage.Group != null)
-                _groups.Add(addGroupMessage.Group);
+            try
+            {
+                if (addGroupMessage != null && addGroupMessage.Group != null)
+                    _groups.Add(addGroupMessage.Group);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
         #endregion
 
         #region filters
         private bool FilteredGroupCollection_Filter(object obj)
         {
-            var group = obj as Group;
-
-            if (string.IsNullOrWhiteSpace(_groupSearchText))
+            try
             {
-                return true;
+                var group = obj as Group;
+
+                if (string.IsNullOrWhiteSpace(_groupSearchText))
+                {
+                    return true;
+                }
+
+                if (group.Name.ToUpper().Contains(_groupSearchText.ToUpper()))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return false;
             }
 
-            if (group.Name.ToUpper().Contains(_groupSearchText.ToUpper()))
-            {
-                return true;
-            }
-
-            return false;
         }
         #endregion
 
@@ -151,36 +167,64 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Group> SelectGroupCommand => _selectGroupCommand ?? (_selectGroupCommand = new RelayCommand<Group>(SelectGroup));
         private void SelectGroup(Group group)
         {
-            SelectedGroup = group;
+            try
+            {
+                SelectedGroup = group;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<Group> _deleteGroupCommand;
         public RelayCommand<Group> DeleteGroupCommand => _deleteGroupCommand ?? (_deleteGroupCommand = new RelayCommand<Group>(DeleteGroup));
         private async void DeleteGroup(Group group)
         {
-            _groups.Remove(group);
+            try
+            {
+                _groups.Remove(group);
 
-            await _dataService.RemoveGroupAsync(group);
+                await _dataService.RemoveGroupAsync(group);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<Group> _repeatGroupCommand;
         public RelayCommand<Group> RepeatGroupCommand => _repeatGroupCommand ?? (_repeatGroupCommand = new RelayCommand<Group>(RepeatGroup));
         private async void RepeatGroup(Group group)
         {
-            await _groupService.MonitorGroupAsync(SpotifyServices, group);
+            try
+            {
+                await _groupService.MonitorGroupAsync(SpotifyServices, group);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
         #endregion
 
         #region messages
         private void ReceiveSelectGroupMessage(Group group)
         {
-            var targetGroup = Groups
-                .FirstOrDefault(x => x.Name == group.Name && x.CreatedAt == group.CreatedAt);
+            try
+            {
+                var targetGroup = Groups
+                    .FirstOrDefault(x => x.Name == group.Name && x.CreatedAt == group.CreatedAt);
 
-            if (targetGroup != null)
-                SelectedGroup = targetGroup;
-            else
-                SelectedGroup = group;
+                if (targetGroup != null)
+                    SelectedGroup = targetGroup;
+                else
+                    SelectedGroup = group;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
         #endregion
     }

@@ -105,19 +105,27 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region filters
         private bool FilteredPlaylistCollection_Filter(object obj)
         {
-            var playlist = obj as Playlist;
-
-            if (string.IsNullOrWhiteSpace(_playlistSearchText))
+            try
             {
-                return true;
-            }
+                var playlist = obj as Playlist;
 
-            if (playlist.DisplayName.ToUpper().Contains(_playlistSearchText.ToUpper()))
+                if (string.IsNullOrWhiteSpace(_playlistSearchText))
+                {
+                    return true;
+                }
+
+                if (playlist.DisplayName.ToUpper().Contains(_playlistSearchText.ToUpper()))
+                {
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
             {
-                return true;
+                _logger.Error(ex);
+                return false;
             }
-
-            return false;
         }
         #endregion
 
@@ -152,58 +160,72 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region methods
         private void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)
         {
-            var playlistsToRemove = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName).ToList();
-
-            foreach (var playlistToRemove in playlistsToRemove)
+            try
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    var targetPlaylist = Playlists.FirstOrDefault(x => x.Id == playlistToRemove.Id);
+                var playlistsToRemove = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName).ToList();
 
-                    if (targetPlaylist != null)
-                    {
-                        Playlists.Remove(targetPlaylist);
-                    }
-                });
-            }
-
-            var playlists = message.Playlists;
-
-            foreach (var playlist in playlists)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Playlists.Add(playlist);
-                });
-            }
-
-            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify || playlistsToRemove.Any(x => x.IsExported))
-            {
-                var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
-
-                foreach (var playlist in targetPlaylists)
+                foreach (var playlistToRemove in playlistsToRemove)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        SyncPlaylistCommand.Execute(playlist);
+                        var targetPlaylist = Playlists.FirstOrDefault(x => x.Id == playlistToRemove.Id);
+
+                        if (targetPlaylist != null)
+                        {
+                            Playlists.Remove(targetPlaylist);
+                        }
                     });
                 }
+
+                var playlists = message.Playlists;
+
+                foreach (var playlist in playlists)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Playlists.Add(playlist);
+                    });
+                }
+
+                if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify || playlistsToRemove.Any(x => x.IsExported))
+                {
+                    var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
+
+                    foreach (var playlist in targetPlaylists)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            SyncPlaylistCommand.Execute(playlist);
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
         private async Task FetchData()
         {
-            _logger.Info("Fetching Playlists Data...");
+            try
+            {
+                _logger.Info("Fetching Playlists Data...");
 
-            var playlists = await _dataService.GetAllPlaylistsAsync(true);
+                var playlists = await _dataService.GetAllPlaylistsAsync(true);
 
-            Playlists = new PlaylistCollection(playlists);
+                Playlists = new PlaylistCollection(playlists);
 
-            FilteredPlaylistCollection = GetAudiosCollectionView(_playlists);
+                FilteredPlaylistCollection = GetAudiosCollectionView(_playlists);
 
-            FilteredPlaylistCollection.Filter += FilteredPlaylistCollection_Filter;
+                FilteredPlaylistCollection.Filter += FilteredPlaylistCollection_Filter;
 
-            FilteredPlaylistCollection.CustomSort = new PlaylistsSorter();
+                FilteredPlaylistCollection.CustomSort = new PlaylistsSorter();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         public ListCollectionView GetAudiosCollectionView(IEnumerable<Playlist> playlists)
@@ -213,7 +235,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private void GetPlaylists(Playlist playlist)
         {
-            SelectedPlaylist = playlist;
+            try
+            {
+                SelectedPlaylist = playlist;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
         #endregion
 
@@ -222,61 +251,89 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Playlist> SyncPlaylistCommand => _syncPlaylistCommand ?? (_syncPlaylistCommand = new RelayCommand<Playlist>(SyncPlaylist));
         private async void SyncPlaylist(Playlist playlist)
         {
-            playlist.ProcessingInProgress = true;
+            try
+            {
+                playlist.ProcessingInProgress = true;
 
-            var syncedPalylist = await _playlistService.RecreateOnSpotify(playlist);
+                var syncedPalylist = await _playlistService.RecreateOnSpotify(playlist);
 
-            playlist.SpotifyId = syncedPalylist.Id;
-            playlist.Href = syncedPalylist.Href;
-            playlist.Uri = syncedPalylist.Uri;
+                playlist.SpotifyId = syncedPalylist.Id;
+                playlist.Href = syncedPalylist.Href;
+                playlist.Uri = syncedPalylist.Uri;
 
-            playlist.Owner = syncedPalylist.Owner.DisplayName;
-            playlist.OwnerProfileUrl = syncedPalylist.Owner.Href;
-            playlist.Cover = syncedPalylist.Images != null && syncedPalylist.Images.Count > 0 ? syncedPalylist.Images.First().Url : "null";
+                playlist.Owner = syncedPalylist.Owner.DisplayName;
+                playlist.OwnerProfileUrl = syncedPalylist.Owner.Href;
+                playlist.Cover = syncedPalylist.Images != null && syncedPalylist.Images.Count > 0 ? syncedPalylist.Images.First().Url : "null";
 
-            await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, playlist.SpotifyId, playlist.Href, playlist.Uri,
-                                                                playlist.Owner, playlist.OwnerProfileUrl, playlist.Cover);
-            await Task.Delay(TimeSpan.FromSeconds(2));
+                await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, playlist.SpotifyId, playlist.Href, playlist.Uri,
+                                                                    playlist.Owner, playlist.OwnerProfileUrl, playlist.Cover);
+                await Task.Delay(TimeSpan.FromSeconds(2));
 
-            playlist.ProcessingInProgress = false;
+                playlist.ProcessingInProgress = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<Playlist> _selectPlaylistCommand;
         public RelayCommand<Playlist> SelectPlaylistCommand => _selectPlaylistCommand ?? (_selectPlaylistCommand = new RelayCommand<Playlist>(SelectPlaylist));
         private void SelectPlaylist(Playlist playlist)
         {
-            SelectedPlaylist = playlist;
+            try
+            {
+                SelectedPlaylist = playlist;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<Playlist> _deletePlaylistCommand;
         public RelayCommand<Playlist> DeletePlaylistCommand => _deletePlaylistCommand ?? (_deletePlaylistCommand = new RelayCommand<Playlist>(DeletePlaylist));
         private async void DeletePlaylist(Playlist playlist)
         {
-            playlist.ProcessingInProgress = true;
-
-            if (playlist.IsExported)
+            try
             {
-                string confirmMessage = await RemoveFromSpotifyConfirmation("Confirmation", string.Format("Also remove {0} from Spotify? Type 'yes' to confirm.", playlist.DisplayName));
+                playlist.ProcessingInProgress = true;
 
-                if (string.Equals(confirmMessage, "yes", StringComparison.OrdinalIgnoreCase))
+                if (playlist.IsExported)
                 {
-                    await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
+                    string confirmMessage = await RemoveFromSpotifyConfirmation("Confirmation", string.Format("Also remove {0} from Spotify? Type 'yes' to confirm.", playlist.DisplayName));
+
+                    if (string.Equals(confirmMessage, "yes", StringComparison.OrdinalIgnoreCase))
+                    {
+                        await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
+                    }
                 }
+
+                _playlists.Remove(playlist);
+
+                await _dataService.RemovePlaylistAsync(playlist);
+
+                playlist.ProcessingInProgress = false;
             }
-
-            _playlists.Remove(playlist);
-
-            await _dataService.RemovePlaylistAsync(playlist);
-
-            playlist.ProcessingInProgress = false;
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<Playlist> _openPlaylistInBrowserCommand;
         public RelayCommand<Playlist> OpenPlaylistInBrowserCommand => _openPlaylistInBrowserCommand ?? (_openPlaylistInBrowserCommand = new RelayCommand<Playlist>(OpenPlaylistInBrowser));
         private void OpenPlaylistInBrowser(Playlist playlist)
         {
-            if (playlist.IsExported)
-                System.Diagnostics.Process.Start(playlist.PublicUrl);
+            try
+            {
+                if (playlist.IsExported)
+                    System.Diagnostics.Process.Start(playlist.PublicUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
         #endregion
     }

@@ -364,10 +364,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 if (_selectedPlaylist != null)
                 {
-                    //_selectedPlaylist.IsChecked = true;
-
-                    //PlaylistSelectedCommand.Execute(_selectedPlaylist);
-
                     GetPlaylistsAudios();
                 }
             }
@@ -454,64 +450,98 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
         private async void RefreshTokenTimer_Tick(object sender, EventArgs e)
         {
-            TokenExpiredIn = TokenExpiredIn.Add(TimeSpan.FromSeconds(-1));
-
-            if (TokenExpiredIn.TotalSeconds <= 600)
+            try
             {
-                var accessToken = _settingUtility.GetAccessToken();
-                var refreshToken = _settingUtility.GetRefreshToken();
-                await _spotifyServices.GetAccess(accessToken?.Value, refreshToken?.Value);
-            }
+                TokenExpiredIn = TokenExpiredIn.Add(TimeSpan.FromSeconds(-1));
 
+                if (TokenExpiredIn.TotalSeconds <= 600)
+                {
+                    var accessToken = _settingUtility.GetAccessToken();
+                    var refreshToken = _settingUtility.GetRefreshToken();
+                    await _spotifyServices.GetAccess(accessToken?.Value, refreshToken?.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private void OnSpotifyTokenRecieved(Token token)
         {
-            _token = token;
+            try
+            {
+                _token = token;
 
-            if (string.IsNullOrEmpty(token.AccessToken) == false)
-                _settingUtility.SaveAccessToken(token.AccessToken);
+                if (string.IsNullOrEmpty(token.AccessToken) == false)
+                    _settingUtility.SaveAccessToken(token.AccessToken);
 
-            if (string.IsNullOrEmpty(token.RefreshToken) == false)
-                _settingUtility.SaveRefreshToken(token.RefreshToken);
+                if (string.IsNullOrEmpty(token.RefreshToken) == false)
+                    _settingUtility.SaveRefreshToken(token.RefreshToken);
 
-            TokenExpiredIn = TimeSpan.FromSeconds(_token.ExpiresIn);
+                TokenExpiredIn = TimeSpan.FromSeconds(_token.ExpiresIn);
 
-            _refreshTokenTimer.Start();
+                _refreshTokenTimer.Start();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async void AuthResponse(AuthResponseMessage obj)
         {
-            if (isStartup)
+            try
             {
-                IsConnectionEsatblished = true;
-
-                await HideConnectingMessage();
                 if (isStartup)
                 {
-                    await ShowMessage("Notification", "Succesfully authorized in Spotify!");
+                    IsConnectionEsatblished = true;
+
+                    await HideConnectingMessage();
+                    if (isStartup)
+                    {
+                        await ShowMessage("Notification", "Succesfully authorized in Spotify!");
+                    }
+
+                    await FetchSpotifyData();
+
+                    isStartup = false;
+
+                    Messenger.Default.Send<ConnectionEstablishedMessage>(new ConnectionEstablishedMessage());
                 }
-
-                await FetchSpotifyData();
-
-                isStartup = false;
-
-                Messenger.Default.Send<ConnectionEstablishedMessage>(new ConnectionEstablishedMessage());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
         #region dialogs
         private async Task ShowConnectingMessage()
         {
-            progressDialogController = await _dialogCoordinator.ShowProgressAsync(this, "Loading", "Connecting to Spotify...");
-            progressDialogController.SetIndeterminate();
+            try
+            {
+                progressDialogController = await _dialogCoordinator.ShowProgressAsync(this, "Loading", "Connecting to Spotify...");
+                progressDialogController.SetIndeterminate();
 
-            await Task.Delay(TimeSpan.FromSeconds(2));
+                await Task.Delay(TimeSpan.FromSeconds(2));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async Task ShowMessage(string header, string message)
         {
-            await _dialogCoordinator.ShowMessageAsync(this, header, message);
+            try
+            {
+                await _dialogCoordinator.ShowMessageAsync(this, header, message);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async Task HideConnectingMessage()
@@ -549,29 +579,37 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.Error(ex);
                 return false;
             }
         }
 
         private async Task EstablishConnection()
         {
-            _logger.Info("Connecting to Spotify...");
+            try
+            {
+                _logger.Info("Connecting to Spotify...");
 
-            var accessToken = _settingUtility.GetAccessToken();
-            var refreshToken = _settingUtility.GetRefreshToken();
+                var accessToken = _settingUtility.GetAccessToken();
+                var refreshToken = _settingUtility.GetRefreshToken();
 
-            await ShowConnectingMessage();
+                await ShowConnectingMessage();
 
-            string userId = _userId;
-            string secretId = _secretId;
-            string redirectUri = _redirectUri;
-            string serverUri = _serverUri;
+                string userId = _userId;
+                string secretId = _secretId;
+                string redirectUri = _redirectUri;
+                string serverUri = _serverUri;
 
-            _spotifyServices.Init(userId, secretId, redirectUri, serverUri);
+                _spotifyServices.Init(userId, secretId, redirectUri, serverUri);
 
-            await _spotifyServices.GetAccess(accessToken?.Value, refreshToken?.Value);
+                await _spotifyServices.GetAccess(accessToken?.Value, refreshToken?.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private bool isStartup = true;
@@ -580,127 +618,179 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region private data metods
         private void ResetUI(object o)
         {
-            TargetGroup = new Group();
-            TargetAudios = new AudioCollection();
-            TargetPlaylists = new PlaylistCollection();
+            try
+            {
+                TargetGroup = new Group();
+                TargetAudios = new AudioCollection();
+                TargetPlaylists = new PlaylistCollection();
 
-            if (ExplorePlaylists != null)
-                foreach (var playlist in ExplorePlaylists)
-                    playlist.IsChecked = false;
+                if (ExplorePlaylists != null)
+                    foreach (var playlist in ExplorePlaylists)
+                        playlist.IsChecked = false;
 
-            if (Playlists != null)
-                foreach (var playlist in Playlists)
-                    playlist.IsChecked = false;
+                if (Playlists != null)
+                    foreach (var playlist in Playlists)
+                        playlist.IsChecked = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         void FilteredMyPlaylistsCollection_Filter(object sender, FilterEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(_myPlaylistsSearchText))
+            try
             {
-                e.Accepted = true;
-                return;
-            }
-
-            if (e.Item != null)
-            {
-                if (e.Item is Playlist playlist)
+                if (string.IsNullOrWhiteSpace(_myPlaylistsSearchText))
                 {
-                    if (playlist.Name.ToUpper().Contains(_myPlaylistsSearchText.ToUpper()) ||
-                        playlist.Owner.ToUpper().Contains(_myPlaylistsSearchText.ToUpper()))
+                    e.Accepted = true;
+                    return;
+                }
+
+                if (e.Item != null)
+                {
+                    if (e.Item is Playlist playlist)
                     {
-                        e.Accepted = true;
-                        return;
+                        if (playlist.Name.ToUpper().Contains(_myPlaylistsSearchText.ToUpper()) ||
+                            playlist.Owner.ToUpper().Contains(_myPlaylistsSearchText.ToUpper()))
+                        {
+                            e.Accepted = true;
+                            return;
+                        }
                     }
                 }
-            }
 
-            e.Accepted = false;
+                e.Accepted = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                e.Accepted = false;
+            }
         }
 
         void FilteredExplorePlaylistsCollection_Filter(object sender, FilterEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(_explorePlaylistsSearchText))
+            try
             {
-                e.Accepted = true;
-                return;
-            }
-
-            if (e.Item != null)
-            {
-                if (e.Item is Playlist playlist)
+                if (string.IsNullOrWhiteSpace(_explorePlaylistsSearchText))
                 {
-                    if (playlist.Name.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()) ||
-                        playlist.Owner.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()))
+                    e.Accepted = true;
+                    return;
+                }
+
+                if (e.Item != null)
+                {
+                    if (e.Item is Playlist playlist)
                     {
-                        e.Accepted = true;
-                        return;
+                        if (playlist.Name.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()) ||
+                            playlist.Owner.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()))
+                        {
+                            e.Accepted = true;
+                            return;
+                        }
                     }
                 }
-            }
 
-            e.Accepted = false;
+                e.Accepted = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                e.Accepted = false;
+            }
         }
 
         void FilteredAudioCollection_Filter(object sender, FilterEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(_audiosSearchText))
+            try
             {
-                e.Accepted = true;
-                return;
-            }
-
-            if (e.Item != null)
-            {
-                if (e.Item is Audio audio)
+                if (string.IsNullOrWhiteSpace(_audiosSearchText))
                 {
-                    if (audio.Title.ToUpper().Contains(_audiosSearchText.ToUpper()) ||
-                        audio.Artist.ToUpper().Contains(_audiosSearchText.ToUpper()))
+                    e.Accepted = true;
+                    return;
+                }
+
+                if (e.Item != null)
+                {
+                    if (e.Item is Audio audio)
                     {
-                        e.Accepted = true;
-                        return;
+                        if (audio.Title.ToUpper().Contains(_audiosSearchText.ToUpper()) ||
+                            audio.Artist.ToUpper().Contains(_audiosSearchText.ToUpper()))
+                        {
+                            e.Accepted = true;
+                            return;
+                        }
                     }
                 }
-            }
 
-            e.Accepted = false;
+                e.Accepted = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                e.Accepted = false;
+            }
         }
 
         private void AddSpotifyUser()
         {
-            if (string.IsNullOrWhiteSpace(_user)) return;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(_user)) return;
 
-            _users.Add(new User(_user));
+                _users.Add(new User(_user));
 
-            User = string.Empty;
+                User = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async Task FetchSpotifyData()
         {
-            IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
+            try
+            {
+                IsSongsAreaBusy = IsPlaylistsAreaBusy = true;
 
-            var playlists = (await _spotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
+                var playlists = (await _spotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
 
-            Playlists = new PlaylistCollection(playlists);
+                Playlists = new PlaylistCollection(playlists);
 
-            IsPlaylistsAreaBusy = false;
+                IsPlaylistsAreaBusy = false;
 
-            likedSongs = (await _spotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
+                likedSongs = (await _spotifyServices.GetSongs()).Select(x => new Audio(x.Track)).ToList();
 
-            SavedTracks = new AudioCollection(likedSongs);
+                SavedTracks = new AudioCollection(likedSongs);
 
-            var foreignUserPlaylists = await _spotifyServices.GetForeignUserPlaylists();
+                var foreignUserPlaylists = await _spotifyServices.GetForeignUserPlaylists();
 
-            IsSongsAreaBusy = false;
+                IsSongsAreaBusy = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async void GetPlaylistsAudios()
         {
-            IsSongsAreaBusy = true;
+            try
+            {
+                IsSongsAreaBusy = true;
 
-            var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.SpotifyId);
-            SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
+                var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.SpotifyId);
+                SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
 
-            IsSongsAreaBusy = false;
+                IsSongsAreaBusy = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
         #endregion
 
@@ -709,20 +799,27 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand GlobalSearchCommand => _globalSearchCommand ?? (_globalSearchCommand = new RelayCommand(GlobalSearch));
         private async void GlobalSearch()
         {
-            if (_globalSearchEnabled)
+            try
             {
-                try
+                if (_globalSearchEnabled)
                 {
-                    IsPlaylistsAreaBusy = true;
+                    try
+                    {
+                        IsPlaylistsAreaBusy = true;
 
-                    var playlists = await _spotifyServices.GlobalPlaylistsSearch(_explorePlaylistsSearchText);
+                        var playlists = await _spotifyServices.GlobalPlaylistsSearch(_explorePlaylistsSearchText);
 
-                    ExplorePlaylists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
+                        ExplorePlaylists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
+                    }
+                    finally
+                    {
+                        IsPlaylistsAreaBusy = false;
+                    }
                 }
-                finally
-                {
-                    IsPlaylistsAreaBusy = false;
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
@@ -730,9 +827,16 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<KeyEventArgs> AddSpotifyUsernameCommand => _addSpotifyUsernameCommand ?? (_addSpotifyUsernameCommand = new RelayCommand<KeyEventArgs>(AddSpotifyUsername));
         private void AddSpotifyUsername(KeyEventArgs e)
         {
-            if (e.Key == Key.Enter || e.Key == Key.Return)
+            try
             {
-                AddSpotifyUser();
+                if (e.Key == Key.Enter || e.Key == Key.Return)
+                {
+                    AddSpotifyUser();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
@@ -740,30 +844,51 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand<Playlist> PlaylistSelectedCommand => _playlistSelectedCommand ?? (_playlistSelectedCommand = new RelayCommand<Playlist>(PlaylistSelected));
         private void PlaylistSelected(Playlist playlist)
         {
-            if (playlist.IsChecked)
+            try
             {
-                if (_targetPlaylists.Contains(playlist))
-                    return;
+                if (playlist.IsChecked)
+                {
+                    if (_targetPlaylists.Contains(playlist))
+                        return;
 
-                _targetPlaylists.Add(playlist);
+                    _targetPlaylists.Add(playlist);
+                }
+                else
+                    _targetPlaylists.Remove(playlist);
             }
-            else
-                _targetPlaylists.Remove(playlist);
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<Audio> _addAudioToTargetCommand;
         public RelayCommand<Audio> AddAudioToTargetCommand => _addAudioToTargetCommand ?? (_addAudioToTargetCommand = new RelayCommand<Audio>(AddAudioToTarget));
         private void AddAudioToTarget(Audio audio)
         {
-            if (_targetAudios.Contains(audio) == false)
-                _targetAudios.Add(audio);
+            try
+            {
+                if (_targetAudios.Contains(audio) == false)
+                    _targetAudios.Add(audio);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand<Audio> _saveAudioToDbCommand;
         public RelayCommand<Audio> SaveAudioToDbCommand => _saveAudioToDbCommand ?? (_saveAudioToDbCommand = new RelayCommand<Audio>(SaveAudioToDb));
         private async void SaveAudioToDb(Audio audio)
         {
-            await _dataService.InsertAudioAsync(audio);
+            try
+            {
+                await _dataService.InsertAudioAsync(audio);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private bool checkExplorePlaylists = true;
@@ -771,15 +896,22 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand SelectExplorePlaylistsCommand => _selectExplorePlaylistsCommand ?? (_selectExplorePlaylistsCommand = new RelayCommand(SelectExplorePlaylists));
         private void SelectExplorePlaylists()
         {
-            if (_explorePlaylists == null) return;
-
-            foreach (var exploreplaylist in _explorePlaylists)
+            try
             {
-                exploreplaylist.IsChecked = checkExplorePlaylists;
-                PlaylistSelectedCommand.Execute(exploreplaylist);
-            }
+                if (_explorePlaylists == null) return;
 
-            checkExplorePlaylists = !checkExplorePlaylists;
+                foreach (var exploreplaylist in _explorePlaylists)
+                {
+                    exploreplaylist.IsChecked = checkExplorePlaylists;
+                    PlaylistSelectedCommand.Execute(exploreplaylist);
+                }
+
+                checkExplorePlaylists = !checkExplorePlaylists;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private bool checkAllPlaylists = true;
@@ -787,98 +919,147 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public RelayCommand SelectAllMyPlaylistsCommand => _selectAllMyPlaylistsCommand ?? (_selectAllMyPlaylistsCommand = new RelayCommand(SelectAllMyPlaylists));
         private void SelectAllMyPlaylists()
         {
-            if (_playlists == null) return;
-
-            foreach (var playlist in _playlists)
+            try
             {
-                playlist.IsChecked = checkAllPlaylists;
-                PlaylistSelectedCommand.Execute(playlist);
-            }
+                if (_playlists == null) return;
 
-            checkAllPlaylists = !checkAllPlaylists;
+                foreach (var playlist in _playlists)
+                {
+                    playlist.IsChecked = checkAllPlaylists;
+                    PlaylistSelectedCommand.Execute(playlist);
+                }
+
+                checkAllPlaylists = !checkAllPlaylists;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand _selectAllUsersCommand;
         public RelayCommand SelectAllUsersCommand => _selectAllUsersCommand ?? (_selectAllUsersCommand = new RelayCommand(SelectAllUsers));
         private void SelectAllUsers()
         {
-            if (_users == null) return;
+            try
+            {
+                if (_users == null) return;
 
-            foreach (var user in _users)
-                user.IsChecked = !user.IsChecked;
+                foreach (var user in _users)
+                    user.IsChecked = !user.IsChecked;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand _getUsersPlaylistsCommand;
         public RelayCommand GetUsersPlaylistsCommand => _getUsersPlaylistsCommand ?? (_getUsersPlaylistsCommand = new RelayCommand(GetUsersPlaylists));
         private async void GetUsersPlaylists()
         {
-            IsPlaylistsAreaBusy = true;
+            try
+            {
+                IsPlaylistsAreaBusy = true;
 
-            var userPlaylists = (await _spotifyServices
-                .GetForeignUserPlaylists(_users
-                .Where(x => x.IsChecked)
-                .Select(x => x.Username)
-                .ToList()))
-                .Select(x => new Playlist(x))
-                .ToList();
+                var userPlaylists = (await _spotifyServices
+                    .GetForeignUserPlaylists(_users
+                    .Where(x => x.IsChecked)
+                    .Select(x => x.Username)
+                    .ToList()))
+                    .Select(x => new Playlist(x))
+                    .ToList();
 
-            ExplorePlaylists = new PlaylistCollection(userPlaylists);
+                ExplorePlaylists = new PlaylistCollection(userPlaylists);
 
-            IsPlaylistsAreaBusy = false;
+                IsPlaylistsAreaBusy = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand _addUserCommand;
         public RelayCommand AddUserCommand => _addUserCommand ?? (_addUserCommand = new RelayCommand(AddUser));
         private void AddUser()
         {
-            AddSpotifyUser();
+            try
+            {
+                AddSpotifyUser();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand _connectToSpotifyCommand;
         public RelayCommand ConnectToSpotifyCommand => _connectToSpotifyCommand ?? (_connectToSpotifyCommand = new RelayCommand(ConnectToSpotify));
         private async void ConnectToSpotify()
         {
-            await EstablishConnection();
+            try
+            {
+                await EstablishConnection();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand _likedSongsLoadCommand;
         public RelayCommand LikedSongsLoadCommand => _likedSongsLoadCommand ?? (_likedSongsLoadCommand = new RelayCommand(LikedSongsLoad));
         private void LikedSongsLoad()
         {
-            IsSongsAreaBusy = true;
+            try
+            {
+                IsSongsAreaBusy = true;
 
-            SavedTracks = new AudioCollection(likedSongs);
+                SavedTracks = new AudioCollection(likedSongs);
 
-            SelectedPlaylist = null;
+                SelectedPlaylist = null;
 
-            IsSongsAreaBusy = false;
+                IsSongsAreaBusy = false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private RelayCommand _createProcessGroupCommand;
         public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
         private async void GetTrends()
         {
-            var monitoringItem = _monitoringService.Initiate(_targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
-
-            if (monitoringItem.IsReady)
+            try
             {
-                _monitoringViewModel.MonitoringItems.Add(monitoringItem);
+                var monitoringItem = _monitoringService.Initiate(_targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
 
-                //monitoringItem.Group.MonitoringItem = monitoringItem;
+                if (monitoringItem.IsReady)
+                {
+                    _monitoringViewModel.MonitoringItems.Add(monitoringItem);
 
-                _groupManagingViewModel.Groups.Add(monitoringItem.Group);
+                    //monitoringItem.Group.MonitoringItem = monitoringItem;
 
-                //move to service
-                await _dataService.InsertGroupAsync(monitoringItem.Group);
-                await _dataService.InsertPlaylistRangeAsync(monitoringItem.Group.Playlists);
-                await _dataService.InsertGroupPlaylistRangeAsync(monitoringItem.Group);
+                    _groupManagingViewModel.Groups.Add(monitoringItem.Group);
 
-                await _dataService.InsertMonitoringItemAsync(monitoringItem);
-                await _dataService.InsertPlaylistRangeAsync(monitoringItem.Playlists);
+                    //move to service
+                    await _dataService.InsertGroupAsync(monitoringItem.Group);
+                    await _dataService.InsertPlaylistRangeAsync(monitoringItem.Group.Playlists);
+                    await _dataService.InsertGroupPlaylistRangeAsync(monitoringItem.Group);
 
-                ResetUI(null);
+                    await _dataService.InsertMonitoringItemAsync(monitoringItem);
+                    await _dataService.InsertPlaylistRangeAsync(monitoringItem.Playlists);
 
-                await _monitoringService.ProcessAsync(monitoringItem);
+                    ResetUI(null);
+
+                    await _monitoringService.ProcessAsync(monitoringItem);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
             }
         }
 
@@ -912,8 +1093,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.Error(ex);
                 IsSpotifyCredsEntered = false;
             }
         }
