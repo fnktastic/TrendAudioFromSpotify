@@ -6,6 +6,7 @@ using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,6 @@ using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Sorter;
-using TrendAudioFromSpotify.UI.Utility;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
@@ -27,6 +27,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region fields
         private DispatcherTimer _nextFireDisplayTimer;
         private DispatcherTimer _updateFireDisplayTimer;
+        private DispatcherTimer _nextFireCurrentStateTimer;
         private readonly ISpotifyServices _spotifyServices;
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly IDataService _dataService;
@@ -134,6 +135,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     if (success)
                         monitoringItem.UpdatedAt = DateTime.UtcNow.ToLocalTime();
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
+        private async void NextFireCurrentStateTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                var currentPlayingContext = await _spotifyServices.GetCurrentlyPlaying();
             }
             catch (Exception ex)
             {
@@ -287,6 +300,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 };
                 _updateFireDisplayTimer.Tick += UpdateFireDisplayTimer_Tick;
                 _updateFireDisplayTimer.Start();
+
+                _nextFireCurrentStateTimer = new DispatcherTimer()
+                {
+                    Interval = TimeSpan.FromSeconds(10)
+                };
+                _nextFireCurrentStateTimer.Tick += NextFireCurrentStateTimer_Tick;
+                _nextFireCurrentStateTimer.Start();
             }
             catch (Exception ex)
             {

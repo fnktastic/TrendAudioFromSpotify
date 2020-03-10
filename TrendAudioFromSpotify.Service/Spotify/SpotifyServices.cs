@@ -25,6 +25,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<ErrorResponse> PlayTrack(string trackUri);
         Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
         Task RemovePlaylistAsync(string playlistId);
+        Task<PlaybackContext> GetCurrentlyPlaying();
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -305,13 +306,13 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
             int counter = 0;
             int limit = 20;
-            int maxSize = 300;
+            int maxSize = 20_000;
 
             var searchResultPack = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, 1, 0, "");
 
             int total = searchResultPack.Playlists.Total;
 
-            while (counter < total && counter < maxSize)
+            while (counter < total && counter < maxSize )
             {
                 var searchResult = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, limit, counter, "");
 
@@ -328,6 +329,15 @@ namespace TrendAudioFromSpotify.Service.Spotify
         public async Task RemovePlaylistAsync(string playlistId)
         {
             var error = await _spotifyWebAPI.UnfollowPlaylistAsync(_privateProfile.Id, playlistId);
+        }
+
+        public async Task<PlaybackContext> GetCurrentlyPlaying()
+        {
+            var currentPlayback = await _spotifyWebAPI.GetPlaybackAsync();
+
+            var currentlyPlsyingTrack = await _spotifyWebAPI.GetPlayingTrackAsync();
+
+            return currentPlayback;
         }
     }
 }
