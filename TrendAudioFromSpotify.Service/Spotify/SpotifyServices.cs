@@ -26,6 +26,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
         Task RemovePlaylistAsync(string playlistId);
         Task<PlaybackContext> GetCurrentlyPlaying();
+        Task<FullPlaylist> GetPlaylistById(string playlistId);
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -116,11 +117,18 @@ namespace TrendAudioFromSpotify.Service.Spotify
             };
         }
 
+        public async Task<FullPlaylist> GetPlaylistById(string playlistId)
+        {
+            var playlist = await _spotifyWebAPI.GetPlaylistAsync(playlistId: playlistId);
+
+            return playlist;
+        }
+
         public async Task<IEnumerable<SimplePlaylist>> GetAllPlaylists()
         {
             int counter = 0;
 
-            int limit = 20;
+            int limit = 50;
 
             var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(_privateProfile.Id, limit: 1, offset: 0);
 
@@ -241,7 +249,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
             foreach (var username in usernames)
             {
                 int counter = 0;
-                int limit = 20;
+                int limit = 50;
 
                 var playlists = await _spotifyWebAPI.GetUserPlaylistsAsync(username, limit: 1, offset: 0);
 
@@ -305,16 +313,22 @@ namespace TrendAudioFromSpotify.Service.Spotify
             if (query == null) return foundPlaylists;
 
             int counter = 0;
-            int limit = 20;
-            int maxSize = 20_000;
+            int limit = 50;
+            int maxSize = 2_000;
 
-            var searchResultPack = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, 1, 0, "");
+            var searchResultPack = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, limit: 1, offset: 0);
+
+            if (searchResultPack.HasError())
+                return new List<SimplePlaylist>();
 
             int total = searchResultPack.Playlists.Total;
 
-            while (counter < total && counter < maxSize )
+            while (counter < total && counter < maxSize)
             {
-                var searchResult = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, limit, counter, "");
+                var searchResult = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Playlist, limit: limit, offset: counter);
+
+                if (searchResult.HasError())
+                    return foundPlaylists;
 
                 var items = searchResult.Playlists.Items;
 

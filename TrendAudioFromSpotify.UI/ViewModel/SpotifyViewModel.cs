@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using TrendAudioFromSpotify.Messaging;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Extensions;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
@@ -96,6 +97,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 if (FilteredExplorePlaylistsCollection.View != null)
                     FilteredExplorePlaylistsCollection.View.Refresh();
+
+                if (string.IsNullOrWhiteSpace(_explorePlaylistsSearchText) == false)
+                    CheckForUrl(_explorePlaylistsSearchText);
 
                 RaisePropertyChanged(nameof(ExplorePlaylistsSearchText));
             }
@@ -616,6 +620,27 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region private data metods
+        private async void CheckForUrl(string s)
+        {
+            var uri = UrlValidator.Validate(s);
+
+            if (uri != null)
+            {
+                string playlistId = uri.Segments.Last();
+
+                var fullPlaylist = await _spotifyServices.GetPlaylistById(playlistId);
+
+                var playlist = new Playlist(fullPlaylist.ToSimple())
+                {
+                    IsChecked = true
+                };
+
+                _targetPlaylists.Add(playlist);
+
+                ExplorePlaylistsSearchText = string.Empty;
+            }
+        }
+
         private void ResetUI(object o)
         {
             try
@@ -684,6 +709,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 {
                     if (e.Item is Playlist playlist)
                     {
+                        if(playlist.Name == null || playlist.Owner == null)
+                        {
+                            e.Accepted = false;
+                            return;
+                        }
+
                         if (playlist.Name.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()) ||
                             playlist.Owner.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()))
                         {

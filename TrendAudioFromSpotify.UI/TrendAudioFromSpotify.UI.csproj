@@ -235,6 +235,7 @@
     <Compile Include="Enum\RepeatModeEnum.cs" />
     <Compile Include="Enum\TabsEnum.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\PlaylistExtensions.cs" />
     <Compile Include="Job\MonitorItemJob.cs" />
     <Compile Include="Messaging\AddMonitoringItemMessage.cs" />
     <Compile Include="Messaging\AddGroupMessage.cs" />
@@ -262,6 +263,7 @@
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />
     <Compile Include="Utility\SimpleCommand.cs" />
+    <Compile Include="Utility\UrlValidator.cs" />
     <Compile Include="ViewModel\GroupManagingViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PlaylistViewModel.cs" />
