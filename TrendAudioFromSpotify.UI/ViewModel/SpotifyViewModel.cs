@@ -709,14 +709,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 {
                     if (e.Item is Playlist playlist)
                     {
-                        if(playlist.Name == null || playlist.Owner == null)
-                        {
-                            e.Accepted = false;
-                            return;
-                        }
-
-                        if (playlist.Name.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()) ||
-                            playlist.Owner.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper()))
+                        if ((playlist.Name != null && playlist.Name.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper())) ||
+                            (playlist.Owner != null && playlist.Owner.ToUpper().Contains(_explorePlaylistsSearchText.ToUpper())))
                         {
                             e.Accepted = true;
                             return;
