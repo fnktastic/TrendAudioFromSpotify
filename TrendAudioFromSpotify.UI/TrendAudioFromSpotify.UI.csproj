@@ -244,6 +244,15 @@
     <Compile Include="Messaging\PlaylistBuiltMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Messaging\StartMonitoringMessage.cs" />
+    <Compile Include="Migrations\202004031110298_InitialCreate.cs" />
+    <Compile Include="Migrations\202004031110298_InitialCreate.designer.cs">
+      <DependentUpon>202004031110298_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202004031158400_Added IsPublic property to PlaylistDto.cs" />
+    <Compile Include="Migrations\202004031158400_Added IsPublic property to PlaylistDto.designer.cs">
+      <DependentUpon>202004031158400_Added IsPublic property to PlaylistDto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\Group.cs" />
     <Compile Include="Model\MonitoringItem.cs" />
     <Compile Include="Model\Playlist.cs" />
@@ -259,6 +268,7 @@
     <Compile Include="Sorter\GroupSorter.cs" />
     <Compile Include="Sorter\MonitoringItemSorter.cs" />
     <Compile Include="Sorter\PlaylistsSorter.cs" />
+    <Compile Include="Utility\DbContext.cs" />
     <Compile Include="Utility\MapperInitializer.cs" />
     <Compile Include="Utility\SerialQueue.cs" />
     <Compile Include="Utility\SettingUtility.cs" />
@@ -370,6 +380,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Migrations\202004031110298_InitialCreate.resx">
+      <DependentUpon>202004031110298_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004031158400_Added IsPublic property to PlaylistDto.resx">
+      <DependentUpon>202004031158400_Added IsPublic property to PlaylistDto.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -68,6 +68,18 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public virtual string PublicUrl => string.Format("https://open.spotify.com/playlist/{0}", SpotifyId);
 
+        private bool _isPublic;
+        public bool IsPublic
+        {
+            get { return _isPublic; }
+            set
+            {
+                if (_isPublic == value) return;
+                _isPublic = value;
+                RaisePropertyChanged(nameof(IsPublic));
+            }
+        }
+
         public virtual bool IsExported
         {
             get
@@ -151,6 +163,7 @@ namespace TrendAudioFromSpotify.UI.Model
             OwnerProfileUrl = _simplePlaylist.Owner.Href;
             Href = _simplePlaylist.Href;
             Uri = _simplePlaylist.Uri;
+            IsPublic = _simplePlaylist.Public;
             Cover = _simplePlaylist.Images != null && _simplePlaylist.Images.Count > 0 ? _simplePlaylist.Images.First().Url : "null";
         }
 
