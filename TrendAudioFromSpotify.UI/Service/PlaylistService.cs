@@ -35,11 +35,11 @@ namespace TrendAudioFromSpotify.UI.Service
 
             if (sourcePlaylist.PlaylistType == PlaylistTypeEnum.Fifo)
             {
-                playlist = await _spotifyServices.RecreatePlaylist(sourcePlaylist.SpotifyId, sourcePlaylist.DisplayName, sourcePlaylist.Audios.Select(x => x.Uri));
+                playlist = await _spotifyServices.RecreatePlaylist(sourcePlaylist.SpotifyId, sourcePlaylist.DisplayName, sourcePlaylist.Audios.Select(x => x.Uri), sourcePlaylist.IsPublic);
             }
             if (sourcePlaylist.PlaylistType == PlaylistTypeEnum.Standard)
             {
-                playlist = await _spotifyServices.RecreatePlaylist(sourcePlaylist.SpotifyId, sourcePlaylist.DisplayName, sourcePlaylist.Audios.Select(x => x.Uri));
+                playlist = await _spotifyServices.RecreatePlaylist(sourcePlaylist.SpotifyId, sourcePlaylist.DisplayName, sourcePlaylist.Audios.Select(x => x.Uri), sourcePlaylist.IsPublic);
             }
 
             return playlist;

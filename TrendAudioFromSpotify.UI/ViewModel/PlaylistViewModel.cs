@@ -260,6 +260,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 playlist.SpotifyId = syncedPalylist.Id;
                 playlist.Href = syncedPalylist.Href;
                 playlist.Uri = syncedPalylist.Uri;
+                playlist.IsPublic = syncedPalylist.Public;
 
                 playlist.Owner = syncedPalylist.Owner.DisplayName;
                 playlist.OwnerProfileUrl = syncedPalylist.Owner.Href;

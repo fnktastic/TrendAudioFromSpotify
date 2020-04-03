@@ -20,7 +20,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(string username = "_annalasnier_");
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
-        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = true);
+        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false);
         Task<PublicProfile> GetMyProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
         Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
@@ -264,7 +264,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         }
 
         [Obsolete]
-        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = true)
+        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false)
         {
             FullPlaylist playlist = null;
 
