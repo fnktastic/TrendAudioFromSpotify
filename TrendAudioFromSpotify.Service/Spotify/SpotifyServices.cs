@@ -20,7 +20,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(string username = "_annalasnier_");
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
-        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids);
+        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = true);
         Task<PublicProfile> GetMyProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
         Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
@@ -50,7 +50,6 @@ namespace TrendAudioFromSpotify.Service.Spotify
             _spotifyProvider = spotifyProvider;
             Messenger.Default.Register<SpotifyWebAPI>(this, OnSpotifyAccessRecieved);
             Messenger.Default.Register<Token>(this, OnSpotifyTokenRecieved);
-
         }
 
         public void Init(string clientId, string secretId, string redirectUri, string serverUri)
@@ -65,20 +64,6 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
         public async Task GetAccess(string accessToken = null, string refreshToken = null)
         {
-            //if (string.IsNullOrWhiteSpace(accessToken) == false)
-            //{
-            //    AuthByToken(accessToken);
-
-            //    _privateProfile = await _spotifyWebAPI.GetPrivateProfileAsync();
-
-            //    if (_privateProfile.HasError() == false)
-            //    {
-            //        Messenger.Default.Send<AuthResponseMessage>(new AuthResponseMessage(accessToken));
-
-            //        return;
-            //    }
-            //}
-
             if (string.IsNullOrWhiteSpace(refreshToken) == false)
             {
                 await _spotifyProvider.GetAccess(_clientId, _secretId, _redirectUri, _serverUri, refreshToken);
@@ -279,29 +264,29 @@ namespace TrendAudioFromSpotify.Service.Spotify
         }
 
         [Obsolete]
-        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids)
+        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = true)
         {
             FullPlaylist playlist = null;
 
             if (string.IsNullOrWhiteSpace(playlistUri) == false)
             {
-                playlist = await _spotifyWebAPI.GetPlaylistAsync(userId: _privateProfile.Id, playlistId: playlistUri);
+                playlist = await _spotifyWebAPI.GetPlaylistAsync(playlistId: playlistUri);
 
                 var deleteTrackUries = (await GetPlaylistSongs(playlist.Id)).Select(x => new DeleteTrackUri(x.Track.Uri)).ToList();
 
-                await _spotifyWebAPI.RemovePlaylistTracksAsync(_privateProfile.Id, playlist.Id, deleteTrackUries);
+                await _spotifyWebAPI.RemovePlaylistTracksAsync(playlist.Id, deleteTrackUries);
 
                 await RemovePlaylistAsync(playlist.Id);
 
                 if (playlist.HasError() == false)
-                    playlist = await _spotifyWebAPI.CreatePlaylistAsync(_privateProfile.Id, playlistName);
+                    playlist = await _spotifyWebAPI.CreatePlaylistAsync(userId: _privateProfile.Id, playlistName: playlistName, isPublic: isPublic);
             }
             else
             {
-                playlist = await _spotifyWebAPI.CreatePlaylistAsync(_privateProfile.Id, playlistName);
+                playlist = await _spotifyWebAPI.CreatePlaylistAsync(userId: _privateProfile.Id, playlistName: playlistName, isPublic: isPublic);
             }
 
-            var error = await _spotifyWebAPI.AddPlaylistTracksAsync(_privateProfile.Id, playlist.Id, ids.ToList());
+            var error = await _spotifyWebAPI.AddPlaylistTracksAsync(playlist.Id, ids.ToList());
 
             return playlist;
         }

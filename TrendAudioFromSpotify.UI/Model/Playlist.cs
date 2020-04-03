@@ -38,6 +38,7 @@ namespace TrendAudioFromSpotify.UI.Model
         public int SeriesNo { get; set; }
 
         public PlaylistTypeEnum PlaylistType { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         private DateTime _updateAt;
