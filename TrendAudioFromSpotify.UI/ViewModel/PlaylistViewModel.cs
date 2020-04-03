@@ -99,7 +99,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FetchData().ConfigureAwait(true);
 
             Messenger.Default.Register<PlaylistBuiltMessage>(this, PlaylistBuiltMessageRecieved);
+            Messenger.Default.Register<TogglePlaylistPublicMessage>(this, TogglePlaylistPublicMessageRecieved);
         }
+
         #endregion
 
         #region filters
@@ -158,6 +160,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region methods
+        private void TogglePlaylistPublicMessageRecieved(TogglePlaylistPublicMessage obj)
+        {
+
+        }
+
         private void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)
         {
             try
@@ -330,6 +337,20 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             {
                 if (playlist.IsExported)
                     System.Diagnostics.Process.Start(playlist.PublicUrl);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
+        private RelayCommand<Playlist> _togglePlaylistPublicCommand;
+        public RelayCommand<Playlist> TogglePlaylistPublicCommand => _togglePlaylistPublicCommand ?? (_togglePlaylistPublicCommand = new RelayCommand<Playlist>(TogglePlaylistPublic));
+        private void TogglePlaylistPublic(Playlist playlist)
+        {
+            try
+            {
+                Messenger.Default.Send<TogglePlaylistPublicMessage>(new TogglePlaylistPublicMessage(playlist.SeriesKey, playlist.Id, playlist.IsPublic));
             }
             catch (Exception ex)
             {

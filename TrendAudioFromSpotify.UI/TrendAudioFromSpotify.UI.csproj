@@ -244,6 +244,7 @@
     <Compile Include="Messaging\PlaylistBuiltMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Messaging\StartMonitoringMessage.cs" />
+    <Compile Include="Messaging\TogglePlaylistPublicMessage.cs" />
     <Compile Include="Migrations\202004031110298_InitialCreate.cs" />
     <Compile Include="Migrations\202004031110298_InitialCreate.designer.cs">
       <DependentUpon>202004031110298_InitialCreate.cs</DependentUpon>

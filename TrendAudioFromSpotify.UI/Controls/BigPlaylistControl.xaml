@@ -77,14 +77,23 @@
                                        HorizontalAlignment="Right" />
                         </Border>
                     </StackPanel>
-                    <Controls:ToggleSwitch
+                    <Controls:ToggleSwitch Background="SpringGreen"
                                Grid.Row="1" Grid.Column="0"
                                Width="120"
                                HorizontalAlignment="Left"
                                IsChecked="{Binding IsPublic}"
                                VerticalAlignment="Center" VerticalContentAlignment="Center"
                                ToolTip="Changing this property takes effect immediately. It work for whole series."
-                               OffLabel="private" OnLabel="public" />
+                               OffLabel="private" OnLabel="public">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Checked">
+                                <cmd:EventToCommand 
+                                        Command="{Binding Path=DataContext.TogglePlaylistPublicCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                                        CommandParameter="{Binding}"
+                                        PassEventArgsToCommand="True" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </Controls:ToggleSwitch>
                     <TextBlock Grid.Row="2" Grid.Column="0" FontSize="12" FontWeight="Thin" Text="{Binding Total, StringFormat=Items: {0}}" />
                     <TextBlock Grid.Row="3" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding UpdatedAt, StringFormat=Updated: {0}}" />
                     <TextBlock Grid.Row="4" Grid.Column="0" FontSize="8" FontWeight="Thin" Text="{Binding Owner, StringFormat=Owner: {0}}" />

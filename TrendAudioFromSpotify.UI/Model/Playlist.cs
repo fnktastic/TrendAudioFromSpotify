@@ -1,13 +1,10 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
 using SpotifyAPI.Web.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
-using TrendAudioFromSpotify.UI.ViewModel;
 
 namespace TrendAudioFromSpotify.UI.Model
 {
