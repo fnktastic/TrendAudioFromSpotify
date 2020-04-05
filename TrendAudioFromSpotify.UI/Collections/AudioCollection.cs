@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TrendAudioFromSpotify.UI.Model;
 
 namespace TrendAudioFromSpotify.UI.Collections
@@ -31,7 +28,7 @@ namespace TrendAudioFromSpotify.UI.Collections
         private void RefreshNo()
         {
             for (int i = 0; i < this.Count(); i++)
-                this.ElementAt(i).No = i+1;
+                this.ElementAt(i).No = i + 1;
         }
     }
 }

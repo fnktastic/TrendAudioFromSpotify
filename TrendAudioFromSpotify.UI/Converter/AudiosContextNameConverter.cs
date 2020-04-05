@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using TrendAudioFromSpotify.UI.Model;
 
@@ -13,7 +9,7 @@ namespace TrendAudioFromSpotify.UI.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is Playlist playlist)
+            if (value is Playlist playlist)
                 return playlist.Name;
 
             return "My Library";

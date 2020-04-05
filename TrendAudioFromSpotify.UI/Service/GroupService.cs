@@ -1,12 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
-using TrendAudioFromSpotify.UI.Enum;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 

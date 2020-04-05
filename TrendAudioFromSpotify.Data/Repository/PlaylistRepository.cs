@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.DataAccess;
 using TrendAudioFromSpotify.Data.Model;
@@ -147,8 +146,8 @@ namespace TrendAudioFromSpotify.Data.Repository
                 {
                     var volumeItems = _context.PlaylistAudios.Where(x => x.PlaylistId == volume.Id);
 
-                    foreach(var volumeItem in volumeItems)
-                        _context.Entry<PlaylistAudioDto>(volumeItem).State = EntityState.Deleted; 
+                    foreach (var volumeItem in volumeItems)
+                        _context.Entry<PlaylistAudioDto>(volumeItem).State = EntityState.Deleted;
 
                     _context.Entry<PlaylistDto>(volume).State = EntityState.Deleted;
                 }
@@ -194,7 +193,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         {
             var playlist = await _context.Playlists.FirstOrDefaultAsync(x => x.Id == playlistDto.Id);
 
-            if(playlist != null)
+            if (playlist != null)
             {
                 playlist.IsPublic = isPublic;
 

@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
-using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using MahApps.Metro.Controls.Dialogs;
 using System;
-using System.Windows.Input;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Controls;
 using TrendAudioFromSpotify.UI.Enum;
-using TrendAudioFromSpotify.UI.Utility;
 using TrendAudioFromSpotify.UI.ViewModel;
 
 namespace TrendAudioFromSpotify.UI.Model

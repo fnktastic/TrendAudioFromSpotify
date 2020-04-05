@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.DataAccess;
 using TrendAudioFromSpotify.Data.Model;
@@ -77,7 +76,7 @@ namespace TrendAudioFromSpotify.Data.Repository
 
             var dbEntry = await _context.MonitoringItems.FindAsync(monitoringItem.Id);
 
-            if(dbEntry != null)
+            if (dbEntry != null)
             {
                 dbEntry.IsDeleted = true;
             }

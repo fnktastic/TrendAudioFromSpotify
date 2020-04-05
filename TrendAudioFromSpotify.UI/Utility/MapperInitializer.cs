@@ -1,12 +1,5 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.Model;
-using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Model;
 
 namespace TrendAudioFromSpotify.UI.Utility

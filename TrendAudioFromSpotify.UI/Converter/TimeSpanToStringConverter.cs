@@ -1,10 +1,6 @@
 ﻿using Humanizer;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace TrendAudioFromSpotify.UI.Converter
@@ -13,7 +9,7 @@ namespace TrendAudioFromSpotify.UI.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is TimeSpan timeSpan)
+            if (value is TimeSpan timeSpan)
             {
                 if (TimeSpan.Zero == timeSpan) return "Next fire in <no data>";
 

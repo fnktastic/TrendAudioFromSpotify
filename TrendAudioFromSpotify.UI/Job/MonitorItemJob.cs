@@ -1,10 +1,7 @@
 ﻿using CommonServiceLocator;
 using GalaSoft.MvvmLight.Messaging;
 using Quartz;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Messaging;

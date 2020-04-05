@@ -1,5 +1,4 @@
 ﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Messaging;
 using SpotifyAPI.Web.Models;
 using System;
 using System.Linq;

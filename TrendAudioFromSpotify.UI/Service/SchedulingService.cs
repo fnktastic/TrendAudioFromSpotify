@@ -1,15 +1,13 @@
 ﻿using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using TrendAudioFromSpotify.UI.Enum;
 using TrendAudioFromSpotify.UI.Job;
 using TrendAudioFromSpotify.UI.Model;
-using TrendAudioFromSpotify.UI.Enum;
-using Quartz.Impl.Calendar;
-using Quartz.Impl.Matchers;
 
 namespace TrendAudioFromSpotify.UI.Service
 {

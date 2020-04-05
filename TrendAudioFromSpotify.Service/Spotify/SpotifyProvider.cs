@@ -4,9 +4,6 @@ using SpotifyAPI.Web.Auth;
 using SpotifyAPI.Web.Enums;
 using SpotifyAPI.Web.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.Service.Spotify
@@ -39,7 +36,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
             Scope.PlaylistModifyPrivate |
             Scope.UserFollowRead |
             Scope.UserReadPrivate |
-            Scope.UserModifyPlaybackState | 
+            Scope.UserModifyPlaybackState |
             Scope.UserReadPlaybackState |
             Scope.UserReadRecentlyPlayed |
             Scope.Streaming |
@@ -75,7 +72,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
                        Scope.AppRemoteControl |
                        Scope.UserLibraryRead);
 
-            _token = await  _authorization.RefreshToken(refreshToken);
+            _token = await _authorization.RefreshToken(refreshToken);
 
             SpotifyWebAPI api = new SpotifyWebAPI
             {
@@ -98,10 +95,10 @@ namespace TrendAudioFromSpotify.Service.Spotify
         }
 
         private async void OnAuthResponse(object sender, AuthorizationCode payload)
-        { 
+        {
             if (sender is AuthorizationCodeAuth authorization)
             {
-                authorization.Stop(); 
+                authorization.Stop();
 
                 _token = await authorization.ExchangeCode(payload.Code);
 

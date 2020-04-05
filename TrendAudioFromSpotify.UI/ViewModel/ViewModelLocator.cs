@@ -1,10 +1,8 @@
 using AutoMapper;
 using CommonServiceLocator;
 using GalaSoft.MvvmLight.Ioc;
-using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.Service.Spotify;
-using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Utility;
 using DbContext = TrendAudioFromSpotify.Data.DataAccess.Context;

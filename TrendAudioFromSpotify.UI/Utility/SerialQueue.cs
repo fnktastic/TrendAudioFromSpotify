@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace TrendAudioFromSpotify.UI.Utility
@@ -13,7 +10,8 @@ namespace TrendAudioFromSpotify.UI.Utility
 
         public Task Enqueue(Action action)
         {
-            return Enqueue<bool>(() => {
+            return Enqueue<bool>(() =>
+            {
                 action();
                 return true;
             });
