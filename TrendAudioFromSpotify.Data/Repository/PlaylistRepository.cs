@@ -30,6 +30,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task<PlaylistDto> GetPlaylistAsync(string playlistName);
 
         Task<List<PlaylistDto>> GetByTargetPlaylistNameAsync(string targetPlaylistName);
+
+        Task ChangePlaylistVisibility(PlaylistDto playlist, bool isPublic);
     }
 
     public class PlaylistRepository : IPlaylistRepository
@@ -186,6 +188,18 @@ namespace TrendAudioFromSpotify.Data.Repository
                 .ToListAsync();
 
             return playlists;
+        }
+
+        public async Task ChangePlaylistVisibility(PlaylistDto playlistDto, bool isPublic)
+        {
+            var playlist = await _context.Playlists.FirstOrDefaultAsync(x => x.Id == playlistDto.Id);
+
+            if(playlist != null)
+            {
+                playlist.IsPublic = isPublic;
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

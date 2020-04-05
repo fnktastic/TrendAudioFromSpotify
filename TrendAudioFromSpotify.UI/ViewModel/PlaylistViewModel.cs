@@ -160,9 +160,31 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region methods
-        private void TogglePlaylistPublicMessageRecieved(TogglePlaylistPublicMessage obj)
+        private async void TogglePlaylistPublicMessageRecieved(TogglePlaylistPublicMessage obj)
         {
+            if (obj.SeriesKey != Guid.Empty)
+            {
+                var series = _playlists.Where(x => x.SeriesKey == obj.SeriesKey).ToList();
 
+                foreach (var volume in series)
+                {
+                    if (volume.IsPublic != obj.IsPublic)
+                        volume.IsPublic = obj.IsPublic;
+
+                    await _playlistService.ChangeVisibility(volume, volume.IsPublic);
+                }
+            }
+            else
+            {
+                var playlist = _playlists.FirstOrDefault(x => x.Id == obj.Id);
+
+                if (playlist != null)
+                {
+                    playlist.IsPublic = obj.IsPublic;
+
+                    await _playlistService.ChangeVisibility(playlist, playlist.IsPublic);
+                }
+            }
         }
 
         private void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)

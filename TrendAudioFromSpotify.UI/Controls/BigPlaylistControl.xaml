@@ -86,7 +86,7 @@
                                ToolTip="Changing this property takes effect immediately. It work for whole series."
                                OffLabel="private" OnLabel="public">
                         <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Checked">
+                            <i:EventTrigger EventName="Click">
                                 <cmd:EventToCommand 
                                         Command="{Binding Path=DataContext.TogglePlaylistPublicCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
                                         CommandParameter="{Binding}"

@@ -16,6 +16,7 @@ namespace TrendAudioFromSpotify.UI.Service
     {
         Task<FullPlaylist> RecreateOnSpotify(Playlist sourcePlaylist);
         Task<List<Playlist>> BuildPlaylistAsync(MonitoringItem monitoringItem);
+        Task ChangeVisibility(Playlist playlist, bool isPublic);
     }
 
     public class PlaylistService : IPlaylistService
@@ -280,6 +281,11 @@ namespace TrendAudioFromSpotify.UI.Service
             }
 
             return new List<Playlist>();
+        }
+
+        public async Task ChangeVisibility(Playlist playlist, bool isPublic)
+        {
+            await _dataService.ChangePlaylistVisibility(playlist, isPublic);
         }
     }
 }

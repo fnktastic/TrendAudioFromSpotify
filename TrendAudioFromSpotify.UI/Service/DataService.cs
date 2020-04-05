@@ -36,7 +36,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task<Playlist> GetPlaylistAsync(string playlistName);
         Task<List<Playlist>> GetPlaylistsByMonitoringItemAsync(MonitoringItem monitoringItem);
         Task<MonitoringItem> GetMonitoringItemByIdAsync(Guid monitoringItemId);
-
+        Task ChangePlaylistVisibility(Playlist playlist, bool isPublic);
     }
 
     public class DataService : IDataService
@@ -266,6 +266,13 @@ namespace TrendAudioFromSpotify.UI.Service
             var monitoringItem = await _monitoringItemRepository.GetByIdAsync(monitoringItemId);
 
             return _mapper.Map<MonitoringItem>(monitoringItem);
+        }
+
+        public async Task ChangePlaylistVisibility(Playlist playlist, bool isPublic)
+        {
+            var playlistDto = _mapper.Map<PlaylistDto>(playlist);
+
+            await _serialQueue.Enqueue(async () => await _playlistRepository.ChangePlaylistVisibility(playlistDto, isPublic));
         }
     }
 }
