@@ -98,8 +98,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Messenger.Default.Register<PlaylistBuiltMessage>(this, PlaylistBuiltMessageRecieved);
             Messenger.Default.Register<TogglePlaylistPublicMessage>(this, TogglePlaylistPublicMessageRecieved);
+            Messenger.Default.Register<RemoveSongFromPlaylistMessage>(this, RemoveSongFromPlaylistMessageRecieved);
+            Messenger.Default.Register<ChangeSomgPositionMessage>(this, ChangeSomgPositionMessageRecieved);
         }
-
         #endregion
 
         #region filters
@@ -158,6 +159,36 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region methods
+        private void ChangeSomgPositionMessageRecieved(ChangeSomgPositionMessage obj)
+        {
+            var selectedAudio = obj.Audio;
+
+            var selectedPlaylist = this.SelectedPlaylist;
+
+            //delete from spotify
+
+            //delete from db
+
+            //delete from ui
+            selectedPlaylist.Audios.RemoveAt(obj.OldPosition);
+
+            selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+        }
+
+        private void RemoveSongFromPlaylistMessageRecieved(RemoveSongFromPlaylistMessage obj)
+        {
+            var selectedAudio = obj.Audio;
+
+            var selectedPlaylist = this.SelectedPlaylist;
+
+            //delete from spotify
+
+            //delete from db
+
+            //delete from ui
+            selectedPlaylist.Audios.Remove(selectedAudio);
+        }
+
         private async void TogglePlaylistPublicMessageRecieved(TogglePlaylistPublicMessage obj)
         {
             try

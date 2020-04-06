@@ -104,5 +104,13 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             Messenger.Default.Send<PlayAudioMessage>(new PlayAudioMessage(audio));
         }
+
+        private RelayCommand _removeSongCommand;
+        public RelayCommand RemoveSongCommand => _removeSongCommand ?? (_removeSongCommand = new RelayCommand(RemoveSong));
+        private void RemoveSong()
+        {
+            Messenger.Default.Send<RemoveSongFromPlaylistMessage>(new RemoveSongFromPlaylistMessage(this));
+        }
+        
     }
 }

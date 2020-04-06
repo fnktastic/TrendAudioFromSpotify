@@ -4,10 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              HorizontalContentAlignment="Stretch"
-          
+             RowStyle="{StaticResource DefaultRowStyle}"
+             AllowDrop="True"
              AutoGenerateColumns="False"
              CanUserAddRows="False"
              CanUserSortColumns="True"
+             x:Name="dataGrid"
+
              RowHeaderWidth="0"
              BorderThickness="0"
              Background="#252525"
@@ -16,7 +19,7 @@
              xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
-             mc:Ignorable="d">
+             mc:Ignorable="d" Drop="DataGrid_Drop" PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown">
     <DataGrid.Resources>
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
         <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
@@ -70,7 +73,7 @@
         <DataGridTemplateColumn Header="№" SortMemberPath="No" CanUserSort="True">
             <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding No, Mode=OneTime}"
+                    <TextBlock Text="{Binding No}"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center" />
                 </DataTemplate>
