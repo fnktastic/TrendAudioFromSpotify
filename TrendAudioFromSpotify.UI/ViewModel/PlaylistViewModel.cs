@@ -167,28 +167,33 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             var selectedPlaylist = this.SelectedPlaylist;
 
-            //delete from spotify
+            //spotify
 
-            //delete from db
+            //db
 
-            //delete from ui
+            //ui
             selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+
+            //update total
         }
 
-        private void ChangeSomgPositionMessageRecieved(ChangeSomgPositionMessage obj)
+        private async void ChangeSomgPositionMessageRecieved(ChangeSomgPositionMessage obj)
         {
             var selectedAudio = obj.Audio;
 
             var selectedPlaylist = this.SelectedPlaylist;
 
-            //delete from spotify
+            //spotify
 
-            //delete from db
+            //db
+            await _playlistService.ChangeTrackPosition(selectedPlaylist.Id, selectedAudio.Id, obj.OldPosition, obj.NewPosition);
 
-            //delete from ui
+            //ui
             selectedPlaylist.Audios.RemoveAt(obj.OldPosition);
 
             selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+
+            //update total
         }
 
         private void RemoveSongFromPlaylistMessageRecieved(RemoveSongFromPlaylistMessage obj)
@@ -197,12 +202,16 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             var selectedPlaylist = this.SelectedPlaylist;
 
-            //delete from spotify
+            //spotify
+            _spotifyServices.RemoveSongFromPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri);
 
-            //delete from db
+            //db
+            _playlistService.RemoveSongFromPlaylist(selectedPlaylist.Id, selectedAudio.Id);
 
-            //delete from ui
+            //ui
             selectedPlaylist.Audios.Remove(selectedAudio);
+
+            //update total
         }
 
         private async void TogglePlaylistPublicMessageRecieved(TogglePlaylistPublicMessage obj)

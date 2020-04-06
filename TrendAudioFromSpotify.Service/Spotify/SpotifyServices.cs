@@ -28,6 +28,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<PlaybackContext> GetCurrentlyPlaying();
         Task<FullPlaylist> GetPlaylistById(string playlistId);
         Task ChangePlaylistVisibility(string playlistId, bool newPublic);
+        Task RemoveSongFromPlaylist(string playlistId, string songId);
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -348,6 +349,13 @@ namespace TrendAudioFromSpotify.Service.Spotify
         public async Task ChangePlaylistVisibility(string playlistId, bool newPublic)
         {
             await _spotifyWebAPI.UpdatePlaylistAsync(playlistId: playlistId, newPublic: newPublic);
+        }
+
+        public async Task RemoveSongFromPlaylist(string playlistId, string songId)
+        {
+            var deleteTrackUri = new DeleteTrackUri(songId);
+
+            var x = await _spotifyWebAPI.RemovePlaylistTrackAsync(playlistId, deleteTrackUri);
         }
     }
 }

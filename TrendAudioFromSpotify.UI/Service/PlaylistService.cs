@@ -16,6 +16,8 @@ namespace TrendAudioFromSpotify.UI.Service
         Task<FullPlaylist> RecreateOnSpotify(Playlist sourcePlaylist);
         Task<List<Playlist>> BuildPlaylistAsync(MonitoringItem monitoringItem);
         Task ChangeVisibility(Playlist playlist, bool isPublic);
+        Task RemoveSongFromPlaylist(Guid playlistId, string songId);
+        Task ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
     }
 
     public class PlaylistService : IPlaylistService
@@ -285,6 +287,16 @@ namespace TrendAudioFromSpotify.UI.Service
         public async Task ChangeVisibility(Playlist playlist, bool isPublic)
         {
             await _dataService.ChangePlaylistVisibility(playlist, isPublic);
+        }
+
+        public async Task RemoveSongFromPlaylist(Guid playlistId, string songId)
+        {
+            await _dataService.RemoveSongFromPlaylist(playlistId, songId);
+        }
+
+        public async Task ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition)
+        {
+            await _dataService.ChangeTrackPosition(playlistId, songId, oldPosition, newPosition);
         }
     }
 }

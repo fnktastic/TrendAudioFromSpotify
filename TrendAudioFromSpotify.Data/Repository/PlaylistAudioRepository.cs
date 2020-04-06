@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.DataAccess;
 using TrendAudioFromSpotify.Data.Model;
@@ -9,6 +11,8 @@ namespace TrendAudioFromSpotify.Data.Repository
     public interface IPlaylistAudioRepository
     {
         Task InsertPlaylistAudioRangeAsync(IEnumerable<PlaylistAudioDto> playlistAudioDtos);
+        Task RemoveSong(Guid playlistId, string songId);
+        Task ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
     }
 
     public class PlaylistAudioRepository : IPlaylistAudioRepository
@@ -18,6 +22,24 @@ namespace TrendAudioFromSpotify.Data.Repository
         public PlaylistAudioRepository(Context context)
         {
             _context = context;
+        }
+
+        public async Task ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition)
+        {
+            var audios = await _context.PlaylistAudios.Where(x => x.PlaylistId == playlistId).OrderBy(x => x.Placement).ToListAsync();
+
+            var targetAudio = audios.FirstOrDefault(x => x.AudioId == songId);
+
+            audios.Remove(targetAudio);
+
+            audios.Insert(newPosition, targetAudio);
+
+            for (int i = 0; i < audios.Count; i++)
+            {
+                audios.ElementAt(i).Placement = i + 1;
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task InsertPlaylistAudioRangeAsync(IEnumerable<PlaylistAudioDto> playlistAudioDtos)
@@ -35,6 +57,18 @@ namespace TrendAudioFromSpotify.Data.Repository
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveSong(Guid playlistId, string songId)
+        {
+            var dbEntry = await _context.PlaylistAudios.FirstOrDefaultAsync(x => x.PlaylistId == playlistId && x.AudioId == songId);
+
+            if (dbEntry != null)
+            {
+                _context.Entry<PlaylistAudioDto>(dbEntry).State = EntityState.Deleted;
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
