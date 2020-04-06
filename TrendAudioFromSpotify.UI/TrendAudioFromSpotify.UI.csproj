@@ -219,6 +219,9 @@
     <Compile Include="Controls\PlaylistsCollectionControl.xaml.cs">
       <DependentUpon>PlaylistsCollectionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AddSongToPlaylistControlDialog.xaml.cs">
+      <DependentUpon>AddSongToPlaylistControlDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ScheduleControlDialog.xaml.cs">
       <DependentUpon>ScheduleControlDialog.xaml</DependentUpon>
     </Compile>
@@ -245,6 +248,7 @@
     <Compile Include="Messaging\PlaylistBuiltMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Messaging\RemoveSongFromPlaylistMessage.cs" />
+    <Compile Include="Messaging\SendSongToPlaylistMessage.cs" />
     <Compile Include="Messaging\StartMonitoringMessage.cs" />
     <Compile Include="Messaging\TogglePlaylistPublicMessage.cs" />
     <Compile Include="Migrations\202004031110298_InitialCreate.cs" />
@@ -277,6 +281,7 @@
     <Compile Include="Utility\SettingUtility.cs" />
     <Compile Include="Utility\SimpleCommand.cs" />
     <Compile Include="Utility\UrlValidator.cs" />
+    <Compile Include="ViewModel\AddSongToPlaylistViewModel.cs" />
     <Compile Include="ViewModel\GroupManagingViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\PlaylistViewModel.cs" />
@@ -327,6 +332,10 @@
     <Page Include="Controls\PlaylistsCollectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AddSongToPlaylistControlDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\ScheduleControlDialog.xaml">
       <SubType>Designer</SubType>

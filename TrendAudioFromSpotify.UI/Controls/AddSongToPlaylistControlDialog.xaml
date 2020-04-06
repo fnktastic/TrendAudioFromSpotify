@@ -1,0 +1,50 @@
+﻿<Controls:MetroWindow Title="Send To Playlist"
+                      x:Class="TrendAudioFromSpotify.UI.Controls.AddSongToPlaylistControlDialog"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"    
+                      xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
+                      xmlns:System="clr-namespace:System;assembly=mscorlib"
+                      xmlns:enums="clr-namespace:TrendAudioFromSpotify.UI.Enum"
+                      xmlns:customControls="clr-namespace:TrendAudioFromSpotify.UI.Controls"
+                      xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      Dialog:DialogParticipation.Register="{Binding}"
+                      Height="600" Width="800"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="0.5*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBox Text="{Binding PlaylistsSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                 VerticalContentAlignment="Center"
+                                 Grid.Row="0" Grid.Column="0"
+                                 Style="{DynamicResource SearchMetroTextBox}"
+                                 Controls:TextBoxHelper.ButtonCommand="{Binding GlobalPlaylistsSearchCommand}"
+                                 Controls:TextBoxHelper.Watermark="search for playlists" />
+        <customControls:GroupPlaylistCollectionControl
+                Grid.Row="1" Grid.Column="0"
+                Margin="0"
+                IsSynchronizedWithCurrentItem="False"
+                VirtualizingPanel.IsVirtualizing="True"
+                ItemsSource="{Binding FilteredPlaylistsCollection.View}"
+                SelectedItem="{Binding SelectedPlaylist}"/>
+        <TextBox Text="{Binding AudiosSearchText, UpdateSourceTrigger=PropertyChanged}" 
+                                 VerticalContentAlignment="Center"
+                                 Grid.Row="0" Grid.Column="2"
+                                 Style="{DynamicResource SearchMetroTextBox}"
+                                 Controls:TextBoxHelper.ButtonCommand="{Binding GlobalAudiosSearchCommand}"
+                                 Controls:TextBoxHelper.Watermark="search for audios" />
+        <customControls:AudioCollectionControl
+                Grid.Row="2" Grid.Column="2" 
+                SelectedItem="{Binding SelectedAudio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ItemsSource="{Binding FilteredAudioCollection.View}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        </customControls:AudioCollectionControl>
+    </Grid>
+</Controls:MetroWindow>

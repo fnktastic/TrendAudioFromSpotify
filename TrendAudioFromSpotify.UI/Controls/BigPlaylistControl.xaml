@@ -129,6 +129,14 @@
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                         <icons:Material Kind="Delete" />
                     </Button>
+                    <Button 
+                        Width="40" Height="40"
+                        Command="{Binding Path=DataContext.SendToPlaylistCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                        CommandParameter="{Binding}"
+                        ToolTip="Send To Playlist"
+                        Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                        <icons:Material Kind="PlusBox" />
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </Expander>

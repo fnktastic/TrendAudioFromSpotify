@@ -24,9 +24,24 @@ namespace TrendAudioFromSpotify.UI.Controls
 
         private void DataGrid_Drop(object sender, DragEventArgs e)
         {
+            int index = 0;
+
             if (rowIndex < 0)
+            {
+                index = this.GetCurrentRowIndex(e.GetPosition);
+
+                var audioObject = e.Data.GetData(typeof(Audio));
+
+                if (audioObject is Audio audio)
+                {
+                    Messenger.Default.Send<SendSongToPlaylistMessage>(new SendSongToPlaylistMessage(audio, index));
+                }
+
                 return;
-            int index = this.GetCurrentRowIndex(e.GetPosition);
+            }
+
+            index = this.GetCurrentRowIndex(e.GetPosition);
+
             if (index < 0)
                 return;
             if (index == rowIndex)
@@ -36,12 +51,14 @@ namespace TrendAudioFromSpotify.UI.Controls
                 MessageBox.Show("This row-index cannot be drop");
                 return;
             }
-            
+
             var songsCollection = dataGrid.Items;
             var changedSong = songsCollection[rowIndex] as Audio;
 
             //messenger part
-            Messenger.Default.Send<ChangeSomgPositionMessage>(new ChangeSomgPositionMessage(changedSong, rowIndex, index)); ;
+            Messenger.Default.Send<ChangeSomgPositionMessage>(new ChangeSomgPositionMessage(changedSong, rowIndex, index));
+
+            rowIndex = -1;
         }
 
         private void DataGrid_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -89,7 +106,11 @@ namespace TrendAudioFromSpotify.UI.Controls
             {
                 DataGridRow itm = GetRowItem(i);
 
-                if (itm == null) continue;
+                if (itm == null)
+                {
+                    curIndex = -1;
+                    continue;
+                }
 
                 if (GetMouseTargetRow(itm, pos))
                 {

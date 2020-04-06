@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Data;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Controls;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
@@ -100,6 +101,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             Messenger.Default.Register<TogglePlaylistPublicMessage>(this, TogglePlaylistPublicMessageRecieved);
             Messenger.Default.Register<RemoveSongFromPlaylistMessage>(this, RemoveSongFromPlaylistMessageRecieved);
             Messenger.Default.Register<ChangeSomgPositionMessage>(this, ChangeSomgPositionMessageRecieved);
+            Messenger.Default.Register<SendSongToPlaylistMessage>(this, SendSongToPlaylistMessageRecieved);
         }
         #endregion
 
@@ -159,6 +161,20 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region methods
+        private void SendSongToPlaylistMessageRecieved(SendSongToPlaylistMessage obj)
+        {
+            var selectedAudio = obj.Audio;
+
+            var selectedPlaylist = this.SelectedPlaylist;
+
+            //delete from spotify
+
+            //delete from db
+
+            //delete from ui
+            selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+        }
+
         private void ChangeSomgPositionMessageRecieved(ChangeSomgPositionMessage obj)
         {
             var selectedAudio = obj.Audio;
@@ -328,6 +344,28 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region commands
+        private RelayCommand _sendToPlaylistCommand;
+        public RelayCommand SendToPlaylistCommand => _sendToPlaylistCommand ?? (_sendToPlaylistCommand = new RelayCommand(SendToPlaylist));
+        private void SendToPlaylist()
+        {
+            try
+            {
+                var dialogCoordinator = DialogCoordinator.Instance;
+
+                var addSongToPlaylistControlDialog = new AddSongToPlaylistControlDialog();
+
+                var addSongToPlaylistViewModel = new AddSongToPlaylistViewModel(_spotifyServices);
+
+                addSongToPlaylistControlDialog.DataContext = addSongToPlaylistViewModel;
+
+                addSongToPlaylistControlDialog.Show();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
         private RelayCommand<Playlist> _syncPlaylistCommand;
         public RelayCommand<Playlist> SyncPlaylistCommand => _syncPlaylistCommand ?? (_syncPlaylistCommand = new RelayCommand<Playlist>(SyncPlaylist));
         private async void SyncPlaylist(Playlist playlist)
