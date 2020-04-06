@@ -502,16 +502,21 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     IsConnectionEsatblished = true;
 
                     await HideConnectingMessage();
+
                     if (isStartup)
                     {
                         await ShowMessage("Notification", "Succesfully authorized in Spotify!");
                     }
 
+                    var privateProfile = await _spotifyServices.GetPrivateProfile();
+
+                    var publicProfile = await _spotifyServices.GetMyProfile();
+
+                    Messenger.Default.Send<ConnectionEstablishedMessage>(new ConnectionEstablishedMessage(privateProfile, publicProfile));
+
                     await FetchSpotifyData();
 
                     isStartup = false;
-
-                    Messenger.Default.Send<ConnectionEstablishedMessage>(new ConnectionEstablishedMessage());
                 }
             }
             catch (Exception ex)

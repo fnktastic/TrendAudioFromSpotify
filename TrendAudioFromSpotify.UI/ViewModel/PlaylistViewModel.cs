@@ -160,28 +160,51 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region methods
         private async void TogglePlaylistPublicMessageRecieved(TogglePlaylistPublicMessage obj)
         {
-            if (obj.SeriesKey != Guid.Empty)
+            try
             {
-                var series = _playlists.Where(x => x.SeriesKey == obj.SeriesKey).ToList();
-
-                foreach (var volume in series)
+                if (obj.SeriesKey != Guid.Empty)
                 {
-                    if (volume.IsPublic != obj.IsPublic)
-                        volume.IsPublic = obj.IsPublic;
+                    var series = _playlists.Where(x => x.SeriesKey == obj.SeriesKey).ToList();
 
-                    await _playlistService.ChangeVisibility(volume, volume.IsPublic);
+                    foreach (var volume in series)
+                    {
+                        if (volume.IsPublic != obj.IsPublic)
+                            volume.IsPublic = obj.IsPublic;
+
+                        await _spotifyServices.ChangePlaylistVisibility(volume.SpotifyId, volume.IsPublic).ContinueWith(async i =>
+                        {
+                            if (i.Status == TaskStatus.RanToCompletion)
+                                await _playlistService.ChangeVisibility(volume, volume.IsPublic);
+                            else
+                            {
+                                volume.IsPublic = !obj.IsPublic;
+                            }
+                        });
+                    }
+                }
+                else
+                {
+                    var playlist = _playlists.FirstOrDefault(x => x.Id == obj.Id);
+
+                    if (playlist != null)
+                    {
+                        playlist.IsPublic = obj.IsPublic;
+
+                        await _spotifyServices.ChangePlaylistVisibility(playlist.SpotifyId, playlist.IsPublic).ContinueWith(async i =>
+                        {
+                            if (i.Status == TaskStatus.RanToCompletion)
+                                await _playlistService.ChangeVisibility(playlist, playlist.IsPublic);
+                            else
+                            {
+                                playlist.IsPublic = !obj.IsPublic;
+                            }
+                        });
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                var playlist = _playlists.FirstOrDefault(x => x.Id == obj.Id);
-
-                if (playlist != null)
-                {
-                    playlist.IsPublic = obj.IsPublic;
-
-                    await _playlistService.ChangeVisibility(playlist, playlist.IsPublic);
-                }
+                _logger.Error(ex);
             }
         }
 

@@ -48,6 +48,7 @@
                             <icons:PackIconBoxIcons Kind="LogosSpotify" Width="18" Height="18"  
                                                 ToolTip="Spotify status"
                                                 Margin="5 0 0 0"
+                                                Cursor="Hand"
                                                 HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <icons:PackIconBoxIcons.Style>
                                     <Style TargetType="{x:Type icons:PackIconBoxIcons}">

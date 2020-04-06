@@ -55,7 +55,7 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             get
             {
-                if (IsSeries)
+                if (IsSeries && SeriesNo > 1)
                     return string.Format("{0} {1}", Name, SeriesNo);
 
                 return Name;

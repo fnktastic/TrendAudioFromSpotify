@@ -21,11 +21,13 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
         Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false);
         Task<PublicProfile> GetMyProfile();
+        Task<PrivateProfile> GetPrivateProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
         Task<IEnumerable<SimplePlaylist>> GlobalPlaylistsSearch(string query);
         Task RemovePlaylistAsync(string playlistId);
         Task<PlaybackContext> GetCurrentlyPlaying();
         Task<FullPlaylist> GetPlaylistById(string playlistId);
+        Task ChangePlaylistVisibility(string playlistId, bool newPublic);
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -262,6 +264,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
             return _spotifyWebAPI.GetPublicProfileAsync(_privateProfile.Id);
         }
 
+        public Task<PrivateProfile> GetPrivateProfile()
+        {
+            return _spotifyWebAPI.GetPrivateProfileAsync();
+        }
+
         [Obsolete]
         public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false)
         {
@@ -336,6 +343,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
             var currentlyPlsyingTrack = await _spotifyWebAPI.GetPlayingTrackAsync();
 
             return currentPlayback;
+        }
+
+        public async Task ChangePlaylistVisibility(string playlistId, bool newPublic)
+        {
+            await _spotifyWebAPI.UpdatePlaylistAsync(playlistId: playlistId, newPublic: newPublic);
         }
     }
 }

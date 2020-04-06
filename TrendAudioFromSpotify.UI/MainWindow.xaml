@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:local="clr-namespace:TrendAudioFromSpotify.UI"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
         xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
         xmlns:views="clr-namespace:TrendAudioFromSpotify.UI.Views"
         Dialog:DialogParticipation.Register="{Binding}"
@@ -17,6 +19,20 @@
         <converter:TabsConverter x:Key="TabsConverter" />
     </Controls:MetroWindow.Resources>
     <Grid>
+        <TextBlock HorizontalAlignment="Right" Margin="0 15 15 0"
+                   FontWeight="UltraLight"
+                   Cursor="Hand"
+                   Text="{Binding Username}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="PreviewMouseDown">
+                    <cmd:EventToCommand 
+                        Command="{Binding OpenUserInBrowserCommand}"
+                        CommandParameter="{Binding}"
+                        PassEventArgsToCommand="True" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </TextBlock>
+
         <TabControl SelectedIndex="{Binding SelectedTab, Converter={StaticResource TabsConverter}}">
             <TabItem Foreground="Black">
                 <TabItem.Header>
