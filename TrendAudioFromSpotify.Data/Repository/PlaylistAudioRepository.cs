@@ -13,6 +13,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task InsertPlaylistAudioRangeAsync(IEnumerable<PlaylistAudioDto> playlistAudioDtos);
         Task RemoveSong(Guid playlistId, string songId);
         Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
+        Task SendToPlaylist(string audioId, Guid playlistId, int newPosition);
     }
 
     public class PlaylistAudioRepository : IPlaylistAudioRepository
@@ -71,6 +72,30 @@ namespace TrendAudioFromSpotify.Data.Repository
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task SendToPlaylist(string audioId, Guid playlistId, int newPosition)
+        {
+            var audios = await _context.PlaylistAudios.Where(x => x.PlaylistId == playlistId).OrderBy(x => x.Placement).ToListAsync();
+
+            var targetAudio = _context.PlaylistAudios.Add(new PlaylistAudioDto()
+            {
+                AudioId = audioId,
+                PlaylistId = playlistId,
+                IsDeleted = false,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                Placement = newPosition
+            });
+
+            audios.Insert(newPosition, targetAudio);
+
+            for (int i = 0; i < audios.Count; i++)
+            {
+                audios.ElementAt(i).Placement = i + 1;
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -18,6 +18,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task ChangeVisibility(Playlist playlist, bool isPublic);
         Task RemoveSongFromPlaylist(Guid playlistId, string songId);
         Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
+        Task SendToPlaylist(Audio audio, Guid playlistId, int newPosition);
     }
 
     public class PlaylistService : IPlaylistService
@@ -297,6 +298,11 @@ namespace TrendAudioFromSpotify.UI.Service
         public async Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition)
         {
             return await _dataService.ChangeTrackPosition(playlistId, songId, oldPosition, newPosition);
+        }
+
+        public async Task SendToPlaylist(Audio audio, Guid playlistId, int newPosition)
+        {
+            await _dataService.SendToPlaylist(audio, playlistId, newPosition);
         }
     }
 }

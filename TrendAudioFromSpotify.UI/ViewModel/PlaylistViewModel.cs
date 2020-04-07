@@ -161,7 +161,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region methods
-        private void SendSongToPlaylistMessageRecieved(SendSongToPlaylistMessage obj)
+        private async void SendSongToPlaylistMessageRecieved(SendSongToPlaylistMessage obj)
         {
             var selectedAudio = obj.Audio;
 
@@ -170,6 +170,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             //spotify
 
             //db
+            await _playlistService.SendToPlaylist(obj.Audio, selectedPlaylist.Id, obj.NewPosition);
 
             //ui
             selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
