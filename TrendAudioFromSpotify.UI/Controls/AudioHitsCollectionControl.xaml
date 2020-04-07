@@ -8,6 +8,8 @@
              AutoGenerateColumns="False"
              CanUserAddRows="False"
              CanUserSortColumns="True"
+             CanUserResizeColumns="True"
+             CanUserResizeRows="True"
              RowHeaderWidth="0"
              BorderThickness="0"
              Background="#252525"
@@ -17,15 +19,32 @@
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls">
     <DataGrid.Resources>
+        <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="SizeWE"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
         <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
         <Style TargetType="{x:Type DataGridColumnHeader}" >
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="DataGridColumnHeader">
-                        <Label Foreground="White"
+                        <Grid>
+                            <Label Foreground="White"
                                HorizontalAlignment="Left"
                                Content="{TemplateBinding Content}"/>
+                            <Thumb x:Name="PART_LeftHeaderGripper" HorizontalAlignment="Left" Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                            <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" Style="{StaticResource ColumnHeaderGripperStyle}"/>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -100,11 +119,13 @@
             <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
                     <ScrollViewer Margin="0" MaxHeight="40" HorizontalAlignment="Right"
-                                  HorizontalScrollBarVisibility="Disabled">
-                        <ListBox ItemsSource="{Binding Playlists}" MaxWidth="350" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Disabled">
+                        <ListBox ItemsSource="{Binding Playlists}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Margin="0" Height="35" BorderThickness="1" BorderBrush="Black" 
+                                            CornerRadius="3"
                                             Padding="12 0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                                         <TextBlock FontSize="10" FontWeight="Thin" VerticalAlignment="Center" Text="{Binding Name}" />
                                     </Border>
@@ -112,9 +133,27 @@
                             </ListBox.ItemTemplate>
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel Orientation="Horizontal" MaxWidth="475" />
+                                    <StackPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
+                            <ListBox.ToolTip>
+                                <ListBox ItemsSource="{Binding Playlists}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Margin="0" Height="35" BorderThickness="1" BorderBrush="Black" 
+                                            CornerRadius="3"
+                                            Padding="12 0" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                                                <TextBlock FontSize="10" FontWeight="Thin" VerticalAlignment="Center" Text="{Binding Name}" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Vertical" />
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                </ListBox>
+                            </ListBox.ToolTip>
                         </ListBox>
                     </ScrollViewer>
                 </DataTemplate>

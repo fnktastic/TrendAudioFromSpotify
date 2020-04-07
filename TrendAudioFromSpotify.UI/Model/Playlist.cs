@@ -160,7 +160,7 @@ namespace TrendAudioFromSpotify.UI.Model
             Href = _simplePlaylist.Href;
             Uri = _simplePlaylist.Uri;
             IsPublic = _simplePlaylist.Public;
-            Cover = _simplePlaylist.Images != null && _simplePlaylist.Images.Count > 0 ? _simplePlaylist.Images.First().Url : "null";
+            Cover = _simplePlaylist.Images != null && _simplePlaylist.Images.Count > 0 ? _simplePlaylist.Images.First().Url : "";
         }
 
         public Playlist()

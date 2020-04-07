@@ -37,7 +37,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task<MonitoringItem> GetMonitoringItemByIdAsync(Guid monitoringItemId);
         Task ChangePlaylistVisibility(Playlist playlist, bool isPublic);
         Task RemoveSongFromPlaylist(Guid playlistId, string songId);
-        Task ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
+        Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
     }
 
     public class DataService : IDataService
@@ -281,9 +281,9 @@ namespace TrendAudioFromSpotify.UI.Service
             await _serialQueue.Enqueue(async () => await _playlistAudioRepository.RemoveSong(playlistId, songId));
         }
 
-        public async Task ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition)
+        public async Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition)
         {
-            await _serialQueue.Enqueue(async () => await _playlistAudioRepository.ChangeTrackPosition(playlistId, songId, oldPosition, newPosition));
+            return await _serialQueue.Enqueue(async () => await _playlistAudioRepository.ChangeTrackPosition(playlistId, songId, oldPosition, newPosition));
         }
     }
 }

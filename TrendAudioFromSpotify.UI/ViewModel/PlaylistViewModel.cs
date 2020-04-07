@@ -183,10 +183,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             var selectedPlaylist = this.SelectedPlaylist;
 
-            //spotify
-
             //db
-            await _playlistService.ChangeTrackPosition(selectedPlaylist.Id, selectedAudio.Id, obj.OldPosition, obj.NewPosition);
+            var uris = await _playlistService.ChangeTrackPosition(selectedPlaylist.Id, selectedAudio.Id, obj.OldPosition, obj.NewPosition);
+
+            //spotify
+            await _spotifyServices.ReorderPlaylist(selectedPlaylist.SpotifyId, uris);
 
             //ui
             selectedPlaylist.Audios.RemoveAt(obj.OldPosition);
@@ -392,7 +393,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 playlist.Owner = syncedPalylist.Owner.DisplayName;
                 playlist.OwnerProfileUrl = syncedPalylist.Owner.Href;
-                playlist.Cover = syncedPalylist.Images != null && syncedPalylist.Images.Count > 0 ? syncedPalylist.Images.First().Url : "null";
+                playlist.Cover = syncedPalylist.Images != null && syncedPalylist.Images.Count > 0 ? syncedPalylist.Images.First().Url : "";
 
                 await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, playlist.SpotifyId, playlist.Href, playlist.Uri,
                                                                     playlist.Owner, playlist.OwnerProfileUrl, playlist.Cover);
