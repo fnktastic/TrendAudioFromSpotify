@@ -258,9 +258,18 @@ namespace TrendAudioFromSpotify.Service.Spotify
             return usersPlaylists;
         }
 
-        public Task<ErrorResponse> PlayTrack(string trackUri)
+        public async Task<ErrorResponse> PlayTrack(string trackUri)
         {
-            return _spotifyWebAPI.ResumePlaybackAsync("", "", new List<string> { trackUri }, "", 0);
+            var playback = await _spotifyWebAPI.GetPlaybackAsync();
+
+            var x = await _spotifyWebAPI.ResumePlaybackAsync(playback.Device?.Id, playback.Context?.Uri, new List<string> { trackUri }, "", 0);
+
+            if(x.HasError())
+            {
+
+            }
+
+            return x;
         }
 
         public Task<PublicProfile> GetMyProfile()

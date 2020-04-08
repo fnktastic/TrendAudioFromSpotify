@@ -66,7 +66,7 @@ namespace TrendAudioFromSpotify.UI.Controls
         {
             if (e.OriginalSource is Ellipse || e.OriginalSource is Path)
             {
-                //e.Handled = false;
+                e.Handled = false;
             }
             else
             {

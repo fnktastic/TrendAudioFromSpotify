@@ -10,11 +10,9 @@
              CanUserAddRows="False"
              CanUserSortColumns="True"
              x:Name="dataGrid"
-
              RowHeaderWidth="0"
              BorderThickness="0"
              Background="#252525"
-          
              xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"

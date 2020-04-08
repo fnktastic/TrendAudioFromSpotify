@@ -309,12 +309,12 @@ namespace TrendAudioFromSpotify.UI.Service
         {
             var playlistDto = _mapper.Map<PlaylistDto>(playlist);
 
-            await _playlistRepository.UpdatePlaylist(playlistDto);
+            await _serialQueue.Enqueue(async () => await _playlistRepository.UpdatePlaylist(playlistDto));
         }
 
         public async Task ClearPlaylist(Playlist playlist)
         {
-            await _playlistAudioRepository.ClearPlaylist(playlist.Id);
+            await _serialQueue.Enqueue(async () => await _playlistAudioRepository.ClearPlaylist(playlist.Id));
         }
     }
 }
