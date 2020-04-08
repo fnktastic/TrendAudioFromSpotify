@@ -336,6 +336,8 @@ namespace TrendAudioFromSpotify.Service.Spotify
 
                 var items = searchResult.Playlists.Items;
 
+                if (items.Count == 0) break;
+
                 counter += items.Count;
 
                 foundPlaylists.AddRange(items);
@@ -369,6 +371,8 @@ namespace TrendAudioFromSpotify.Service.Spotify
                     return foundTracks;
 
                 var items = searchResult.Tracks.Items;
+
+                if (items.Count == 0) break;
 
                 counter += items.Count;
 

@@ -181,6 +181,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 var playlists = await _spotifyServices.GlobalPlaylistsSearch(_playlistsSearchText);
 
                 Playlists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
+
+                PlaylistsSearchText = string.Empty;
             }
             catch (Exception ex)
             {
@@ -203,6 +205,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 var audios = await _spotifyServices.GlobalAudiosSearch(_audiosSearchText);
 
                 SavedTracks = new AudioCollection(audios.Select(x => new Audio(x)));
+
+                AudiosSearchText = string.Empty;
             }
             catch (Exception ex)
             {
