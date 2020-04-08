@@ -137,6 +137,14 @@
                         Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
                         <icons:Material Kind="PlusBox" />
                     </Button>
+                    <Button 
+                        Width="40" Height="40"
+                        Command="{Binding Path=DataContext.SyncWithExportedPlaylistCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBox}}}"
+                        CommandParameter="{Binding}"
+                        ToolTip="Sync"
+                        Style="{DynamicResource MahApps.Metro.Styles.MetroCircleButtonStyle}">
+                        <icons:Material Kind="Sync" />
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </Expander>

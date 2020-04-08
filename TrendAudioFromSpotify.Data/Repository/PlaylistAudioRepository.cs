@@ -15,6 +15,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
         Task SendToPlaylist(string audioId, Guid playlistId, int newPosition);
         Task<int> RecalcTotal(Guid playlistId);
+        Task ClearPlaylist(Guid playlistId);
     }
 
     public class PlaylistAudioRepository : IPlaylistAudioRepository
@@ -53,6 +54,18 @@ namespace TrendAudioFromSpotify.Data.Repository
             {
                 return null;
             }
+        }
+
+        public async Task ClearPlaylist(Guid playlistId)
+        {
+            var audios = await _context.PlaylistAudios.Where(x => x.PlaylistId == playlistId).ToListAsync();
+
+            foreach(var audio in audios)
+            {
+                _context.Entry<PlaylistAudioDto>(audio).State = EntityState.Deleted;
+            }
+
+            await _context.SaveChangesAsync();
         }
 
         public async Task InsertPlaylistAudioRangeAsync(IEnumerable<PlaylistAudioDto> playlistAudioDtos)

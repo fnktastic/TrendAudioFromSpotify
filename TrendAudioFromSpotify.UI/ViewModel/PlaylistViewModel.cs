@@ -12,6 +12,7 @@ using System.Windows.Data;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Controls;
+using TrendAudioFromSpotify.UI.Extensions;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
@@ -408,6 +409,49 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             catch (Exception ex)
             {
                 _logger.Error(ex);
+            }
+        }
+
+        private RelayCommand<Playlist> _syncWithExportedPlaylistCommand;
+        public RelayCommand<Playlist> SyncWithExportedPlaylistCommand => _syncWithExportedPlaylistCommand ?? (_syncWithExportedPlaylistCommand = new RelayCommand<Playlist>(SyncWithExportedPlaylist));
+        private async void SyncWithExportedPlaylist(Playlist playlist)
+        {
+            try
+            {
+                playlist.ProcessingInProgress = true;
+
+                var spotifyPlaylist = new Playlist((await _spotifyServices.GetPlaylistById(playlist.SpotifyId)).ToSimple());
+
+                if(spotifyPlaylist != null)
+                {
+                    playlist.SpotifyId = spotifyPlaylist.SpotifyId;
+                    playlist.Name = spotifyPlaylist.Name;
+                    playlist.Total = spotifyPlaylist.Total;
+                    playlist.Owner = spotifyPlaylist.Owner;
+                    playlist.OwnerProfileUrl = spotifyPlaylist.OwnerProfileUrl;
+                    playlist.Href = spotifyPlaylist.Href;
+                    playlist.Uri = spotifyPlaylist.Uri;
+                    playlist.IsPublic = spotifyPlaylist.IsPublic;
+                    playlist.Cover = spotifyPlaylist.Cover;
+                    playlist.UpdatedAt = DateTime.UtcNow;
+                }
+
+                await _playlistService.UpdatePlaylist(playlist);
+
+                var tracks = (await _spotifyServices.GetPlaylistSongs(spotifyPlaylist.SpotifyId)).Select(x => new Audio(x.Track)).ToList();
+
+                playlist.Audios = new AudioCollection(tracks);
+
+                await _playlistService.UpdatePlaylistTracks(playlist, tracks);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+            finally
+            {
+                playlist.ProcessingInProgress = false;
             }
         }
 

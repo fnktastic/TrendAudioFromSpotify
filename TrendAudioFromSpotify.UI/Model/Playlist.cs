@@ -15,13 +15,33 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string SpotifyId { get; set; }
 
-        public string Name { get; set; }
+        private string _name;
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                if (_name == value) return;
+                _name = value;
+                RaisePropertyChanged(nameof(Name));
+            }
+        }
 
         public string OwnerProfileUrl { get; set; }
 
         public string Href { get; set; }
 
-        public string Cover { get; set; }
+        private string _cover;
+        public string Cover
+        {
+            get { return _cover; }
+            set
+            {
+                if (_cover == value) return;
+                _cover = value;
+                RaisePropertyChanged(nameof(Cover));
+            }
+        }
 
         public bool MadeByUser { get; set; }
 
@@ -59,7 +79,17 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
-        public virtual AudioCollection Audios { get; set; }
+        private AudioCollection _audios;
+        public virtual AudioCollection Audios
+        {
+            get { return _audios; }
+            set
+            {
+                if (_audios == value) return;
+                _audios = value;
+                RaisePropertyChanged(nameof(Audios));
+            }
+        }
 
         public virtual string DisplayName
         {
