@@ -14,7 +14,7 @@
         mc:Ignorable="d"
         WindowTitleBrush="Black"    
         DataContext="{Binding Main, Source={StaticResource Locator}}"
-        Title="Trendify | 1.00.000" Height="750" Width="1200">
+        Title="Trendify | 1.10.005" Height="750" Width="1200">
     <Controls:MetroWindow.Resources>
         <converter:TabsConverter x:Key="TabsConverter" />
     </Controls:MetroWindow.Resources>
