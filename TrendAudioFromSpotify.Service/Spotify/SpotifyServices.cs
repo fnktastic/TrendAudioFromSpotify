@@ -30,6 +30,8 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task ChangePlaylistVisibility(string playlistId, bool newPublic);
         Task RemoveSongFromPlaylist(string playlistId, string songId);
         Task ReorderPlaylist(string playlistId, List<string> uris);
+        Task SendToPlaylist(string playlistId, string audioId, int position);
+        Task<IEnumerable<FullTrack>> GlobalAudiosSearch(string query);
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -333,6 +335,40 @@ namespace TrendAudioFromSpotify.Service.Spotify
             return foundPlaylists;
         }
 
+        public async Task<IEnumerable<FullTrack>> GlobalAudiosSearch(string query)
+        {
+            var foundTracks = new List<FullTrack>();
+
+            if (query == null) return foundTracks;
+
+            int counter = 0;
+            int limit = 50;
+            int maxSize = 2_000;
+
+            var searchResultPack = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Track, limit: 1, offset: 0);
+
+            if (searchResultPack.HasError())
+                return new List<FullTrack>();
+
+            int total = searchResultPack.Tracks.Total;
+
+            while (counter < total && counter < maxSize)
+            {
+                var searchResult = await _spotifyWebAPI.SearchItemsEscapedAsync(query, Enums.SearchType.Track, limit: limit, offset: counter);
+
+                if (searchResult.HasError())
+                    return foundTracks;
+
+                var items = searchResult.Tracks.Items;
+
+                counter += items.Count;
+
+                foundTracks.AddRange(items);
+            }
+
+            return foundTracks;
+        }
+
         public async Task RemovePlaylistAsync(string playlistId)
         {
             var error = await _spotifyWebAPI.UnfollowPlaylistAsync(_privateProfile.Id, playlistId);
@@ -362,6 +398,11 @@ namespace TrendAudioFromSpotify.Service.Spotify
         public async Task ReorderPlaylist(string playlistId, List<string> uris)
         {
             var x = await _spotifyWebAPI.ReplacePlaylistTracksAsync(playlistId, uris);
+        }
+
+        public async Task SendToPlaylist(string playlistId, string audioId, int position)
+        {
+            var x = await _spotifyWebAPI.AddPlaylistTrackAsync(playlistId, audioId, position);
         }
     }
 }

@@ -12,10 +12,14 @@
                       Dialog:DialogParticipation.Register="{Binding}"
                       Height="600" Width="800"
                       xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
-    <Grid>
+    <Controls:MetroWindow.Resources>
+        <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
+        <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
+    </Controls:MetroWindow.Resources>
+    <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.5*" />
-            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="10" />
             <ColumnDefinition Width="0.5*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -33,8 +37,12 @@
                 Margin="0"
                 IsSynchronizedWithCurrentItem="False"
                 VirtualizingPanel.IsVirtualizing="True"
+                Visibility="{Binding IsPlaylistsLoading, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                 ItemsSource="{Binding FilteredPlaylistsCollection.View}"
                 SelectedItem="{Binding SelectedPlaylist}"/>
+        <Controls:ProgressRing  
+            Grid.Row="1" Grid.Column="0" 
+            Visibility="{Binding IsPlaylistsLoading, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
         <TextBox Text="{Binding AudiosSearchText, UpdateSourceTrigger=PropertyChanged}" 
                                  VerticalContentAlignment="Center"
                                  Grid.Row="0" Grid.Column="2"
@@ -43,8 +51,12 @@
                                  Controls:TextBoxHelper.Watermark="search for audios" />
         <customControls:AudioCollectionControl
                 Grid.Row="2" Grid.Column="2" 
+                Visibility="{Binding IsTracksLoading, Converter={StaticResource InverseBoolToVisibilityConverter}}"
                 SelectedItem="{Binding SelectedAudio, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 ItemsSource="{Binding FilteredAudioCollection.View}" ScrollViewer.VerticalScrollBarVisibility="Auto">
         </customControls:AudioCollectionControl>
+        <Controls:ProgressRing  
+            Grid.Row="2" Grid.Column="2" 
+            Visibility="{Binding IsTracksLoading, Converter={StaticResource BoolToVisibleOrCollapsed}}" />
     </Grid>
 </Controls:MetroWindow>

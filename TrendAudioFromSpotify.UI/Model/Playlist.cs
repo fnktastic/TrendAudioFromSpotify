@@ -17,8 +17,6 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string Name { get; set; }
 
-        public int Total { get; set; }
-
         public string OwnerProfileUrl { get; set; }
 
         public string Href { get; set; }
@@ -36,6 +34,18 @@ namespace TrendAudioFromSpotify.UI.Model
         public PlaylistTypeEnum PlaylistType { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        private int _total;
+        public int Total
+        {
+            get { return _total; }
+            set
+            {
+                if (_total == value) return;
+                _total = value;
+                RaisePropertyChanged(nameof(Total));
+            }
+        }
 
         private DateTime _updateAt;
         public DateTime UpdatedAt

@@ -39,6 +39,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task RemoveSongFromPlaylist(Guid playlistId, string songId);
         Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition);
         Task SendToPlaylist(Audio audio, Guid playlistId, int newPosition);
+        Task<int> RecalcTotal(Guid playlistId);
     }
 
     public class DataService : IDataService
@@ -293,8 +294,13 @@ namespace TrendAudioFromSpotify.UI.Service
 
             await _audioRepository.InsertAsync(audioDto).ContinueWith(async i =>
             {
-                await _playlistAudioRepository.SendToPlaylist(audio.Id, playlistId, newPosition);
+                await _serialQueue.Enqueue(async () => await _playlistAudioRepository.SendToPlaylist(audio.Id, playlistId, newPosition));
             });
+        }
+
+        public async Task<int> RecalcTotal(Guid playlistId)
+        {
+            return await _serialQueue.Enqueue(async () => await _playlistAudioRepository.RecalcTotal(playlistId));
         }
     }
 }

@@ -163,57 +163,91 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #region methods
         private async void SendSongToPlaylistMessageRecieved(SendSongToPlaylistMessage obj)
         {
-            var selectedAudio = obj.Audio;
+            try
+            {
+                var selectedAudio = obj.Audio;
 
-            var selectedPlaylist = this.SelectedPlaylist;
+                var selectedPlaylist = this.SelectedPlaylist;
 
-            //spotify
+                int position = obj.NewPosition;
 
-            //db
-            await _playlistService.SendToPlaylist(obj.Audio, selectedPlaylist.Id, obj.NewPosition);
+                //if (position == 0) position++;
 
-            //ui
-            selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+                //spotify
+                await _spotifyServices.SendToPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri, position);
 
-            //update total
+                //db
+                await _playlistService.SendToPlaylist(obj.Audio, selectedPlaylist.Id, obj.NewPosition);
+
+                //ui
+                selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+
+                //update total
+                selectedPlaylist.Total = await _dataService.RecalcTotal(selectedPlaylist.Id);
+                selectedPlaylist.UpdatedAt = DateTime.UtcNow;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async void ChangeSomgPositionMessageRecieved(ChangeSomgPositionMessage obj)
         {
-            var selectedAudio = obj.Audio;
+            try
+            {
+                var selectedAudio = obj.Audio;
 
-            var selectedPlaylist = this.SelectedPlaylist;
+                var selectedPlaylist = this.SelectedPlaylist;
 
-            //db
-            var uris = await _playlistService.ChangeTrackPosition(selectedPlaylist.Id, selectedAudio.Id, obj.OldPosition, obj.NewPosition);
+                //db
+                var uris = await _playlistService.ChangeTrackPosition(selectedPlaylist.Id, selectedAudio.Id, obj.OldPosition, obj.NewPosition);
 
-            //spotify
-            await _spotifyServices.ReorderPlaylist(selectedPlaylist.SpotifyId, uris);
+                if (uris == null) return;
 
-            //ui
-            selectedPlaylist.Audios.RemoveAt(obj.OldPosition);
+                //spotify
+                await _spotifyServices.ReorderPlaylist(selectedPlaylist.SpotifyId, uris);
 
-            selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+                //ui
+                selectedPlaylist.Audios.RemoveAt(obj.OldPosition);
 
-            //update total
+                selectedPlaylist.Audios.Insert(obj.NewPosition, selectedAudio);
+
+                //update total
+                selectedPlaylist.Total = await _dataService.RecalcTotal(selectedPlaylist.Id);
+                selectedPlaylist.UpdatedAt = DateTime.UtcNow;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
-        private void RemoveSongFromPlaylistMessageRecieved(RemoveSongFromPlaylistMessage obj)
+        private async void RemoveSongFromPlaylistMessageRecieved(RemoveSongFromPlaylistMessage obj)
         {
-            var selectedAudio = obj.Audio;
+            try
+            {
+                var selectedAudio = obj.Audio;
 
-            var selectedPlaylist = this.SelectedPlaylist;
+                var selectedPlaylist = this.SelectedPlaylist;
 
-            //spotify
-            _spotifyServices.RemoveSongFromPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri);
+                //spotify
+                await _spotifyServices.RemoveSongFromPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri);
 
-            //db
-            _playlistService.RemoveSongFromPlaylist(selectedPlaylist.Id, selectedAudio.Id);
+                //db
+                await _playlistService.RemoveSongFromPlaylist(selectedPlaylist.Id, selectedAudio.Id);
 
-            //ui
-            selectedPlaylist.Audios.Remove(selectedAudio);
+                //ui
+                selectedPlaylist.Audios.Remove(selectedAudio);
 
-            //update total
+                //update total
+                selectedPlaylist.Total = await _dataService.RecalcTotal(selectedPlaylist.Id);
+                selectedPlaylist.UpdatedAt = DateTime.UtcNow;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async void TogglePlaylistPublicMessageRecieved(TogglePlaylistPublicMessage obj)

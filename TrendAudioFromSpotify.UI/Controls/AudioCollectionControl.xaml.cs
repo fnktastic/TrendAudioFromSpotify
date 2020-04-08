@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 
@@ -63,18 +64,25 @@ namespace TrendAudioFromSpotify.UI.Controls
 
         private void DataGrid_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            rowIndex = GetCurrentRowIndex(e.GetPosition);
-            if (rowIndex < 0)
-                return;
-            dataGrid.SelectedIndex = rowIndex;
-            var selectedEmp = dataGrid.Items[rowIndex] as Audio;
-            if (selectedEmp == null)
-                return;
-            DragDropEffects dragdropeffects = DragDropEffects.Move;
-            if (DragDrop.DoDragDrop(dataGrid, selectedEmp, dragdropeffects)
-                                != DragDropEffects.None)
+            if (e.OriginalSource is Ellipse || e.OriginalSource is Path)
             {
-                dataGrid.SelectedItem = selectedEmp;
+                //e.Handled = false;
+            }
+            else
+            {
+                rowIndex = GetCurrentRowIndex(e.GetPosition);
+                if (rowIndex < 0)
+                    return;
+                dataGrid.SelectedIndex = rowIndex;
+                var selectedEmp = dataGrid.Items[rowIndex] as Audio;
+                if (selectedEmp == null)
+                    return;
+                DragDropEffects dragdropeffects = DragDropEffects.Move;
+                if (DragDrop.DoDragDrop(dataGrid, selectedEmp, dragdropeffects)
+                                    != DragDropEffects.None)
+                {
+                    dataGrid.SelectedItem = selectedEmp;
+                }
             }
         }
 

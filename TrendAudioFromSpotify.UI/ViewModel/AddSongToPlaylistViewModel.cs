@@ -26,6 +26,30 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region properties
+        private bool _isTracksLoading;
+        public bool IsTracksLoading
+        {
+            get { return _isTracksLoading; }
+            set
+            {
+                if (_isTracksLoading == value) return;
+                _isTracksLoading = value;
+                RaisePropertyChanged(nameof(IsTracksLoading));
+            }
+        }
+
+        private bool _isPlaylistsLoading;
+        public bool IsPlaylistsLoading
+        {
+            get { return _isPlaylistsLoading; }
+            set
+            {
+                if (_isPlaylistsLoading == value) return;
+                _isPlaylistsLoading = value;
+                RaisePropertyChanged(nameof(IsPlaylistsLoading));
+            }
+        }
+
         public CollectionViewSource FilteredAudioCollection { get; set; }
         public CollectionViewSource FilteredPlaylistsCollection { get; set; }
 
@@ -130,14 +154,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        public List<Audio> SelectedAudios { get; set; }
         #endregion
 
         public AddSongToPlaylistViewModel(ISpotifyServices spotifyServices)
         {
             _spotifyServices = spotifyServices;
-
-            SelectedAudios = new List<Audio>();
 
             FilteredAudioCollection = new CollectionViewSource();
             FilteredAudioCollection.Filter += FilteredAudioCollection_Filter;
@@ -155,19 +176,19 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
-                try
-                {
-                    var playlists = await _spotifyServices.GlobalPlaylistsSearch(_playlistsSearchText);
+                IsPlaylistsLoading = true;
 
-                    Playlists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
-                }
-                finally
-                {
-                }
+                var playlists = await _spotifyServices.GlobalPlaylistsSearch(_playlistsSearchText);
+
+                Playlists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
+            }
+            finally
+            {
+                IsPlaylistsLoading = false;
             }
         }
 
@@ -177,19 +198,19 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
-                try
-                {
-                    var playlists = await _spotifyServices.GlobalPlaylistsSearch(_playlistsSearchText);
+                IsTracksLoading = true;
 
-                    Playlists = new PlaylistCollection(playlists.Select(x => new Playlist(x)));
-                }
-                finally
-                {
-                }
+                var audios = await _spotifyServices.GlobalAudiosSearch(_audiosSearchText);
+
+                SavedTracks = new AudioCollection(audios.Select(x => new Audio(x)));
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
+            }
+            finally
+            {
+                IsTracksLoading = false;
             }
         }
         #endregion
@@ -227,12 +248,18 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
+                IsTracksLoading = true;
+
                 var audios = await _spotifyServices.GetPlaylistSongs(_selectedPlaylist.SpotifyId);
                 SavedTracks = new AudioCollection(audios.Select(x => new Audio(x.Track)));
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
+            }
+            finally
+            {
+                IsTracksLoading = false;
             }
         }
 
@@ -304,6 +331,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
+                IsTracksLoading = true;
+                IsPlaylistsLoading = true;
+
                 var playlists = (await _spotifyServices.GetAllPlaylists()).Select(x => new Playlist(x)).ToList();
 
                 Playlists = new PlaylistCollection(playlists);
@@ -317,6 +347,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             catch (Exception ex)
             {
                 _logger.Error(ex);
+            }
+            finally
+            {
+                IsTracksLoading = false;
+                IsPlaylistsLoading = false;
             }
         }
         #endregion
