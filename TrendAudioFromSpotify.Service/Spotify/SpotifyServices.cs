@@ -262,7 +262,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         {
             var playback = await _spotifyWebAPI.GetPlaybackAsync();
 
-            var x = await _spotifyWebAPI.ResumePlaybackAsync(playback.Device?.Id, playback.Context?.Uri, new List<string> { trackUri }, "", 0);
+            var x = await _spotifyWebAPI.ResumePlaybackAsync(deviceId: playback.Device?.Id, "", new List<string> { trackUri }, "", 0);
 
             if(x.HasError())
             {
