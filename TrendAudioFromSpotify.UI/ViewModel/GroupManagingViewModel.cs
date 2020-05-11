@@ -15,6 +15,7 @@ using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Sorter;
 using MahApps.Metro.Controls.Dialogs;
+using TrendAudioFromSpotify.UI.Extensions;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
@@ -214,6 +215,23 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 addSongToPlaylistControlDialog.DataContext = addSongToPlaylistViewModel;
 
                 addSongToPlaylistControlDialog.Show();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
+        private RelayCommand<Group> _randomizeGroupPlaylistsCommand;
+        public RelayCommand<Group> RandomizeGroupPlaylistsCommand => _randomizeGroupPlaylistsCommand ?? (_randomizeGroupPlaylistsCommand = new RelayCommand<Group>(RandomizeGroupPlaylists));
+        private async void RandomizeGroupPlaylists(Group group)
+        {
+            try
+            {
+                //db
+                _selectedGroup.Playlists.Shuffle();
+                await _dataService.RemoveGroupPlaylistsPhysically(_selectedGroup.Id);
+                await _dataService.InsertGroupPlaylistRangeAsync(_selectedGroup);
             }
             catch (Exception ex)
             {
