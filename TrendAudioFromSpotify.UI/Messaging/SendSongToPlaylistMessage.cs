@@ -2,6 +2,7 @@
 
 namespace TrendAudioFromSpotify.UI.Messaging
 {
+
     public class SendSongToPlaylistMessage
     {
         public Audio Audio { get; set; }

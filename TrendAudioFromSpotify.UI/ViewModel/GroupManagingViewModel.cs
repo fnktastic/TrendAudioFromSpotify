@@ -95,6 +95,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             Messenger.Default.Register<Group>(this, ReceiveSelectGroupMessage);
             Messenger.Default.Register<AddGroupMessage>(this, AddGroupMessage);
             Messenger.Default.Register<RemovePlaylistFromGroupMessage>(this, RecieveRemovePlaylistFromGroupMessage);
+            Messenger.Default.Register<SendPlaylistToPlaylistMessage>(this, SendPlaylistToPlaylistMessageRecieved);
+            Messenger.Default.Register<ChangePlaylistPositionMessage>(this, ChangePlaylistPositionMessageRecieved);
         }
 
         #region private methods
@@ -193,9 +195,52 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _logger.Error(ex);
             }
         }
+
+        private RelayCommand<Group> _addPlaylistToGroupCommand;
+        public RelayCommand<Group> AddPlaylistToGroupCommand => _addPlaylistToGroupCommand ?? (_addPlaylistToGroupCommand = new RelayCommand<Group>(AddPlaylistToGroup));
+        private void AddPlaylistToGroup(Group group)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
         #endregion
 
         #region messages
+        private void SendPlaylistToPlaylistMessageRecieved(SendPlaylistToPlaylistMessage obj)
+        {
+
+        }
+
+        private async void ChangePlaylistPositionMessageRecieved(ChangePlaylistPositionMessage obj)
+        {
+            try
+            {
+                var selectedPlaylist = obj.Playlist;
+
+                var selectedGroup = this.SelectedGroup;
+
+                //db
+                await _dataService.ChangeGroupPlaylistPosition(selectedGroup.Id, selectedPlaylist.Id, obj.OldPosition, obj.NewPosition);
+
+                //ui
+                selectedGroup.Playlists.RemoveAt(obj.OldPosition);
+                selectedGroup.Playlists.Insert(obj.NewPosition, selectedPlaylist);
+
+                //update total
+                selectedGroup.UpdatedAt = DateTime.UtcNow;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
         private void ReceiveSelectGroupMessage(Group group)
         {
             try

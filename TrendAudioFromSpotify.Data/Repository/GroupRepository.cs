@@ -36,7 +36,7 @@ namespace TrendAudioFromSpotify.Data.Repository
 
             list.ForEach(item =>
             {
-                item.GroupPlaylists = item.GroupPlaylists.Where(x => x.IsDeleted == false).ToList();
+                item.GroupPlaylists = item.GroupPlaylists.Where(x => x.IsDeleted == false).OrderBy(x => x.Placement).ToList();
             });
 
             return list;

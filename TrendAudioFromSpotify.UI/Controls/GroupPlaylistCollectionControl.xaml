@@ -11,10 +11,13 @@
              RowHeaderWidth="0"
              BorderThickness="0"
              Background="#252525"
-          
+             AllowDrop="True"
+             x:Name="dataGrid"
              xmlns:converter="clr-namespace:TrendAudioFromSpotify.UI.Converter"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls"
              VirtualizingPanel.IsVirtualizing="True"
+             Drop="DataGrid_Drop"
+             PreviewMouseLeftButtonDown="DataGrid_PreviewMouseLeftButtonDown"
              mc:Ignorable="d">
     <DataGrid.Resources>
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />

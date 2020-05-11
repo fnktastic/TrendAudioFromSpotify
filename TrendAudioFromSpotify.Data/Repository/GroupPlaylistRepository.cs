@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.DataAccess;
 using TrendAudioFromSpotify.Data.Model;
@@ -10,6 +11,7 @@ namespace TrendAudioFromSpotify.Data.Repository
     public interface IGroupPlaylistRepository
     {
         Task InsertRangeAsync(IList<GroupPlaylistDto> groupPlaylistDtos);
+        Task ChangePosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition);
         Task RemovePlaylistFromGroupAsync(Guid groupId, Guid playlistId);
     }
 
@@ -50,6 +52,26 @@ namespace TrendAudioFromSpotify.Data.Repository
 
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task ChangePosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition)
+        {
+            var groupPlaylists = await _context.GroupPlaylists.Where(x => x.GroupId == groupId && x.IsDeleted == false).OrderBy(x => x.Placement).ToListAsync();
+
+            var targetGroupPlaylist = groupPlaylists.FirstOrDefault(x => x.PlaylistId == playlistId);
+
+            if (targetGroupPlaylist == null) return;
+
+            groupPlaylists.Remove(targetGroupPlaylist);
+
+            groupPlaylists.Insert(newPosition, targetGroupPlaylist);
+
+            for (int i = 0; i < groupPlaylists.Count; i++)
+            {
+                groupPlaylists.ElementAt(i).Placement = i + 1;
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

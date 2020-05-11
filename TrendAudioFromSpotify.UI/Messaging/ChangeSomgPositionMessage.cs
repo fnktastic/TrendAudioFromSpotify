@@ -7,12 +7,9 @@ using TrendAudioFromSpotify.UI.Model;
 
 namespace TrendAudioFromSpotify.UI.Messaging
 {
-
-    public class ChangeSomgPositionMessage
+    public class ChangeSomgPositionMessage : ChangeItemPosition
     {
         public Audio Audio { get; set; }
-        public int OldPosition { get; set; }
-        public int NewPosition { get; set; }
 
         public ChangeSomgPositionMessage(Audio audio, int oldPosition, int newPosition)
         {

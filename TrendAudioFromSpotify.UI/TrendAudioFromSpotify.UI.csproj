@@ -243,6 +243,8 @@
     <Compile Include="Job\MonitorItemJob.cs" />
     <Compile Include="Messaging\AddMonitoringItemMessage.cs" />
     <Compile Include="Messaging\AddGroupMessage.cs" />
+    <Compile Include="Messaging\ChangeItemPosition.cs" />
+    <Compile Include="Messaging\ChangePlaylistPositionMessage.cs" />
     <Compile Include="Messaging\ChangeSomgPositionMessage.cs" />
     <Compile Include="Messaging\ConnectionEstablishedMessage.cs" />
     <Compile Include="Messaging\PlayAudioMessage.cs" />
@@ -250,6 +252,7 @@
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
     <Compile Include="Messaging\RemovePlaylistFromGroupMessage.cs" />
     <Compile Include="Messaging\RemoveSongFromPlaylistMessage.cs" />
+    <Compile Include="Messaging\SendPlaylistToPlaylistMessage.cs" />
     <Compile Include="Messaging\SendSongToPlaylistMessage.cs" />
     <Compile Include="Messaging\StartMonitoringMessage.cs" />
     <Compile Include="Messaging\TogglePlaylistPublicMessage.cs" />

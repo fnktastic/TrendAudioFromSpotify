@@ -29,38 +29,31 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         public async Task<List<string>> ChangeTrackPosition(Guid playlistId, string songId, int oldPosition, int newPosition)
         {
-            try
+            var audios = await _context.PlaylistAudios.Where(x => x.PlaylistId == playlistId).OrderBy(x => x.Placement).ToListAsync();
+
+            var targetAudio = audios.FirstOrDefault(x => x.AudioId == songId);
+
+            if (targetAudio == null) return null;
+
+            audios.Remove(targetAudio);
+
+            audios.Insert(newPosition, targetAudio);
+
+            for (int i = 0; i < audios.Count; i++)
             {
-                var audios = await _context.PlaylistAudios.Where(x => x.PlaylistId == playlistId).OrderBy(x => x.Placement).ToListAsync();
-
-                var targetAudio = audios.FirstOrDefault(x => x.AudioId == songId);
-
-                audios.Remove(targetAudio);
-
-                if (targetAudio == null) return null;
-
-                audios.Insert(newPosition, targetAudio);
-
-                for (int i = 0; i < audios.Count; i++)
-                {
-                    audios.ElementAt(i).Placement = i + 1;
-                }
-
-                await _context.SaveChangesAsync();
-
-                return audios.Select(x => x.Audio.Uri).ToList();
+                audios.ElementAt(i).Placement = i + 1;
             }
-            catch
-            {
-                return null;
-            }
+
+            await _context.SaveChangesAsync();
+
+            return audios.Select(x => x.Audio.Uri).ToList();
         }
 
         public async Task ClearPlaylist(Guid playlistId)
         {
             var audios = await _context.PlaylistAudios.Where(x => x.PlaylistId == playlistId).ToListAsync();
 
-            foreach(var audio in audios)
+            foreach (var audio in audios)
             {
                 _context.Entry<PlaylistAudioDto>(audio).State = EntityState.Deleted;
             }
@@ -91,7 +84,7 @@ namespace TrendAudioFromSpotify.Data.Repository
 
             var playlist = await _context.Playlists.FirstOrDefaultAsync(x => x.Id == playlistId);
 
-            if(playlist != null)
+            if (playlist != null)
             {
                 playlist.Total = total;
 

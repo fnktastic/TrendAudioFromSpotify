@@ -39,7 +39,7 @@
                         </TransformGroup>
                     </LinearGradientBrush.RelativeTransform>
                     <GradientStop Color="Black" Offset="0.508"/>
-                    <GradientStop Color="#FFFFF7F7" Offset="1"/>
+                    <GradientStop Color="#FFADADAD" Offset="1"/>
                 </LinearGradientBrush>
             </Border.Background>
             <Expander Background="Transparent"

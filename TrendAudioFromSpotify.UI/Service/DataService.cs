@@ -45,6 +45,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task ClearPlaylist(Playlist playlist);
         Task RemovePlaylistFromGroupAsync(Group group, Playlist playlist);
         Group GetFreshGroup(Group group);
+        Task ChangeGroupPlaylistPosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition);
     }
 
     public class DataService : IDataService
@@ -334,12 +335,17 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public async Task RemovePlaylistFromGroupAsync(Group group, Playlist playlist)
         {
-            await _groupPlaylistRepository.RemovePlaylistFromGroupAsync(group.Id, playlist.Id);
+            await _serialQueue.Enqueue(async () => await _groupPlaylistRepository.RemovePlaylistFromGroupAsync(group.Id, playlist.Id));
         }
 
         public Group GetFreshGroup(Group group)
         {
             return GroupManagingViewModel.GetFreshGroup(group);
+        }
+
+        public async Task ChangeGroupPlaylistPosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition)
+        {
+            await _serialQueue.Enqueue(async () => await _groupPlaylistRepository.ChangePosition(groupId, playlistId, oldPosition, newPosition));
         }
     }
 }
