@@ -93,6 +93,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Messenger.Default.Register<Group>(this, ReceiveSelectGroupMessage);
             Messenger.Default.Register<AddGroupMessage>(this, AddGroupMessage);
+            Messenger.Default.Register<RemovePlaylistFromGroupMessage>(this, RecieveRemovePlaylistFromGroupMessage);
         }
 
         private async Task FetchData()
@@ -115,19 +116,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         public ListCollectionView GetAudiosCollectionView(IEnumerable<Group> groups)
         {
             return (ListCollectionView)CollectionViewSource.GetDefaultView(groups);
-        }
-
-        private void AddGroupMessage(AddGroupMessage addGroupMessage)
-        {
-            try
-            {
-                if (addGroupMessage != null && addGroupMessage.Group != null)
-                    _groups.Add(addGroupMessage.Group);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-            }
         }
         #endregion
 
@@ -217,6 +205,35 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     SelectedGroup = targetGroup;
                 else
                     SelectedGroup = group;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
+        private async void RecieveRemovePlaylistFromGroupMessage(RemovePlaylistFromGroupMessage obj)
+        {
+            try
+            {
+                var playlist = obj.Playlist;
+
+                _selectedGroup.Playlists.Remove(playlist);
+
+                await _dataService.RemovePlaylistFromGroupAsync(_selectedGroup, playlist);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
+        private void AddGroupMessage(AddGroupMessage addGroupMessage)
+        {
+            try
+            {
+                if (addGroupMessage != null && addGroupMessage.Group != null)
+                    _groups.Add(addGroupMessage.Group);
             }
             catch (Exception ex)
             {

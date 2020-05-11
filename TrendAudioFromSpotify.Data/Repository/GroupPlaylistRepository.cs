@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.DataAccess;
 using TrendAudioFromSpotify.Data.Model;
@@ -9,6 +10,7 @@ namespace TrendAudioFromSpotify.Data.Repository
     public interface IGroupPlaylistRepository
     {
         Task InsertRangeAsync(IList<GroupPlaylistDto> groupPlaylistDtos);
+        Task RemovePlaylistFromGroupAsync(Guid groupId, Guid playlistId);
     }
 
     public class GroupPlaylistRepository : IGroupPlaylistRepository
@@ -35,6 +37,19 @@ namespace TrendAudioFromSpotify.Data.Repository
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task RemovePlaylistFromGroupAsync(Guid groupId, Guid playlistId)
+        {
+            var dbEntry = await _context.GroupPlaylists.FindAsync(groupId, playlistId);
+
+            if (dbEntry != null)
+            {
+                dbEntry.UpdatedAt = DateTime.UtcNow;
+                dbEntry.IsDeleted = true;
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

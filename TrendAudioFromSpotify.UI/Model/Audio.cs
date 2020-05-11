@@ -98,6 +98,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         }
 
+        #region commands 
         private RelayCommand<Audio> _playSongCommand;
         public RelayCommand<Audio> PlaySongCommand => _playSongCommand ?? (_playSongCommand = new RelayCommand<Audio>(PlaySong));
         private void PlaySong(Audio audio)
@@ -111,6 +112,6 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             Messenger.Default.Send<RemoveSongFromPlaylistMessage>(new RemoveSongFromPlaylistMessage(this));
         }
-        
+        #endregion        
     }
 }

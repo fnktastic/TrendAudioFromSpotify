@@ -1,9 +1,12 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using SpotifyAPI.Web.Models;
 using System;
 using System.Linq;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
+using TrendAudioFromSpotify.UI.Messaging;
 
 namespace TrendAudioFromSpotify.UI.Model
 {
@@ -210,5 +213,14 @@ namespace TrendAudioFromSpotify.UI.Model
         {
             Id = Guid.NewGuid();
         }
+
+        #region commands 
+        private RelayCommand<Playlist> _removePlaylistFromGroupCommand;
+        public RelayCommand<Playlist> RemovePlaylistFromGroupCommand => _removePlaylistFromGroupCommand ?? (_removePlaylistFromGroupCommand = new RelayCommand<Playlist>(RemovePlaylistFromGroup));
+        private void RemovePlaylistFromGroup(Playlist playlist)
+        {
+            Messenger.Default.Send<RemovePlaylistFromGroupMessage>(new RemovePlaylistFromGroupMessage(this));
+        }
+        #endregion
     }
 }

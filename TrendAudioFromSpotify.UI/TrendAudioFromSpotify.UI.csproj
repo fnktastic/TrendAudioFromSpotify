@@ -248,6 +248,7 @@
     <Compile Include="Messaging\PlayAudioMessage.cs" />
     <Compile Include="Messaging\PlaylistBuiltMessage.cs" />
     <Compile Include="Messaging\RefreshSpotifyViewUI.cs" />
+    <Compile Include="Messaging\RemovePlaylistFromGroupMessage.cs" />
     <Compile Include="Messaging\RemoveSongFromPlaylistMessage.cs" />
     <Compile Include="Messaging\SendSongToPlaylistMessage.cs" />
     <Compile Include="Messaging\StartMonitoringMessage.cs" />

@@ -23,7 +23,31 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+
+    <ContextMenu  x:Key="GroupPlaylistRowMenu" DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+        <MenuItem Header="Remove" Command="{Binding RemovePlaylistFromGroupCommand}" 
+                  CommandParameter="{Binding}" />
+    </ContextMenu>
+
+    <Style x:Key="GroupPlaylistDefaultRowStyle" TargetType="{x:Type DataGridRow}">
+        <Setter Property="ContextMenu" Value="{StaticResource GroupPlaylistRowMenu}" />
+        <Setter Property="Background" Value="Black" />
+        <Setter Property="BorderBrush" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Margin" Value="0 3" />
+        <Setter Property="Padding" Value="0 3" />
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="Black" />
+                <Setter Property="BorderBrush" Value="{x:Null}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="False">
+                <Setter Property="Background" Value="Black" />
+                <Setter Property="BorderBrush" Value="{x:Null}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style TargetType="{x:Type ListBoxItem}">
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="true" >

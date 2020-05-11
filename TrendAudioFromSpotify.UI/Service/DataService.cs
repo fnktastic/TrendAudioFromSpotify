@@ -42,6 +42,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task<int> RecalcTotal(Guid playlistId);
         Task UpdatePlaylist(Playlist playlist);
         Task ClearPlaylist(Playlist playlist);
+        Task RemovePlaylistFromGroupAsync(Group group, Playlist playlist);
     }
 
     public class DataService : IDataService
@@ -327,6 +328,11 @@ namespace TrendAudioFromSpotify.UI.Service
         public async Task ClearPlaylist(Playlist playlist)
         {
             await _serialQueue.Enqueue(async () => await _playlistAudioRepository.ClearPlaylist(playlist.Id));
+        }
+
+        public async Task RemovePlaylistFromGroupAsync(Group group, Playlist playlist)
+        {
+            await _groupPlaylistRepository.RemovePlaylistFromGroupAsync(group.Id, playlist.Id);
         }
     }
 }

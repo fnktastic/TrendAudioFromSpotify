@@ -28,11 +28,18 @@ namespace TrendAudioFromSpotify.Data.Repository
 
         public async Task<List<GroupDto>> GetAllAsync(bool getDeleted = false)
         {
-            return await _context.Groups
+            var list = await _context.Groups
                 .Where(x => x.IsDeleted == getDeleted)
-                .Include(x => x.GroupPlaylists.Select(y => y.Playlist))
+                .Include(x => x.GroupPlaylists.Select(z => z.Playlist))
                 .Include(x => x.MonitoringItems.Select(y => y.Trends))
                 .ToListAsync();
+
+            list.ForEach(item =>
+            {
+                item.GroupPlaylists = item.GroupPlaylists.Where(x => x.IsDeleted == false).ToList();
+            });
+
+            return list;
         }
 
         public async Task InsertAsync(GroupDto group)
