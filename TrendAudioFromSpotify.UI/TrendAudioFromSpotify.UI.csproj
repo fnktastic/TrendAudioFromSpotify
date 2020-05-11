@@ -237,6 +237,7 @@
     <Compile Include="Enum\RefreshActionEnum.cs" />
     <Compile Include="Enum\RepeatModeEnum.cs" />
     <Compile Include="Enum\TabsEnum.cs" />
+    <Compile Include="Enum\TrendsSortingEnum.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\PlaylistExtensions.cs" />
     <Compile Include="Job\MonitorItemJob.cs" />

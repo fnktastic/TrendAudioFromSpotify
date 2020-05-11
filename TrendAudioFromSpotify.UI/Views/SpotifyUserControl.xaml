@@ -406,18 +406,30 @@
                                     <Controls:ProgressRing />
                                     <TextBlock Text="Please wait..." FontSize="14" Margin="0 15 0 0" FontWeight="SemiBold" HorizontalAlignment="Center" />
                                 </StackPanel>
-                                <StackPanel Width="230" Visibility="{Binding IsProcessingAreaIsBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-                                    <TextBox 
+                                <Grid Width="230" Visibility="{Binding IsProcessingAreaIsBusy, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="26" />
+                                        <RowDefinition Height="1*" />
+                                        <RowDefinition Height="35" />
+                                    </Grid.RowDefinitions>
+                                    <TextBox Grid.Row="0" Grid.Column="0"
                                         Text="{Binding TargetGroup.Name}"
                                         Controls:TextBoxHelper.Watermark="group name" HorizontalContentAlignment="Center" />
 
+                                    <ScrollViewer Grid.Row="1" Grid.Column="0" 
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  VerticalAlignment="Top">
                                     <customControls:MonitoringSettingsControl DataContext="{Binding TargetMonitoringItem}" />
-
-                                    <Button Margin="0 15 0 0" 
+                                    </ScrollViewer>
+                                    <Button Margin="0 7 0 0" 
+                                            Grid.Row="2" Grid.Column="0"
                                             Content="Create and process"
                                             Command="{Binding CreateProcessGroupCommand}">
                                     </Button>
-                                </StackPanel>
+                                </Grid>
                             </Grid>
                         </GroupBox>
                         <GroupBox Header="Target Playlists" Grid.Column="1" 

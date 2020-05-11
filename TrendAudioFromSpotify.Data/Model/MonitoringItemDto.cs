@@ -16,11 +16,15 @@ namespace TrendAudioFromSpotify.Data.Model
 
         public ComparisonEnum Comparison { get; set; }
         public PlaylistTypeEnum PlaylistType { get; set; }
+        public TrendsSortingEnum TrendsSorting { get; set; }
 
         public string TargetPlaylistName { get; set; }
         public bool AutoRecreatePlaylisOnSpotify { get; set; }
         public bool IsOverrideTrends { get; set; }
+        public bool IsOverridePlaylists { get; set; }
+        public bool IsDailyTrends { get; set; }
         public bool IsSeries { get; set; }
+        public bool IsRandomizeGroup { get; set; }
 
         [Key]
         public Guid GroupId { get; set; }
@@ -42,5 +46,13 @@ namespace TrendAudioFromSpotify.Data.Model
         Equals,
         More,
         Less
+    }
+
+    public enum TrendsSortingEnum
+    {
+        None,
+        Popularity,
+        Random,
+        Hits
     }
 }

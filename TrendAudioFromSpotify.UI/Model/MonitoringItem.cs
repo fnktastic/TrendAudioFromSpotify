@@ -50,6 +50,18 @@ namespace TrendAudioFromSpotify.UI.Model
             }
         }
 
+        private TrendsSortingEnum _trendsSorting;
+        public TrendsSortingEnum TrendsSorting
+        {
+            get { return _trendsSorting; }
+            set
+            {
+                if (value == _trendsSorting) return;
+                _trendsSorting = value;
+                RaisePropertyChanged(nameof(TrendsSorting));
+            }
+        }
+
         private PlaylistTypeEnum _playlistType;
         public PlaylistTypeEnum PlaylistType
         {
@@ -131,6 +143,42 @@ namespace TrendAudioFromSpotify.UI.Model
                 if (value == _isSeries) return;
                 _isSeries = value;
                 RaisePropertyChanged(nameof(IsSeries));
+            }
+        }
+
+        private bool _isOverridePlaylists;
+        public bool IsOverridePlaylists
+        {
+            get { return _isOverridePlaylists; }
+            set
+            {
+                if (value == _isOverridePlaylists) return;
+                _isOverridePlaylists = value;
+                RaisePropertyChanged(nameof(IsOverridePlaylists));
+            }
+        }
+
+        private bool _isDailyTrends;
+        public bool IsDailyTrends
+        {
+            get { return _isDailyTrends; }
+            set
+            {
+                if (value == _isDailyTrends) return;
+                _isDailyTrends = value;
+                RaisePropertyChanged(nameof(IsDailyTrends));
+            }
+        }
+
+        private bool _isRandomizeGroup;
+        public bool IsRandomizeGroup
+        {
+            get { return _isRandomizeGroup; }
+            set
+            {
+                if (value == _isRandomizeGroup) return;
+                _isRandomizeGroup = value;
+                RaisePropertyChanged(nameof(IsRandomizeGroup));
             }
         }
 

@@ -103,13 +103,25 @@ namespace TrendAudioFromSpotify.UI.Service
         {
             await _serialQueue.Enqueue(async () =>
             {
-                await _groupPlaylistRepository.InsertRangeAsync(group.Playlists.Select(x => new GroupPlaylistDto()
+                var groupPlaylistDtos = new List<GroupPlaylistDto>();
+
+                int i = 0;
+
+                foreach (var groupPlaylist in group.Playlists)
                 {
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    GroupId = group.Id,
-                    PlaylistId = x.Id
-                }).ToList());
+                    groupPlaylistDtos.Add(new GroupPlaylistDto()
+                    {
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        GroupId = group.Id,
+                        PlaylistId = groupPlaylist.Id,
+                        Placement = i
+                    });
+
+                    i++;
+                }
+
+                await _groupPlaylistRepository.InsertRangeAsync(groupPlaylistDtos);
             });
         }
 

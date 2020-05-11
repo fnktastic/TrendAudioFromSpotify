@@ -57,6 +57,10 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.AutoRecreatePlaylisOnSpotify = monitoringItem.AutoRecreatePlaylisOnSpotify;
                 _monitoringItem.IsOverrideTrends = monitoringItem.IsOverrideTrends;
                 _monitoringItem.IsSeries = monitoringItem.IsSeries;
+                _monitoringItem.TrendsSorting = monitoringItem.TrendsSorting;
+                _monitoringItem.IsOverridePlaylists = monitoringItem.IsOverridePlaylists;
+                _monitoringItem.IsDailyTrends = monitoringItem.IsDailyTrends;
+                _monitoringItem.IsRandomizeGroup = monitoringItem.IsRandomizeGroup;
 
                 _monitoringItem.SpecificAudios = new AudioCollection(audios);
                 _monitoringItem.Playlists = new PlaylistCollection(playlists);
