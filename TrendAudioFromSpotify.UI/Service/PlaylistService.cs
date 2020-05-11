@@ -194,7 +194,7 @@ namespace TrendAudioFromSpotify.UI.Service
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                var newPlaylistAudios = playlistAudios.Take(playlist.Total).ToList();
+                playlistAudios = playlistAudios.Take(playlist.Total).ToList();
 
                 playlist.Audios = new AudioCollection(playlistAudios);
 

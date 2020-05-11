@@ -7,6 +7,7 @@ using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Utility;
+using TrendAudioFromSpotify.UI.ViewModel;
 
 namespace TrendAudioFromSpotify.UI.Service
 {
@@ -43,6 +44,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task UpdatePlaylist(Playlist playlist);
         Task ClearPlaylist(Playlist playlist);
         Task RemovePlaylistFromGroupAsync(Group group, Playlist playlist);
+        Group GetFreshGroup(Group group);
     }
 
     public class DataService : IDataService
@@ -333,6 +335,11 @@ namespace TrendAudioFromSpotify.UI.Service
         public async Task RemovePlaylistFromGroupAsync(Group group, Playlist playlist)
         {
             await _groupPlaylistRepository.RemovePlaylistFromGroupAsync(group.Id, playlist.Id);
+        }
+
+        public Group GetFreshGroup(Group group)
+        {
+            return GroupManagingViewModel.GetFreshGroup(group);
         }
     }
 }

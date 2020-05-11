@@ -123,6 +123,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 if (monitoringItem != null)
                 {
+                    monitoringItem.Group = _dataService.GetFreshGroup(monitoringItem.Group);
+
                     monitoringItem.Playlists = monitoringItem.Group.Playlists;
 
                     monitoringItem.IsReady = true;
@@ -376,7 +378,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             {
                 monitoringItem.ProcessingInProgress = true;
 
+                monitoringItem.Group = _dataService.GetFreshGroup(monitoringItem.Group);
+
                 var _monitoringItem = _monitoringService.Initiate(monitoringItem.Group, monitoringItem, new AudioCollection(), monitoringItem.Group.Playlists);
+                
                 await _monitoringService.ProcessAsync(_monitoringItem);
 
                 monitoringItem.ProcessingInProgress = false;

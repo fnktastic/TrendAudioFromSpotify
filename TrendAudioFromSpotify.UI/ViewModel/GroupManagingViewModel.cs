@@ -55,7 +55,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private GroupCollection _groups;
+        private static GroupCollection _groups = new GroupCollection();
         public GroupCollection Groups
         {
             get { return _groups; }
@@ -82,6 +82,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 RaisePropertyChanged(nameof(SelectedGroup));
             }
         }
+        #endregion
 
         public GroupManagingViewModel(IDataService dataService, IGroupService groupService)
         {
@@ -94,6 +95,14 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             Messenger.Default.Register<Group>(this, ReceiveSelectGroupMessage);
             Messenger.Default.Register<AddGroupMessage>(this, AddGroupMessage);
             Messenger.Default.Register<RemovePlaylistFromGroupMessage>(this, RecieveRemovePlaylistFromGroupMessage);
+        }
+
+        #region private methods
+        public static Group GetFreshGroup(Group group) => _groups.FirstOrDefault(x => x.Id == group.Id);
+
+        public ListCollectionView GetAudiosCollectionView(IEnumerable<Group> groups)
+        {
+            return (ListCollectionView)CollectionViewSource.GetDefaultView(groups);
         }
 
         private async Task FetchData()
@@ -109,13 +118,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             FilteredGroupCollection.Filter += FilteredGroupCollection_Filter;
 
             FilteredGroupCollection.CustomSort = new GroupSorter();
-        }
-        #endregion
-
-        #region private methods
-        public ListCollectionView GetAudiosCollectionView(IEnumerable<Group> groups)
-        {
-            return (ListCollectionView)CollectionViewSource.GetDefaultView(groups);
         }
         #endregion
 
