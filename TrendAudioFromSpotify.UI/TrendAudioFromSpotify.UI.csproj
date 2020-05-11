@@ -219,8 +219,8 @@
     <Compile Include="Controls\PlaylistsCollectionControl.xaml.cs">
       <DependentUpon>PlaylistsCollectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AddSongToPlaylistControlDialog.xaml.cs">
-      <DependentUpon>AddSongToPlaylistControlDialog.xaml</DependentUpon>
+    <Compile Include="Controls\ContentExplorerControlDialog.xaml.cs">
+      <DependentUpon>ContentExplorerControlDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ScheduleControlDialog.xaml.cs">
       <DependentUpon>ScheduleControlDialog.xaml</DependentUpon>
@@ -338,7 +338,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\AddSongToPlaylistControlDialog.xaml">
+    <Page Include="Controls\ContentExplorerControlDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

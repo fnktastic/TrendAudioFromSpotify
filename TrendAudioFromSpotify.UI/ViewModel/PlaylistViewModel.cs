@@ -396,9 +396,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
-                var dialogCoordinator = DialogCoordinator.Instance;
-
-                var addSongToPlaylistControlDialog = new AddSongToPlaylistControlDialog();
+                var addSongToPlaylistControlDialog = new ContentExplorerControlDialog();
 
                 var addSongToPlaylistViewModel = new AddSongToPlaylistViewModel(_spotifyServices);
 
@@ -432,7 +430,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     playlist.Href = spotifyPlaylist.Href;
                     playlist.Uri = spotifyPlaylist.Uri;
                     playlist.IsPublic = spotifyPlaylist.IsPublic;
-                    playlist.Cover = spotifyPlaylist.Cover;
+                    playlist.Cover = spotifyPlaylist.Cover ?? "";
                     playlist.UpdatedAt = DateTime.UtcNow;
                 }
 

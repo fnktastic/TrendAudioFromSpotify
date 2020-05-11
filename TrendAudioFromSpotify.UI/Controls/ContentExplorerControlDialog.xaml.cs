@@ -4,11 +4,11 @@ using MahApps.Metro.Controls.Dialogs;
 namespace TrendAudioFromSpotify.UI.Controls
 {
     /// <summary>
-    /// Логика взаимодействия для AddSongToPlaylistControlDialog.xaml
+    /// Логика взаимодействия для ContentExplorerControlDialog.xaml
     /// </summary>
-    public partial class AddSongToPlaylistControlDialog : MetroWindow
+    public partial class ContentExplorerControlDialog : MetroWindow
     {
-        public AddSongToPlaylistControlDialog()
+        public ContentExplorerControlDialog()
         {
             InitializeComponent();
         }

@@ -46,6 +46,7 @@ namespace TrendAudioFromSpotify.UI.Service
         Task RemovePlaylistFromGroupAsync(Group group, Playlist playlist);
         Group GetFreshGroup(Group group);
         Task ChangeGroupPlaylistPosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition);
+        Task RemoveGroupPlaylistsPhysically(Guid groupId);
     }
 
     public class DataService : IDataService
@@ -239,26 +240,29 @@ namespace TrendAudioFromSpotify.UI.Service
         {
             var playlistDto = _mapper.Map<PlaylistDto>(playlist);
 
-            var audios = playlist.Audios;
+            await _serialQueue.Enqueue(async () => await _playlistRepository.InsertAsync(playlistDto));
 
-            var playlistAudioDtos = new List<PlaylistAudioDto>();
-
-            for (int i = 0; i < audios.Count; i++)
+            if (playlist.Audios != null)
             {
-                playlistAudioDtos.Add(new PlaylistAudioDto()
+                var audios = playlist.Audios;
+
+                var playlistAudioDtos = new List<PlaylistAudioDto>();
+
+                for (int i = 0; i < audios.Count; i++)
                 {
-                    AudioId = audios.ElementAt(i).Id,
-                    PlaylistId = playlist.Id,
-                    Placement = i,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    IsDeleted = false,
-                });
+                    playlistAudioDtos.Add(new PlaylistAudioDto()
+                    {
+                        AudioId = audios.ElementAt(i).Id,
+                        PlaylistId = playlist.Id,
+                        Placement = i,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        IsDeleted = false,
+                    });
+                }
+
+                await _serialQueue.Enqueue(async () => await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos));
             }
-
-            await _playlistRepository.InsertAsync(playlistDto);
-
-            await _playlistAudioRepository.InsertPlaylistAudioRangeAsync(playlistAudioDtos);
         }
 
         public async Task<List<Playlist>> GetPlaylistSeriesAsync(string seriesName)
@@ -346,6 +350,11 @@ namespace TrendAudioFromSpotify.UI.Service
         public async Task ChangeGroupPlaylistPosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition)
         {
             await _serialQueue.Enqueue(async () => await _groupPlaylistRepository.ChangePosition(groupId, playlistId, oldPosition, newPosition));
+        }
+
+        public async Task RemoveGroupPlaylistsPhysically(Guid groupId)
+        {
+            await _serialQueue.Enqueue(async () => await _groupPlaylistRepository.RemovePhysically(groupId));
         }
     }
 }

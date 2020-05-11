@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Controls;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
 using TrendAudioFromSpotify.UI.Sorter;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace TrendAudioFromSpotify.UI.ViewModel
 {
@@ -20,6 +22,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
     {
         #region fields
         private readonly IDataService _dataService;
+        private readonly ISpotifyServices _spotifyServices;
         private readonly IGroupService _groupService;
         public ISpotifyServices SpotifyServices = null;
 
@@ -84,11 +87,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
         #endregion
 
-        public GroupManagingViewModel(IDataService dataService, IGroupService groupService)
+        public GroupManagingViewModel(IDataService dataService, IGroupService groupService, ISpotifyServices spotifyServices)
         {
             _dataService = dataService;
 
             _groupService = groupService;
+
+            _spotifyServices = spotifyServices;
 
             FetchData().ConfigureAwait(true);
 
@@ -202,7 +207,13 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
+                var addSongToPlaylistControlDialog = new ContentExplorerControlDialog();
 
+                var addSongToPlaylistViewModel = new AddSongToPlaylistViewModel(_spotifyServices);
+
+                addSongToPlaylistControlDialog.DataContext = addSongToPlaylistViewModel;
+
+                addSongToPlaylistControlDialog.Show();
             }
             catch (Exception ex)
             {
@@ -212,9 +223,25 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         #endregion
 
         #region messages
-        private void SendPlaylistToPlaylistMessageRecieved(SendPlaylistToPlaylistMessage obj)
+        private async void SendPlaylistToPlaylistMessageRecieved(SendPlaylistToPlaylistMessage obj)
         {
+            try
+            {
+                //ui
+                var selectedPlaylist = obj.Playlist;
+                var newPosition = obj.NewPosition < 0 ? 0 : obj.NewPosition;
 
+                _selectedGroup.Playlists.Insert(newPosition, selectedPlaylist);
+
+                //db
+                await _dataService.InsertPlaylistAsync(selectedPlaylist);
+                await _dataService.RemoveGroupPlaylistsPhysically(_selectedGroup.Id);
+                await _dataService.InsertGroupPlaylistRangeAsync(_selectedGroup);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
         }
 
         private async void ChangePlaylistPositionMessageRecieved(ChangePlaylistPositionMessage obj)

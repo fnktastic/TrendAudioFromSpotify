@@ -30,7 +30,7 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public string Album { get; set; }
 
-        public string Cover { get; set; } = "null";
+        public string Cover { get; set; } = "";
 
         public bool IsFilled => _track != null ? true : false;
 

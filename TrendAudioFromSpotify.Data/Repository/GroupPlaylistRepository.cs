@@ -13,6 +13,7 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task InsertRangeAsync(IList<GroupPlaylistDto> groupPlaylistDtos);
         Task ChangePosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition);
         Task RemovePlaylistFromGroupAsync(Guid groupId, Guid playlistId);
+        Task RemovePhysically(Guid groupId);
     }
 
     public class GroupPlaylistRepository : IGroupPlaylistRepository
@@ -69,6 +70,18 @@ namespace TrendAudioFromSpotify.Data.Repository
             for (int i = 0; i < groupPlaylists.Count; i++)
             {
                 groupPlaylists.ElementAt(i).Placement = i + 1;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemovePhysically(Guid groupId)
+        {
+            var groupPlaylists = await _context.GroupPlaylists.Where(x => x.GroupId == groupId).ToListAsync();
+
+            foreach(var groupPlaylist in groupPlaylists)
+            {
+                _context.Entry<GroupPlaylistDto>(groupPlaylist).State = EntityState.Deleted;
             }
 
             await _context.SaveChangesAsync();
