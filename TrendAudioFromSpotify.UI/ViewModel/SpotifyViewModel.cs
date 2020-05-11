@@ -325,18 +325,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private AudioCollection _targetAudios;
-        public AudioCollection TargetAudios
-        {
-            get { return _targetAudios; }
-            set
-            {
-                if (value == _targetAudios) return;
-                _targetAudios = value;
-                RaisePropertyChanged(nameof(TargetAudios));
-            }
-        }
-
         private AudioCollection _savedTracks;
         public AudioCollection SavedTracks
         {
@@ -432,7 +420,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
             Users = new ObservableCollection<User>();
             TargetPlaylists = new PlaylistCollection();
-            TargetAudios = new AudioCollection();
             TargetGroup = new Group();
             TargetMonitoringItem = new MonitoringItem();
 
@@ -651,7 +638,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             try
             {
                 TargetGroup = new Group();
-                TargetAudios = new AudioCollection();
                 TargetPlaylists = new PlaylistCollection();
 
                 if (ExplorePlaylists != null)
@@ -892,21 +878,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private RelayCommand<Audio> _addAudioToTargetCommand;
-        public RelayCommand<Audio> AddAudioToTargetCommand => _addAudioToTargetCommand ?? (_addAudioToTargetCommand = new RelayCommand<Audio>(AddAudioToTarget));
-        private void AddAudioToTarget(Audio audio)
-        {
-            try
-            {
-                if (_targetAudios.Contains(audio) == false)
-                    _targetAudios.Add(audio);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-            }
-        }
-
         private RelayCommand<Audio> _saveAudioToDbCommand;
         public RelayCommand<Audio> SaveAudioToDbCommand => _saveAudioToDbCommand ?? (_saveAudioToDbCommand = new RelayCommand<Audio>(SaveAudioToDb));
         private async void SaveAudioToDb(Audio audio)
@@ -1064,7 +1035,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
-                var monitoringItem = _monitoringService.Initiate(_targetGroup, _targetMonitoringItem, _targetAudios, _targetPlaylists);
+                var monitoringItem = _monitoringService.Initiate(_targetGroup, _targetMonitoringItem, _targetPlaylists);
 
                 if (monitoringItem.IsReady)
                 {
@@ -1080,7 +1051,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     await _dataService.InsertGroupPlaylistRangeAsync(monitoringItem.Group);
 
                     await _dataService.InsertMonitoringItemAsync(monitoringItem);
-                    await _dataService.InsertPlaylistRangeAsync(monitoringItem.Playlists);
+                    await _dataService.InsertPlaylistRangeAsync(monitoringItem.Group.Playlists);
 
                     ResetUI(null);
 

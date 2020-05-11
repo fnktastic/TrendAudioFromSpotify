@@ -36,17 +36,6 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public virtual PlaylistCollection Playlists { get; set; }
 
-        private bool _isChecked;
-        public bool IsChecked
-        {
-            get { return _isChecked; }
-            set
-            {
-                _isChecked = value;
-                RaisePropertyChanged(nameof(IsChecked));
-            }
-        }
-
         private int _no;
         public int No
         {

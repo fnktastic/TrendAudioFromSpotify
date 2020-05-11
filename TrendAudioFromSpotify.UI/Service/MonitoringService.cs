@@ -14,7 +14,7 @@ namespace TrendAudioFromSpotify.UI.Service
 {
     public interface IMonitoringService
     {
-        MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists);
+        MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, PlaylistCollection playlists);
         Task<bool> ProcessAsync(MonitoringItem monitoringItem);
     }
 
@@ -25,7 +25,6 @@ namespace TrendAudioFromSpotify.UI.Service
         private readonly ISpotifyServices _spotifyServices;
         private readonly IDataService _dataService;
         private readonly IPlaylistService _playlistService;
-        private bool processingSpecificAudios = false;
 
         public MonitoringService(IDataService dataService, ISpotifyServices spotifyServices, ISchedulingService schedulingService, IPlaylistService playlistService)
         {
@@ -35,7 +34,7 @@ namespace TrendAudioFromSpotify.UI.Service
             _playlistService = playlistService;
         }
 
-        public MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, AudioCollection audios, PlaylistCollection playlists)
+        public MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, PlaylistCollection playlists)
         {
             MonitoringItem _monitoringItem = new MonitoringItem();
 
@@ -62,12 +61,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.IsDailyTrends = monitoringItem.IsDailyTrends;
                 _monitoringItem.IsRandomizeGroup = monitoringItem.IsRandomizeGroup;
 
-                _monitoringItem.SpecificAudios = new AudioCollection(audios);
-                _monitoringItem.Playlists = new PlaylistCollection(playlists);
                 _monitoringItem.Group.Playlists = new PlaylistCollection(playlists);
-
-                if (audios.Count > 0)
-                    processingSpecificAudios = true;
 
                 _monitoringItem.CreatedAt = _monitoringItem.Group.CreatedAt = DateTime.UtcNow;
                 _monitoringItem.UpdatedAt = _monitoringItem.Group.UpdatedAt = DateTime.UtcNow;
@@ -115,7 +109,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
                         var audiosOfPlaylists = new Dictionary<string, List<Audio>>();
 
-                        foreach (var playlist in monitoringItem.Playlists)
+                        foreach (var playlist in monitoringItem.Group.Playlists)
                         {
                             var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.SpotifyId))
                             .Where(x => x != null && x.Track != null)
@@ -137,14 +131,11 @@ namespace TrendAudioFromSpotify.UI.Service
 
                         var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList();
 
-                        if (processingSpecificAudios == false)
-                            monitoringItem.SpecificAudios = new AudioCollection(audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList());
-
                         var groupedAudios = audioBunch
                         .GroupBy(x => x.Id)
                         .Select(y =>
                         {
-                            var audio = monitoringItem.SpecificAudios.FirstOrDefault(z => z.Id == y.Key);
+                            var audio = audioBunch.FirstOrDefault(z => z.Id == y.Key);
 
                             if (audio == null) return null;
 
@@ -152,7 +143,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
                             audio.Playlists = new PlaylistCollection();
 
-                            foreach (var playlist in monitoringItem.Playlists)
+                            foreach (var playlist in monitoringItem.Group.Playlists)
                             {
                                 if (playlist.Audios.Any(x => string.Equals(x.Id, audio.Id, StringComparison.OrdinalIgnoreCase)))
                                     audio.Playlists.Add(playlist);
@@ -195,7 +186,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             monitoringItem.Trends = new AudioCollection(groupedAudios);
                         });
 
-                        await SaveTrends(groupedAudios, audioBunch, monitoringItem.Playlists, monitoringItem);
+                        await SaveTrends(groupedAudios, audioBunch, monitoringItem.Group.Playlists, monitoringItem);
                     }
                     finally
                     {

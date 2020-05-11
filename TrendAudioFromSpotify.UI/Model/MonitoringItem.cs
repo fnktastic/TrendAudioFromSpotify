@@ -198,9 +198,6 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public bool IsReady { get; set; } = false;
 
-        [IgnoreMap]
-        public virtual AudioCollection SpecificAudios { get; set; }
-        public virtual PlaylistCollection Playlists { get; set; }
         public virtual Group Group { get; set; }
 
         private Schedule _schedule;
