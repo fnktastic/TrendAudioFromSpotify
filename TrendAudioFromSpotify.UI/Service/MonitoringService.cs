@@ -83,6 +83,8 @@ namespace TrendAudioFromSpotify.UI.Service
         {
             if (monitoringItem.IsReady)
             {
+                monitoringItem.Group = _dataService.GetFreshGroup(monitoringItem.Group);
+
                 await GetTrends(monitoringItem);
 
                 if (monitoringItem.Schedule.RepeatOn == true)

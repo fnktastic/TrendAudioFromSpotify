@@ -25,7 +25,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         private readonly IDataService _dataService;
         private readonly ISpotifyServices _spotifyServices;
         private readonly IGroupService _groupService;
-        public ISpotifyServices SpotifyServices = null;
 
         private static readonly ILog _logger = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         #endregion
@@ -194,7 +193,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
-                await _groupService.MonitorGroupAsync(SpotifyServices, group);
+                await _groupService.MonitorGroupAsync(_spotifyServices, group);
             }
             catch (Exception ex)
             {
@@ -232,6 +231,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _selectedGroup.Playlists.Shuffle();
                 await _dataService.RemoveGroupPlaylistsPhysically(_selectedGroup.Id);
                 await _dataService.InsertGroupPlaylistRangeAsync(_selectedGroup);
+
+                _selectedGroup.UpdatedAt = DateTime.UtcNow;
+                await _dataService.UpdateGroupAsync(_selectedGroup);
             }
             catch (Exception ex)
             {
@@ -255,6 +257,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 await _dataService.InsertPlaylistAsync(selectedPlaylist);
                 await _dataService.RemoveGroupPlaylistsPhysically(_selectedGroup.Id);
                 await _dataService.InsertGroupPlaylistRangeAsync(_selectedGroup);
+
+                _selectedGroup.UpdatedAt = DateTime.UtcNow;
+                await _dataService.UpdateGroupAsync(_selectedGroup);
             }
             catch (Exception ex)
             {
@@ -279,6 +284,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 //update total
                 selectedGroup.UpdatedAt = DateTime.UtcNow;
+                await _dataService.UpdateGroupAsync(_selectedGroup);
             }
             catch (Exception ex)
             {
@@ -311,8 +317,10 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 var playlist = obj.Playlist;
 
                 _selectedGroup.Playlists.Remove(playlist);
+                _selectedGroup.UpdatedAt = DateTime.UtcNow;
 
                 await _dataService.RemovePlaylistFromGroupAsync(_selectedGroup, playlist);
+                await _dataService.UpdateGroupAsync(_selectedGroup);
             }
             catch (Exception ex)
             {

@@ -15,6 +15,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task InsertAsync(GroupDto group);
 
         Task RemoveAsync(GroupDto group);
+
+        Task UpdateAsync(GroupDto groupDto);
     }
 
     public class GroupRepository : IGroupRepository
@@ -75,6 +77,18 @@ namespace TrendAudioFromSpotify.Data.Repository
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(GroupDto groupDto)
+        {
+            var dbEntry = await _context.Groups.FindAsync(groupDto.Id);
+
+            if(dbEntry != null)
+            {
+                _context.Entry(dbEntry).CurrentValues.SetValues(groupDto);
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

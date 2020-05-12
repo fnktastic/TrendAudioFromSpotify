@@ -1030,8 +1030,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
 
         private RelayCommand _createProcessGroupCommand;
-        public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(GetTrends));
-        private async void GetTrends()
+        public RelayCommand CreateProcessGroupCommand => _createProcessGroupCommand ?? (_createProcessGroupCommand = new RelayCommand(CreateProcessGroup));
+        private async void CreateProcessGroup()
         {
             try
             {
@@ -1040,8 +1040,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (monitoringItem.IsReady)
                 {
                     _monitoringViewModel.MonitoringItems.Add(monitoringItem);
-
-                    //monitoringItem.Group.MonitoringItem = monitoringItem;
 
                     _groupManagingViewModel.Groups.Add(monitoringItem.Group);
 
