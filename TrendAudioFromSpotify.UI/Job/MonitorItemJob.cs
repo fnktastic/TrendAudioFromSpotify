@@ -20,6 +20,8 @@ namespace TrendAudioFromSpotify.UI.Job
 
         public async Task Execute(IJobExecutionContext context)
         {
+            await Task.Delay(1);
+
             string monitoringItemId = context.JobDetail.JobDataMap.FirstOrDefault(x => x.Key == "monitoringItemId").Value.ToString();
 
             Messenger.Default.Send<StartMonitoringMessage>(new StartMonitoringMessage(monitoringItemId));

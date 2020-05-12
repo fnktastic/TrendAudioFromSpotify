@@ -38,14 +38,14 @@ namespace TrendAudioFromSpotify.UI.Service
         {
             FullPlaylist playlist = null;
 
-            if (sourcePlaylist.PlaylistType == PlaylistTypeEnum.Fifo)
+            var audioPositionDictionary = new Dictionary<string, int>(); 
+
+            for (int i = 0; i < sourcePlaylist.Audios.Count; i++)
             {
-                playlist = await _spotifyServices.RecreatePlaylist(sourcePlaylist.SpotifyId, sourcePlaylist.DisplayName, sourcePlaylist.Audios.Select(x => x.Uri), sourcePlaylist.IsPublic);
+                audioPositionDictionary.Add(sourcePlaylist.Audios.ElementAt(i).Uri, i);
             }
-            if (sourcePlaylist.PlaylistType == PlaylistTypeEnum.Standard)
-            {
-                playlist = await _spotifyServices.RecreatePlaylist(sourcePlaylist.SpotifyId, sourcePlaylist.DisplayName, sourcePlaylist.Audios.Select(x => x.Uri), sourcePlaylist.IsPublic);
-            }
+            
+            playlist = await _spotifyServices.RecreatePlaylist(sourcePlaylist.SpotifyId, sourcePlaylist.DisplayName, audioPositionDictionary, sourcePlaylist.IsPublic);
 
             return playlist;
         }
@@ -208,7 +208,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 if (monitoringItem.IsSeries == false) break;
             }
 
-            if(targetPlaylist != null)
+            if (targetPlaylist != null)
                 playlistsToAddOrUpdate.Insert(0, targetPlaylist);
 
             foreach (var playlistToAdd in playlistsToAddOrUpdate)

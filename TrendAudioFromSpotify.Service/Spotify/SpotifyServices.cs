@@ -19,7 +19,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<PlaylistTrack>> GetPlaylistSongs(string playlistId);
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(string username = "_annalasnier_");
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
-        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false);
+        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, Dictionary<string, int> audioPosition, bool isPublic = false);
         Task<PublicProfile> GetMyProfile();
         Task<PrivateProfile> GetPrivateProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
@@ -284,7 +284,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         }
 
         [Obsolete]
-        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false)
+        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, Dictionary<string, int> audioPosition, bool isPublic = false)
         {
             FullPlaylist playlist = null;
 
@@ -292,21 +292,28 @@ namespace TrendAudioFromSpotify.Service.Spotify
             {
                 playlist = await _spotifyWebAPI.GetPlaylistAsync(playlistId: playlistUri);
 
-                var deleteTrackUries = (await GetPlaylistSongs(playlist.Id)).Select(x => new DeleteTrackUri(x.Track.Uri)).ToList();
+                var playlistAudios = (await GetPlaylistSongs(playlist.Id)).Select(x => x.Track.Uri).ToList();
 
-                await _spotifyWebAPI.RemovePlaylistTracksAsync(playlist.Id, deleteTrackUries);
+                var newItems = audioPosition.Select(x => x.Key).Except(playlistAudios).ToList();
 
-                await RemovePlaylistAsync(playlist.Id);
+                if (newItems != null && newItems.Count > 0)
+                {
+                    foreach(var newItem in newItems)
+                    {
+                        int position = audioPosition[newItem];
 
-                if (playlist.HasError() == false)
-                    playlist = await _spotifyWebAPI.CreatePlaylistAsync(userId: _privateProfile.Id, playlistName: playlistName, isPublic: isPublic);
+                        var x = await _spotifyWebAPI.AddPlaylistTrackAsync(playlistUri, newItem, position);
+                    }
+                }
             }
             else
             {
-                playlist = await _spotifyWebAPI.CreatePlaylistAsync(userId: _privateProfile.Id, playlistName: playlistName, isPublic: isPublic);
-            }
+                var ids = audioPosition.Select(x => x.Key).ToList();
 
-            var error = await _spotifyWebAPI.AddPlaylistTracksAsync(playlist.Id, ids.ToList());
+                playlist = await _spotifyWebAPI.CreatePlaylistAsync(userId: _privateProfile.Id, playlistName: playlistName, isPublic: isPublic);
+
+                var error = await _spotifyWebAPI.AddPlaylistTracksAsync(playlist.Id, ids);
+            }
 
             return playlist;
         }
