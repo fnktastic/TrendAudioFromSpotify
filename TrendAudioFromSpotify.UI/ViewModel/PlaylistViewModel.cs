@@ -172,10 +172,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 int position = obj.NewPosition;
 
-                //if (position == 0) position++;
-
                 //spotify
-                await _spotifyServices.SendToPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri, position);
+                if (selectedPlaylist.IsExported)
+                    await _spotifyServices.SendToPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri, position);
 
                 //db
                 await _playlistService.SendToPlaylist(obj.Audio, selectedPlaylist.Id, obj.NewPosition);
@@ -207,7 +206,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (uris == null) return;
 
                 //spotify
-                await _spotifyServices.ReorderPlaylist(selectedPlaylist.SpotifyId, uris);
+                if (selectedPlaylist.IsExported)
+                    await _spotifyServices.ReorderPlaylist(selectedPlaylist.SpotifyId, uris);
 
                 //ui
                 selectedPlaylist.Audios.RemoveAt(obj.OldPosition);
@@ -233,7 +233,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 var selectedPlaylist = this.SelectedPlaylist;
 
                 //spotify
-                await _spotifyServices.RemoveSongFromPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri);
+                if (selectedPlaylist.IsExported)
+                    await _spotifyServices.RemoveSongFromPlaylist(selectedPlaylist.SpotifyId, selectedAudio.Uri);
 
                 //db
                 await _playlistService.RemoveSongFromPlaylist(selectedPlaylist.Id, selectedAudio.Id);
@@ -261,6 +262,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                     foreach (var volume in series)
                     {
+                        if (volume.IsExported == false) continue;
+
                         if (volume.IsPublic != obj.IsPublic)
                             volume.IsPublic = obj.IsPublic;
 
@@ -279,7 +282,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 {
                     var playlist = _playlists.FirstOrDefault(x => x.Id == obj.Id);
 
-                    if (playlist != null)
+                    if (playlist != null && playlist.IsExported)
                     {
                         playlist.IsPublic = obj.IsPublic;
 
@@ -420,7 +423,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 var spotifyPlaylist = new Playlist((await _spotifyServices.GetPlaylistById(playlist.SpotifyId)).ToSimple());
 
-                if(spotifyPlaylist != null)
+                if (spotifyPlaylist != null)
                 {
                     playlist.SpotifyId = spotifyPlaylist.SpotifyId;
                     playlist.Name = spotifyPlaylist.Name;

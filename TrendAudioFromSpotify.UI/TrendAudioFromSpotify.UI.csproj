@@ -227,6 +227,7 @@
     </Compile>
     <Compile Include="Converter\AudiosContextNameConverter.cs" />
     <Compile Include="Converter\BoolToVisibleOrCollapsed.cs" />
+    <Compile Include="Converter\NullImageConverter.cs" />
     <Compile Include="Converter\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converter\IsNewToColorConverter.cs" />
     <Compile Include="Converter\RepeatModeToVisibilityConverter.cs" />

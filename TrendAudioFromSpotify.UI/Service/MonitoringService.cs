@@ -113,7 +113,11 @@ namespace TrendAudioFromSpotify.UI.Service
                         var audiosOfPlaylists = new Dictionary<string, List<Audio>>();
 
                         if (monitoringItem.IsRandomizeGroup)
-                            monitoringItem.Group.Playlists.Shuffle();
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                monitoringItem.Group.Playlists.Shuffle();
+                            });
+
 
                         foreach (var playlist in monitoringItem.Group.Playlists)
                         {
@@ -158,6 +162,7 @@ namespace TrendAudioFromSpotify.UI.Service
                             return audio;
                         })
                         .Where(x => x != null)
+                        .Where(x => x.Id != null)
                         .ToList();
 
                         if (monitoringItem.Comparison == ComparisonEnum.Equals)
@@ -206,7 +211,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
         private List<Audio> MixTrends(TrendsSortingEnum trendsSorting, List<Audio> trends)
         {
-            switch(trendsSorting)
+            switch (trendsSorting)
             {
                 case TrendsSortingEnum.None:
                     return trends;
@@ -230,7 +235,7 @@ namespace TrendAudioFromSpotify.UI.Service
             await _dataService.InsertPlaylistAudioRangeAsync(monitoringItem.Trends);
             await _dataService.InsertMonitoringItemAsync(monitoringItem);
 
-            if(monitoringItem.IsOverrideTrends)
+            if (monitoringItem.IsOverrideTrends)
             {
                 //delete from DB existed trends of MI
                 await _dataService.RemoveTrendsFromMonitoringItem(monitoringItem);

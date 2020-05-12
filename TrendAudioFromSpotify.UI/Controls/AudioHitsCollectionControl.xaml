@@ -19,6 +19,7 @@
              xmlns:icons="http://metro.mahapps.com/winfx/xaml/iconpacks"
              xmlns:local="clr-namespace:TrendAudioFromSpotify.UI.Controls">
     <DataGrid.Resources>
+        <converter:NullImageConverter x:Key="NullImageConverter"/>
         <Style x:Key="ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
             <Setter Property="Width" Value="8"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -97,9 +98,9 @@
         <DataGridTemplateColumn Header="Cover" CanUserSort="True">
             <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                    <Image Width="40" Source="{Binding Cover}" HorizontalAlignment="Center">
+                    <Image Width="40" Source="{Binding Cover, Converter={StaticResource NullImageConverter}}" HorizontalAlignment="Center">
                         <Image.ToolTip>
-                            <Image Width="400" Source="{Binding Cover}" />
+                            <Image Width="400" Source="{Binding Cover, Converter={StaticResource NullImageConverter}}" />
                         </Image.ToolTip>
                     </Image>
                 </DataTemplate>

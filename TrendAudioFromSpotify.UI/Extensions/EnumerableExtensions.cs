@@ -6,6 +6,12 @@ namespace TrendAudioFromSpotify.UI.Extensions
 {
     public static class EnumerableExtensions
     {
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            foreach (T element in source)
+                action(element);
+        }
+
         public static IEnumerable<TSource> ExceptBy<TSource, TKey>(this IEnumerable<TSource> first, IEnumerable<TSource> second, Func<TSource, TKey> keySelector)
         {
             return ExceptBy(first, second, keySelector, null);

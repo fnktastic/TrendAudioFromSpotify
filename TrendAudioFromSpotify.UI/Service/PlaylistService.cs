@@ -88,27 +88,146 @@ namespace TrendAudioFromSpotify.UI.Service
             {
                 await ClearPlaylists(monitoringItem);
 
-                return await BuildPlaylistWithOverridingAsync(monitoringItem);
+                return await BuildPlaylistsAsync(monitoringItem);
             }
 
             if (monitoringItem.IsOverridePlaylists == false)
             {
-                return await BuildPlaylistWithoutOverridingAsync(monitoringItem);
+                return await BuildPlaylistsAsync(monitoringItem);
             }
 
             return new List<Playlist>();
         }
 
-        private async Task GGG(MonitoringItem monitoringItem)
+        private async Task<List<Playlist>> BuildPlaylistsAsync(MonitoringItem monitoringItem)
         {
+            //step 1. Check for new Audios
             //get all audios of playlist (series, not-series)
             //except trends by existed audios
+
+            var trends = monitoringItem.Trends;
+
+            var audios = new List<Audio>();
+
+            Playlist targetPlaylist = null;
+
+            var playlistsToAddOrUpdate = new List<Playlist>();
+
+            var existingVolumes = new List<Playlist>();
+
+            if (monitoringItem.IsSeries == true)
+            {
+                existingVolumes = await _dataService.GetPlaylistSeriesAsync(monitoringItem.TargetPlaylistName);
+
+                if (existingVolumes.Count > 0)
+                {
+                    audios = existingVolumes.SelectMany(x => x.Audios).ToList();
+
+                    targetPlaylist = existingVolumes.OrderByDescending(x => x.SeriesNo).First();
+                }
+            }
+
+            if (monitoringItem.IsSeries == false)
+            {
+                var playlist = await _dataService.GetPlaylistAsync(monitoringItem.TargetPlaylistName);
+
+                if (playlist != null)
+                {
+                    audios = playlist.Audios.Select(x => x).ToList();
+
+                    targetPlaylist = playlist;
+                }
+            }
+
+            var newAudios = trends.ExceptBy(audios, x => x.Id).ToList();
+
+            newAudios.ForEach(x => x.IsNew = true);
+
+            int maxSize = int.Parse(monitoringItem.MaxSize);
+
+            //fill up
+            if (targetPlaylist != null && targetPlaylist.Audios.Count < maxSize)
+            {
+                int countToAppend = maxSize - targetPlaylist.Audios.Count;
+
+                var itemsToAppend = newAudios.Take(countToAppend).ToList();
+
+                newAudios = newAudios.Skip(countToAppend).ToList();
+
+                if (monitoringItem.PlaylistType == PlaylistTypeEnum.Fifo)
+                    itemsToAppend.ForEach(x => targetPlaylist.Audios.Insert(0, x));
+
+                if (monitoringItem.PlaylistType == PlaylistTypeEnum.Standard)
+                    itemsToAppend.ForEach(x => targetPlaylist.Audios.Add(x));
+
+                targetPlaylist.Total = targetPlaylist.Audios.Count;
+            }
+
+            //if non-series - no need to continue. Playlists is full
+            if (targetPlaylist != null && monitoringItem.IsSeries == false && targetPlaylist.Audios.Count >= maxSize)
+            {
+                await _dataService.InsertPlaylistAsync(targetPlaylist);
+                playlistsToAddOrUpdate.Insert(0, targetPlaylist);
+                return playlistsToAddOrUpdate;
+            }
+
+            //create new volumes
+            Guid seriesKey = targetPlaylist == null ? Guid.NewGuid() : targetPlaylist.SeriesKey;
+            int seriesNo = targetPlaylist == null ? 1 : targetPlaylist.SeriesNo + 1;
+            int chunk = int.Parse(monitoringItem.MaxSize);
+            int capacity = newAudios.Count;
+            int counter = 0;
+
+            while (counter < capacity)
+            {
+                var volumeAudios = newAudios.Skip(counter).Take(chunk).ToList();
+
+                var volume = existingVolumes.FirstOrDefault(x => x.SeriesKey == seriesKey && x.SeriesNo == seriesNo);
+
+                if (volume == null)
+                    volume = new Playlist
+                    {
+                        Name = monitoringItem.TargetPlaylistName,
+                        IsSeries = monitoringItem.IsSeries,
+                        SeriesKey = seriesKey,
+                        SeriesNo = seriesNo,
+                        MadeByUser = true,
+                        Total = volumeAudios.Count,
+                        PlaylistType = monitoringItem.PlaylistType,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                volume.Audios = new AudioCollection(volumeAudios);
+
+                playlistsToAddOrUpdate.Add(volume);
+
+                seriesNo++;
+                counter += chunk;
+
+                if (monitoringItem.IsSeries == false) break;
+            }
+
+            if(targetPlaylist != null)
+                playlistsToAddOrUpdate.Insert(0, targetPlaylist);
+
+            foreach (var playlistToAdd in playlistsToAddOrUpdate)
+            {
+                await _dataService.InsertPlaylistAsync(playlistToAdd);
+            }
+
+            return playlistsToAddOrUpdate;
+
+            //step 2. Get already existed playlists OR Create them
             // if override -> clear playlists
+
+            //step 3. Append new audios
             //append new audios to (if series - the last volume is target)
             // 1. the top of playlist (standard)
             // 2. the end of playlist (fifo)
         }
 
+        [Obsolete]
         private async Task<List<Playlist>> BuildPlaylistWithoutOverridingAsync(MonitoringItem monitoringItem)
         {
             var trends = monitoringItem.Trends;
@@ -224,6 +343,7 @@ namespace TrendAudioFromSpotify.UI.Service
             return new List<Playlist>();
         }
 
+        [Obsolete]
         private async Task<List<Playlist>> BuildPlaylistWithOverridingAsync(MonitoringItem monitoringItem)
         {
             var trends = monitoringItem.Trends;
@@ -332,7 +452,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public async Task UpdatePlaylistTracks(Playlist playlist, IEnumerable<Audio> tracks)
         {
-            await _dataService.ClearPlaylist(playlist).ContinueWith(async i => 
+            await _dataService.ClearPlaylist(playlist).ContinueWith(async i =>
             {
                 await _dataService.InsertAudioRangeAsync(tracks);
 

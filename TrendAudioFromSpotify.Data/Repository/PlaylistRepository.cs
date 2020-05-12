@@ -66,6 +66,7 @@ namespace TrendAudioFromSpotify.Data.Repository
             {
                 dbEntry.Href = playlist.Href;
                 dbEntry.Name = playlist.Name;
+                dbEntry.Total = playlist.Total;
                 dbEntry.IsDeleted = false;
                 dbEntry.UpdatedAt = DateTime.UtcNow;
                 _context.Entry<PlaylistDto>(dbEntry).State = EntityState.Modified;

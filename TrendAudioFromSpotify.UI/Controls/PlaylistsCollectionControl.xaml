@@ -19,6 +19,7 @@
              VirtualizingPanel.IsVirtualizing="True"
              mc:Ignorable="d">
     <DataGrid.Resources>
+        <converter:NullImageConverter x:Key="NullImageConverter"/>
         <converter:BoolToVisibleOrCollapsed x:Key="BoolToVisibleOrCollapsed" />
         <converter:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
         <Style TargetType="{x:Type DataGridColumnHeader}" >
@@ -71,9 +72,9 @@
         <DataGridTemplateColumn Header="Cover" CanUserSort="True">
             <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                    <Image Width="40" Source="{Binding Cover}" HorizontalAlignment="Center">
+                    <Image Width="40" Source="{Binding Cover, Converter={StaticResource NullImageConverter}}" HorizontalAlignment="Center">
                         <Image.ToolTip>
-                            <Image Width="400" Source="{Binding Cover}" />
+                            <Image Width="400" Source="{Binding Cover, Converter={StaticResource NullImageConverter}}" />
                         </Image.ToolTip>
                     </Image>
                 </DataTemplate>
