@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using TrendAudioFromSpotify.Data.Model;
 using TrendAudioFromSpotify.Data.Repository;
@@ -48,6 +49,8 @@ namespace TrendAudioFromSpotify.UI.Service
         Task ChangeGroupPlaylistPosition(Guid groupId, Guid playlistId, int oldPosition, int newPosition);
         Task RemoveGroupPlaylistsPhysically(Guid groupId);
         Task UpdateGroupAsync(Group selectedGroup);
+        Task RemoveTrendsFromMonitoringItem(MonitoringItem monitoringItem);
+        Task<List<Audio>> GetMonitoringItemAudios(MonitoringItem monitoringItem);
     }
 
     public class DataService : IDataService
@@ -363,6 +366,18 @@ namespace TrendAudioFromSpotify.UI.Service
             var groupDto = _mapper.Map<GroupDto>(selectedGroup);
 
             await _serialQueue.Enqueue(async () => await _groupRepository.UpdateAsync(groupDto));
+        }
+
+        public async Task RemoveTrendsFromMonitoringItem(MonitoringItem monitoringItem)
+        {
+            await _monitoringItemAudioRepository.RemoveRangeAsync(monitoringItem.Id);
+        }
+
+        public async Task<List<Audio>> GetMonitoringItemAudios(MonitoringItem monitoringItem)
+        {
+            var monitoringItemAudioDtos = await _monitoringItemAudioRepository.GetTrends(monitoringItem.Id);
+
+            return _mapper.Map<List<Audio>>(monitoringItemAudioDtos.Select(x => x.Audio).ToList());
         }
     }
 }

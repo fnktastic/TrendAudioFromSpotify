@@ -59,7 +59,11 @@ namespace TrendAudioFromSpotify.UI.Service
                 foreach (var playlist in playlists)
                 {
                     if (playlist.IsExported)
-                        await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
+                    {
+                        var songs = playlist.Audios.Select(x => x.Uri).ToList();
+
+                        await _spotifyServices.ClearPlaylist(playlist.SpotifyId, songs);
+                    }
                 }
             }
 
@@ -69,26 +73,40 @@ namespace TrendAudioFromSpotify.UI.Service
                 if (playlist != null)
                 {
                     if (playlist.IsExported)
-                        await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
+                    {
+                        var songs = playlist.Audios.Select(x => x.Uri).ToList();
+
+                        await _spotifyServices.ClearPlaylist(playlist.SpotifyId, songs);
+                    }
                 }
             }
         }
 
         public async Task<List<Playlist>> BuildPlaylistAsync(MonitoringItem monitoringItem)
         {
-            await ClearPlaylists(monitoringItem);
-
-            if (monitoringItem.IsOverrideTrends == true) // override: remove existed playlists
+            if (monitoringItem.IsOverridePlaylists == true) // override: replace playlists content
             {
+                await ClearPlaylists(monitoringItem);
+
                 return await BuildPlaylistWithOverridingAsync(monitoringItem);
             }
 
-            if (monitoringItem.IsOverrideTrends == false)
+            if (monitoringItem.IsOverridePlaylists == false)
             {
                 return await BuildPlaylistWithoutOverridingAsync(monitoringItem);
             }
 
             return new List<Playlist>();
+        }
+
+        private async Task GGG(MonitoringItem monitoringItem)
+        {
+            //get all audios of playlist (series, not-series)
+            //except trends by existed audios
+            // if override -> clear playlists
+            //append new audios to (if series - the last volume is target)
+            // 1. the top of playlist (standard)
+            // 2. the end of playlist (fifo)
         }
 
         private async Task<List<Playlist>> BuildPlaylistWithoutOverridingAsync(MonitoringItem monitoringItem)

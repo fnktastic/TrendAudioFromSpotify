@@ -8,12 +8,11 @@ using TrendAudioFromSpotify.UI.Messaging;
 
 namespace TrendAudioFromSpotify.UI.Job
 {
-
-    public class MonitorItemJob : IJob
+    public class DailyMonitorItemJob : IJob
     {
         private readonly ISpotifyServices _spotifyServices;
 
-        public MonitorItemJob()
+        public DailyMonitorItemJob()
         {
             _spotifyServices = ServiceLocator.Current.GetInstance<ISpotifyServices>();
         }
@@ -22,7 +21,7 @@ namespace TrendAudioFromSpotify.UI.Job
         {
             string monitoringItemId = context.JobDetail.JobDataMap.FirstOrDefault(x => x.Key == "monitoringItemId").Value.ToString();
 
-            Messenger.Default.Send<StartMonitoringMessage>(new StartMonitoringMessage(monitoringItemId));
+            Messenger.Default.Send<StartDailyMonitoringMessage>(new StartDailyMonitoringMessage(monitoringItemId));
         }
     }
 }

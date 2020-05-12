@@ -32,6 +32,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task ReorderPlaylist(string playlistId, List<string> uris);
         Task SendToPlaylist(string playlistId, string audioId, int position);
         Task<IEnumerable<FullTrack>> GlobalAudiosSearch(string query);
+        Task ClearPlaylist(string palylistId, List<string> songsIds);
     }
 
     public class SpotifyServices : ISpotifyServices
@@ -385,6 +386,13 @@ namespace TrendAudioFromSpotify.Service.Spotify
         public async Task RemovePlaylistAsync(string playlistId)
         {
             var error = await _spotifyWebAPI.UnfollowPlaylistAsync(_privateProfile.Id, playlistId);
+        }
+
+        public async Task ClearPlaylist(string palylistId, List<string> songsIds)
+        {
+            var deleteTracks = songsIds.Select(x => new DeleteTrackUri(x)).ToList();
+
+            var error = await _spotifyWebAPI.RemovePlaylistTracksAsync(palylistId, deleteTracks);
         }
 
         public async Task<PlaybackContext> GetCurrentlyPlaying()

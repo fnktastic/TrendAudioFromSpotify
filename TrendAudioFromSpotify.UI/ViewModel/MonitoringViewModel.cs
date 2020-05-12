@@ -373,7 +373,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             try
             {
                 monitoringItem.ProcessingInProgress = true;
-                
+
+                monitoringItem.IsReady = true;
+
                 await _monitoringService.ProcessAsync(monitoringItem);
 
                 monitoringItem.ProcessingInProgress = false;

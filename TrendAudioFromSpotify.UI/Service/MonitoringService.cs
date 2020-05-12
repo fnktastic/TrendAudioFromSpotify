@@ -7,6 +7,7 @@ using System.Windows;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
+using TrendAudioFromSpotify.UI.Extensions;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 
@@ -20,7 +21,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
     public class MonitoringService : IMonitoringService
     {
-        private const int MAX_SIZE = 150;
+        private const int MAX_SIZE = 300;
         private readonly ISchedulingService _schedulingService;
         private readonly ISpotifyServices _spotifyServices;
         private readonly IDataService _dataService;
@@ -111,6 +112,9 @@ namespace TrendAudioFromSpotify.UI.Service
 
                         var audiosOfPlaylists = new Dictionary<string, List<Audio>>();
 
+                        if (monitoringItem.IsRandomizeGroup)
+                            monitoringItem.Group.Playlists.Shuffle();
+
                         foreach (var playlist in monitoringItem.Group.Playlists)
                         {
                             var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.SpotifyId))
@@ -160,7 +164,6 @@ namespace TrendAudioFromSpotify.UI.Service
                         {
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits == int.Parse(monitoringItem.HitTreshold))
-                            .OrderByDescending(x => x.Hits)
                             .Take(MAX_SIZE)
                             .ToList();
                         }
@@ -169,7 +172,6 @@ namespace TrendAudioFromSpotify.UI.Service
                         {
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits >= int.Parse(monitoringItem.HitTreshold))
-                            .OrderByDescending(x => x.Hits)
                             .Take(MAX_SIZE)
                             .ToList();
                         }
@@ -178,17 +180,18 @@ namespace TrendAudioFromSpotify.UI.Service
                         {
                             groupedAudios = groupedAudios
                             .Where(x => x.Hits <= int.Parse(monitoringItem.HitTreshold))
-                            .OrderByDescending(x => x.Hits)
                             .Take(MAX_SIZE)
                             .ToList();
                         }
+
+                        groupedAudios = MixTrends(monitoringItem.TrendsSorting, groupedAudios);
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {
                             monitoringItem.Trends = new AudioCollection(groupedAudios);
                         });
 
-                        await SaveTrends(groupedAudios, audioBunch, monitoringItem.Group.Playlists, monitoringItem);
+                        await SaveTrends(monitoringItem.Group.Playlists, monitoringItem);
                     }
                     finally
                     {
@@ -201,14 +204,51 @@ namespace TrendAudioFromSpotify.UI.Service
             }
         }
 
-        private async Task SaveTrends(IEnumerable<Audio> trends, IEnumerable<Audio> audios, IEnumerable<Playlist> playlists, MonitoringItem monitoringItem)
+        private List<Audio> MixTrends(TrendsSortingEnum trendsSorting, List<Audio> trends)
         {
-            if (trends == null || trends.Count() == 0) return;
+            switch(trendsSorting)
+            {
+                case TrendsSortingEnum.None:
+                    return trends;
+                case TrendsSortingEnum.Popularity:
+                    return trends.OrderByDescending(x => x.Popularity).ToList();
+                case TrendsSortingEnum.Random:
+                    trends.Shuffle();
+                    return trends;
+                case TrendsSortingEnum.Hits:
+                    return trends.OrderByDescending(x => x.Hits).ToList();
+                default:
+                    return trends;
+            }
+        }
 
-            await _dataService.InsertAudioRangeAsync(trends);
-            await _dataService.InsertPlaylistAudioRangeAsync(trends);
-            await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
+        private async Task SaveTrends(IEnumerable<Playlist> playlists, MonitoringItem monitoringItem)
+        {
+            if (monitoringItem.Trends == null || monitoringItem.Trends.Count() == 0) return;
+
+            await _dataService.InsertAudioRangeAsync(monitoringItem.Trends);
+            await _dataService.InsertPlaylistAudioRangeAsync(monitoringItem.Trends);
             await _dataService.InsertMonitoringItemAsync(monitoringItem);
+
+            if(monitoringItem.IsOverrideTrends)
+            {
+                //delete from DB existed trends of MI
+                await _dataService.RemoveTrendsFromMonitoringItem(monitoringItem);
+            }
+
+            if (monitoringItem.IsOverrideTrends == false)
+            {
+                var trends = await _dataService.GetMonitoringItemAudios(monitoringItem);
+
+                trends = trends.ExceptBy(monitoringItem.Trends, x => x.Uri).ToList();
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    trends.ForEach(x => monitoringItem.Trends.Insert(0, x));
+                });
+            }
+
+            await _dataService.InsertMonitoringItemAudioRangeAsync(monitoringItem);
 
             var builtPlaylists = await _playlistService.BuildPlaylistAsync(monitoringItem);
 

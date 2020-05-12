@@ -13,6 +13,8 @@ namespace TrendAudioFromSpotify.Data.Repository
         Task InsertRangeAsync(IList<MonitoringItemAudioDto> monitoringItemAudioDtos);
 
         Task<List<MonitoringItemAudioDto>> GetAllByMonitoringItemIdAsync(Guid monitoringItemId);
+        Task RemoveRangeAsync(Guid monitoringItemId);
+        Task<List<MonitoringItemAudioDto>> GetTrends(Guid monitoringItemId);
     }
 
     public class MonitoringItemAudioRepository : IMonitoringItemAudioRepository
@@ -46,6 +48,29 @@ namespace TrendAudioFromSpotify.Data.Repository
             return await _context.MonitoringItemAudios
                 .Where(x => x.MonitoringItemId == monitoringItemId)
                 .Include(x => x.Audio.PlaylistAudios.Select(y => y.Playlist))
+                .ToListAsync();
+        }
+
+        public async Task RemoveRangeAsync(Guid monitoringItemId)
+        {
+            var monitoringItemAudios = await _context.MonitoringItemAudios.Where(x => x.MonitoringItemId == monitoringItemId).ToListAsync();
+
+            if (monitoringItemAudios != null && monitoringItemAudios.Count > 0)
+            {
+                monitoringItemAudios.ForEach(x =>
+                {
+                    _context.Entry<MonitoringItemAudioDto>(x).State = EntityState.Deleted;
+                });
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<List<MonitoringItemAudioDto>> GetTrends(Guid monitoringItemId)
+        {
+            return await _context.MonitoringItemAudios
+                .Where(x => x.MonitoringItemId == monitoringItemId)
+                .Include(x => x.Audio)
                 .ToListAsync();
         }
     }

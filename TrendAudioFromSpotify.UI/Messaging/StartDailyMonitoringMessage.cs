@@ -2,12 +2,12 @@
 
 namespace TrendAudioFromSpotify.UI.Messaging
 {
-
-    public class StartMonitoringMessage
+    public class StartDailyMonitoringMessage
     {
         public Guid MonitoringItemId { get; set; }
+        public bool Daily = true;
 
-        public StartMonitoringMessage(string monitoringId)
+        public StartDailyMonitoringMessage(string monitoringId)
         {
             MonitoringItemId = Guid.Parse(monitoringId);
         }
