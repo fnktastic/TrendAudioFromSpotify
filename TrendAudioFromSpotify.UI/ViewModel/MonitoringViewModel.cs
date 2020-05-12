@@ -112,13 +112,28 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             Messenger.Default.Register<AddMonitoringItemMessage>(this, AddMonitoringItemMessage);
             Messenger.Default.Register<ConnectionEstablishedMessage>(this, StartScheduling);
             Messenger.Default.Register<StartMonitoringMessage>(this, StartMonitoringMessageReciever);
+            Messenger.Default.Register<StartDailyMonitoringMessage>(this, StartDailyMonitoringMessageRecieved);
         }
 
         #region private methods
+        private void StartDailyMonitoringMessageRecieved(StartDailyMonitoringMessage obj)
+        {
+            try
+            {
+                //blocking queue
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+        }
+
         public async void StartMonitoringMessageReciever(StartMonitoringMessage message)
         {
             try
             {
+                //wrap into blocking queue 
+
                 var monitoringItem = _monitoringItems.FirstOrDefault(x => x.Id == message.MonitoringItemId); // await _dataService.GetMonitoringItemByIdAsync(message.MonitoringItemId);
 
                 if (monitoringItem != null)
@@ -266,9 +281,9 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                         await _schedulingService.ScheduleMonitoringItem(monitoringItem);
                 }
 
-                await InitTimers();
+                await _schedulingService.DailyScheduleMonitoringItem();
 
-                //Messenger.Default.Send<StartMonitoringMessage>(new StartMonitoringMessage("59c89500-c766-43ad-b297-44485878621c"));
+                await InitTimers();
             }
             catch (Exception ex)
             {

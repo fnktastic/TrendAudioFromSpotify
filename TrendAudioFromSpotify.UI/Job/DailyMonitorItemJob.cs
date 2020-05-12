@@ -21,9 +21,7 @@ namespace TrendAudioFromSpotify.UI.Job
         {
             await Task.Delay(1);
 
-            string monitoringItemId = context.JobDetail.JobDataMap.FirstOrDefault(x => x.Key == "monitoringItemId").Value.ToString();
-
-            Messenger.Default.Send<StartDailyMonitoringMessage>(new StartDailyMonitoringMessage(monitoringItemId));
+            Messenger.Default.Send<StartDailyMonitoringMessage>(new StartDailyMonitoringMessage());
         }
     }
 }

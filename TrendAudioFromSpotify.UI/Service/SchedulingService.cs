@@ -14,6 +14,7 @@ namespace TrendAudioFromSpotify.UI.Service
     public interface ISchedulingService
     {
         Task ScheduleMonitoringItem(MonitoringItem monitoringItem);
+        Task DailyScheduleMonitoringItem();
         Task<Dictionary<Guid, DateTimeOffset>> GetActiveSchedulings();
     }
 
@@ -39,9 +40,14 @@ namespace TrendAudioFromSpotify.UI.Service
                     {
                         Console.WriteLine(nextFireTime.Value.LocalDateTime.ToString());
 
-                        Guid monitoringItem = Guid.Parse(detail.JobDataMap.FirstOrDefault(x => x.Key == "monitoringItemId").Value.ToString());
+                        var jobDataMap = detail.JobDataMap.FirstOrDefault(x => x.Key == "monitoringItemId").Value;
+                        
+                        if (jobDataMap != null)
+                        {
+                            Guid monitoringItem = Guid.Parse(jobDataMap.ToString());
 
-                        sheduleDetails.Add(monitoringItem, nextFireTime.Value);
+                            sheduleDetails.Add(monitoringItem, nextFireTime.Value);
+                        }
                     }
                 }
             }
@@ -121,5 +127,35 @@ namespace TrendAudioFromSpotify.UI.Service
 
             return int.Parse(hours.ToString());
         }
+
+        public async Task DailyScheduleMonitoringItem()
+        {
+            if (_scheduler.IsStarted == false)
+                await _scheduler.Start();
+
+            var jobKey = new JobKey($"daily_monitorItemGroup", "dailyMonitor");
+            if (await _scheduler.CheckExists(jobKey) == false)
+            {
+                IJobDetail job = JobBuilder.Create<DailyMonitorItemJob>()
+                .WithIdentity($"daily_monitorItemGroup", "dailyMonitor")
+                .Build();
+
+                ITrigger trigger = null;
+
+                var now = DateTime.Now;
+                var dateTimeOffset = now.AddSeconds(60); // new DateTime(now.Year, now.Month, now.Day, 01, 0, 0);
+
+                trigger = TriggerBuilder.Create()
+                    .WithIdentity($"daily_monitorItemGroup", "dailyMonitor")
+                    .StartAt(dateTimeOffset)
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInHours(24)
+                        .RepeatForever())
+                    .Build();
+
+                await _scheduler.ScheduleJob(job, trigger);
+            }
+        }
     }
 }
+
