@@ -20,6 +20,7 @@ namespace TrendAudioFromSpotify.Service.Spotify
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(string username = "_annalasnier_");
         Task<IEnumerable<SimplePlaylist>> GetForeignUserPlaylists(IList<string> usernames);
         Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, Dictionary<string, int> audioPosition, bool isPublic = false);
+        Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false);
         Task<PublicProfile> GetMyProfile();
         Task<PrivateProfile> GetPrivateProfile();
         Task<ErrorResponse> PlayTrack(string trackUri);
@@ -281,6 +282,29 @@ namespace TrendAudioFromSpotify.Service.Spotify
         public Task<PrivateProfile> GetPrivateProfile()
         {
             return _spotifyWebAPI.GetPrivateProfileAsync();
+        }
+
+        [Obsolete]
+        public async Task<FullPlaylist> RecreatePlaylist(string playlistUri, string playlistName, IEnumerable<string> ids, bool isPublic = false)
+        {
+            FullPlaylist playlist = null;
+
+            if (string.IsNullOrWhiteSpace(playlistUri) == false)
+            {
+                playlist = await _spotifyWebAPI.GetPlaylistAsync(playlistId: playlistUri);
+
+                var deleteTrackUries = (await GetPlaylistSongs(playlist.Id)).Select(x => new DeleteTrackUri(x.Track.Uri)).ToList();
+
+                await _spotifyWebAPI.RemovePlaylistTracksAsync(playlist.Id, deleteTrackUries);
+            }
+            else
+            {
+                playlist = await _spotifyWebAPI.CreatePlaylistAsync(userId: _privateProfile.Id, playlistName: playlistName, isPublic: isPublic);
+            }
+
+            var error = await _spotifyWebAPI.AddPlaylistTracksAsync(playlist.Id, ids.ToList());
+
+            return playlist;
         }
 
         [Obsolete]

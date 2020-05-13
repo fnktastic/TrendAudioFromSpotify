@@ -121,7 +121,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
-                var dailyMonitoringItems = _monitoringItems;
+                var dailyMonitoringItems = _monitoringItems.Where(x => x.IsDailyMonitoring).ToList();
 
                 dailyMonitoringItems.ForEach(x => x.IsDailyMonitoring = true);
 

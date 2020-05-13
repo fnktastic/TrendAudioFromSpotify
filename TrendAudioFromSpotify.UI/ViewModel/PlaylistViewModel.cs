@@ -3,12 +3,14 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using log4net;
 using MahApps.Metro.Controls.Dialogs;
+using SpotifyAPI.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Threading;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Controls;
@@ -304,45 +306,87 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             }
         }
 
-        private void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)
+        private async Task DailyMonitoring(PlaylistBuiltMessage message)
+        {
+            var targetPlaylists = message.Playlists;
+
+            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify == false)
+                targetPlaylists = targetPlaylists.Where(x => x.IsExported).ToList();
+
+            foreach (var playlist in targetPlaylists)
+            {
+                await Application.Current.Dispatcher.BeginInvoke((Action)(async () => await SendPlaylistToSpotify(message.MonitoringItem, playlist, true)));
+            }
+        }
+
+        private async Task Monitoring(PlaylistBuiltMessage message)
+        {
+            var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
+
+            if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify == false)
+                targetPlaylists = targetPlaylists.Where(x => x.IsExported).ToList();
+
+            if (message.MonitoringItem.IsOverridePlaylists)
+            {
+                await _playlistService.ClearPlaylists(message.MonitoringItem);
+            }
+
+            foreach (var playlist in targetPlaylists)
+            {
+                if (message.MonitoringItem.IsOverridePlaylists == false)
+                {
+                    await Application.Current.Dispatcher.BeginInvoke((Action)(async () => await SendPlaylistToSpotify(message.MonitoringItem, playlist)));
+                }
+
+                if (message.MonitoringItem.IsOverridePlaylists)
+                {
+                    await Application.Current.Dispatcher.BeginInvoke((Action)(async () => await SendPlaylistToSpotify(message.MonitoringItem, playlist)));
+                }
+            }
+        }
+
+        private void ReplacePlaylistsWithUpdatetedOnUI(PlaylistBuiltMessage message)
+        {
+            var playlists = message.Playlists;
+
+            foreach (var playlistToRemove in playlists)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var targetPlaylist = Playlists.FirstOrDefault(x => x.Name == message.MonitoringItem.TargetPlaylistName && x.SeriesNo == playlistToRemove.SeriesNo);
+
+                    if (targetPlaylist != null)
+                    {
+                        Playlists.Remove(targetPlaylist);
+                    }
+                });
+            }
+
+            foreach (var playlist in playlists)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Playlists.Add(playlist);
+                });
+            }
+        }
+
+        private async void PlaylistBuiltMessageRecieved(PlaylistBuiltMessage message)
         {
             try
             {
-                var playlistsToRemove = message.Playlists;
-                foreach (var playlistToRemove in playlistsToRemove)
-                {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        var targetPlaylist = Playlists.FirstOrDefault(x => x.Name == message.MonitoringItem.TargetPlaylistName && x.SeriesNo == playlistToRemove.SeriesNo);
+                ReplacePlaylistsWithUpdatetedOnUI(message);
 
-                        if (targetPlaylist != null)
-                        {
-                            Playlists.Remove(targetPlaylist);
-                        }
-                    });
+                //if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify == false) return;
+
+                if (message.MonitoringItem.IsDailyMonitoring)
+                {
+                    await DailyMonitoring(message);
                 }
 
-                var playlists = message.Playlists;
-
-                foreach (var playlist in playlists)
+                if (message.MonitoringItem.IsDailyMonitoring == false)
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        Playlists.Add(playlist);
-                    });
-                }
-
-                if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify)
-                {
-                    var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
-
-                    foreach (var playlist in targetPlaylists)
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            SyncPlaylistCommand.Execute(playlist);
-                        });
-                    }
+                    await Monitoring(message);
                 }
             }
             catch (Exception ex)
@@ -378,16 +422,37 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             return (ListCollectionView)CollectionViewSource.GetDefaultView(playlists);
         }
 
-        private void GetPlaylists(Playlist playlist)
+        private async Task SendPlaylistToSpotify(MonitoringItem monitoringItem, Playlist playlist, bool daily = false)
         {
-            try
+            playlist.ProcessingInProgress = true;
+
+            FullPlaylist syncedPalylist = null;
+
+            if (daily)
+                syncedPalylist = await _playlistService.RecreateOnSpotify(playlist);
+            else
             {
-                SelectedPlaylist = playlist;
+                if (monitoringItem.IsOverridePlaylists == false)
+                    syncedPalylist = await _playlistService.RecreateOnSpotify(playlist);
+
+                if (monitoringItem.IsOverridePlaylists)
+                    syncedPalylist = await _playlistService.RecreateOnSpotifyWithClearing(playlist);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex);
-            }
+
+            playlist.SpotifyId = syncedPalylist.Id;
+            playlist.Href = syncedPalylist.Href;
+            playlist.Uri = syncedPalylist.Uri;
+            playlist.IsPublic = syncedPalylist.Public;
+
+            playlist.Owner = syncedPalylist.Owner.DisplayName;
+            playlist.OwnerProfileUrl = syncedPalylist.Owner.Href;
+            playlist.Cover = syncedPalylist.Images != null && syncedPalylist.Images.Count > 0 ? syncedPalylist.Images.First().Url : "";
+
+            await _dataService.AddSpotifyUriHrefToPlaylistAsync(playlist.Id, playlist.SpotifyId, playlist.Href, playlist.Uri,
+                                                                playlist.Owner, playlist.OwnerProfileUrl, playlist.Cover);
+            await Task.Delay(TimeSpan.FromSeconds(2));
+
+            playlist.ProcessingInProgress = false;
         }
         #endregion
 
@@ -418,6 +483,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(playlist.SpotifyId)) return;
+
                 playlist.ProcessingInProgress = true;
 
                 var spotifyPlaylist = new Playlist((await _spotifyServices.GetPlaylistById(playlist.SpotifyId)).ToSimple());
@@ -425,7 +492,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 if (spotifyPlaylist != null)
                 {
                     playlist.SpotifyId = spotifyPlaylist.SpotifyId;
-                    playlist.Name = spotifyPlaylist.Name;
                     playlist.Total = spotifyPlaylist.Total;
                     playlist.Owner = spotifyPlaylist.Owner;
                     playlist.OwnerProfileUrl = spotifyPlaylist.OwnerProfileUrl;
@@ -510,23 +576,27 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 if (playlist.IsExported)
                 {
-                    string confirmMessage = await RemoveFromSpotifyConfirmation("Confirmation", string.Format("Also remove {0} from Spotify? Type 'yes' to confirm.", playlist.DisplayName));
+                    string confirmMessage = await RemoveFromSpotifyConfirmation("Confirmation", string.Format("{0} is on Spotify. Type 'yes' to confirm.", playlist.DisplayName));
 
                     if (string.Equals(confirmMessage, "yes", StringComparison.OrdinalIgnoreCase))
                     {
                         await _spotifyServices.RemovePlaylistAsync(playlist.SpotifyId);
                     }
+                    else 
+                        return;
                 }
 
                 _playlists.Remove(playlist);
 
                 await _dataService.RemovePlaylistAsync(playlist);
-
-                playlist.ProcessingInProgress = false;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
+            }
+            finally
+            {
+                playlist.ProcessingInProgress = false;
             }
         }
 
