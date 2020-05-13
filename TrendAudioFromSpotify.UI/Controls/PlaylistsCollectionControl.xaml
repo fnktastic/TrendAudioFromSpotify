@@ -94,7 +94,7 @@
                                 <TextBlock Text="{Binding Name}" Height="30" TextAlignment="Center" 
                                        VerticalAlignment="Center"
                                        TextWrapping="Wrap" TextTrimming="WordEllipsis" />
-                                <Image Source="{Binding Cover}" Width="200" />
+                                <Image Source="{Binding Cover, Converter={StaticResource NullImageConverter}}" Width="200" />
                             </StackPanel>
                         </TextBlock.ToolTip>
                 </TextBlock>
