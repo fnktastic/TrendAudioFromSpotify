@@ -177,7 +177,7 @@ namespace TrendAudioFromSpotify.UI.Service
 
             audios.ForEach(x => x.Hits = monitoringItemAudios.First(y => y.AudioId == x.Id).Hits);
 
-            return audios.OrderByDescending(x => x.Hits).ToList();
+            return audios.ToList();
         }
 
         public async Task InsertPlaylistAudioRangeAsync(IEnumerable<Audio> audios)

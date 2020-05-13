@@ -93,7 +93,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                 _selectedMonitoringItem = value;
                 RaisePropertyChanged(nameof(SelectedMonitoringItem));
 
-                if (_selectedMonitoringItem != null)
+                if (_selectedMonitoringItem != null && (_selectedMonitoringItem.Trends == null || _selectedMonitoringItem.Trends.Count == 0))
                     FetchTrends().ConfigureAwait(true);
             }
         }
@@ -125,7 +125,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
 
                 dailyMonitoringItems.ForEach(x => x.IsDailyMonitoring = true);
 
-                foreach(var monitoringItem in dailyMonitoringItems)
+                foreach (var monitoringItem in dailyMonitoringItems)
                 {
                     monitoringItem.IsReady = true;
 
@@ -258,6 +258,8 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             try
             {
                 var audios = await _dataService.GetAllMonitoringItemAudioByMonitoringItemIdAsync(_selectedMonitoringItem.Id);
+
+                audios = _monitoringService.MixTrends(_selectedMonitoringItem.TrendsSorting, audios);
 
                 SelectedMonitoringItem.Trends = new AudioCollection(audios);
             }

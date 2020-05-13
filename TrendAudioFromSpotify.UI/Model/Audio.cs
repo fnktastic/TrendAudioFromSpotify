@@ -2,8 +2,10 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using SpotifyAPI.Web.Models;
+using System.Collections.Generic;
 using System.Linq;
 using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Extensions;
 using TrendAudioFromSpotify.UI.Messaging;
 
 namespace TrendAudioFromSpotify.UI.Model
@@ -34,7 +36,12 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public bool IsFilled => _track != null ? true : false;
 
-        public virtual PlaylistCollection Playlists { get; set; }
+        private PlaylistCollection _playlists;
+        public virtual PlaylistCollection Playlists
+        {
+            get => _playlists.Where(x => x.MadeByUser == false).ToPlaylistCollection();
+            set => _playlists = value;
+        }
 
         private int _no;
         public int No

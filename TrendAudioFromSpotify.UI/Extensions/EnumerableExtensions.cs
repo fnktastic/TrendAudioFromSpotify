@@ -1,11 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TrendAudioFromSpotify.UI.Collections;
+using TrendAudioFromSpotify.UI.Model;
 
 namespace TrendAudioFromSpotify.UI.Extensions
 {
     public static class EnumerableExtensions
     {
+        public static PlaylistCollection ToPlaylistCollection(this IEnumerable<Playlist> playlists)
+        {
+            return new PlaylistCollection(playlists);
+        }
+
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach (T element in source)

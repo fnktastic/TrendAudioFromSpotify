@@ -17,6 +17,7 @@ namespace TrendAudioFromSpotify.UI.Service
     {
         MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, PlaylistCollection playlists);
         Task<bool> ProcessAsync(MonitoringItem monitoringItem);
+        List<Audio> MixTrends(TrendsSortingEnum trendsSorting, List<Audio> trends);
     }
 
     public class MonitoringService : IMonitoringService
@@ -209,7 +210,7 @@ namespace TrendAudioFromSpotify.UI.Service
             }
         }
 
-        private List<Audio> MixTrends(TrendsSortingEnum trendsSorting, List<Audio> trends)
+        public List<Audio> MixTrends(TrendsSortingEnum trendsSorting, List<Audio> trends)
         {
             switch (trendsSorting)
             {
