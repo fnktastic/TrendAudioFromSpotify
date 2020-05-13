@@ -39,7 +39,7 @@ namespace TrendAudioFromSpotify.UI.Model
         private PlaylistCollection _playlists;
         public virtual PlaylistCollection Playlists
         {
-            get => _playlists.Where(x => x.MadeByUser == false).ToPlaylistCollection();
+            get => _playlists?.Where(x => x.MadeByUser == false).ToPlaylistCollection();
             set => _playlists = value;
         }
 

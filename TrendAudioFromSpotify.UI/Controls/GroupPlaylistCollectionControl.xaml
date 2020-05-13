@@ -38,12 +38,12 @@
             <Setter Property="Background" Value="Black" />
             <Setter Property="BorderBrush" Value="{x:Null}" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="Margin" Value="0 3" />
-            <Setter Property="Padding" Value="0 3" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="Black" />
-                    <Setter Property="BorderBrush" Value="{x:Null}" />
+                    <Setter Property="BorderBrush" Value="White" />
                 </Trigger>
                 <Trigger Property="IsSelected" Value="False">
                     <Setter Property="Background" Value="Black" />
