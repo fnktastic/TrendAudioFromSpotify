@@ -29,6 +29,8 @@ namespace TrendAudioFromSpotify.UI.Service
 
             if (monitoringItem != null && monitoringItem.IsReady)
             {
+                group.GroupSourceMonitoringItem = new MonitoringItem();
+
                 Messenger.Default.Send<AddMonitoringItemMessage>(new AddMonitoringItemMessage(monitoringItem));
 
                 //move to service

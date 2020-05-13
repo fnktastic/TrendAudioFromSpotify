@@ -51,7 +51,17 @@ namespace TrendAudioFromSpotify.UI.Model
 
         public virtual MonitoringItemCollection MonitoringItems { get; set; }
 
-        public virtual MonitoringItem GroupSourceMonitoringItem { get; set; } = new MonitoringItem();
+        private MonitoringItem _groupSourceMonitoringItem = new MonitoringItem();
+        public MonitoringItem GroupSourceMonitoringItem
+        {
+            get { return _groupSourceMonitoringItem; }
+            set
+            {
+                if (_groupSourceMonitoringItem == value) return;
+                _groupSourceMonitoringItem = value;
+                RaisePropertyChanged(nameof(GroupSourceMonitoringItem));
+            }
+        }
         #endregion
     }
 }

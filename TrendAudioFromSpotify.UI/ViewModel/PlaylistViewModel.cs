@@ -377,8 +377,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             {
                 ReplacePlaylistsWithUpdatetedOnUI(message);
 
-                //if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify == false) return;
-
                 if (message.MonitoringItem.IsDailyMonitoring)
                 {
                     await DailyMonitoring(message);
