@@ -236,6 +236,7 @@ namespace TrendAudioFromSpotify.UI.Model
                 RaisePropertyChanged(nameof(NextFireDateTime));
             }
         }
+        public bool IsDailyMonitoring { get; set; } = false;
 
         public MonitoringItem()
         {

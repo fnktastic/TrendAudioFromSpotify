@@ -26,6 +26,6 @@ namespace TrendAudioFromSpotify.Data.Model
         public virtual ICollection<PlaylistAudioDto> PlaylistAudios { get; set; }
 
         [NotMapped]
-        public virtual ICollection<PlaylistDto> Playlists => PlaylistAudios.Select(x => x.Playlist).ToList();
+        public virtual ICollection<PlaylistDto> Playlists => PlaylistAudios?.Select(x => x.Playlist).ToList();
     }
 }

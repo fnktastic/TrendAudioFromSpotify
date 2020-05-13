@@ -308,13 +308,12 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         {
             try
             {
-                var playlistsToRemove = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName).ToList();
-
+                var playlistsToRemove = message.Playlists;
                 foreach (var playlistToRemove in playlistsToRemove)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        var targetPlaylist = Playlists.FirstOrDefault(x => x.Id == playlistToRemove.Id);
+                        var targetPlaylist = Playlists.FirstOrDefault(x => x.Name == message.MonitoringItem.TargetPlaylistName && x.SeriesNo == playlistToRemove.SeriesNo);
 
                         if (targetPlaylist != null)
                         {
@@ -333,7 +332,7 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                     });
                 }
 
-                if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify || playlistsToRemove.Any(x => x.IsExported))
+                if (message.MonitoringItem.AutoRecreatePlaylisOnSpotify)
                 {
                     var targetPlaylists = Playlists.Where(x => x.Name == message.MonitoringItem.TargetPlaylistName);
 

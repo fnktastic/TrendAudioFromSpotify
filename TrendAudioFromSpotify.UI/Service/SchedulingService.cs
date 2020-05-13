@@ -143,7 +143,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 ITrigger trigger = null;
 
                 var now = DateTime.Now;
-                var dateTimeOffset = now.AddSeconds(60); // new DateTime(now.Year, now.Month, now.Day, 01, 0, 0);
+                var dateTimeOffset = new DateTime(now.Year, now.Month, now.Day, 01, 0, 0);  //now.AddSeconds(45); //
 
                 trigger = TriggerBuilder.Create()
                     .WithIdentity($"daily_monitorItemGroup", "dailyMonitor")

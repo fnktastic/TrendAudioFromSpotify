@@ -84,6 +84,11 @@ namespace TrendAudioFromSpotify.UI.Service
 
         public async Task<List<Playlist>> BuildPlaylistAsync(MonitoringItem monitoringItem)
         {
+            if(monitoringItem.IsDailyMonitoring)
+            {
+                return await BuildPlaylistsAsync(monitoringItem);
+            }
+
             if (monitoringItem.IsOverridePlaylists == true) // override: replace playlists content
             {
                 await ClearPlaylists(monitoringItem);

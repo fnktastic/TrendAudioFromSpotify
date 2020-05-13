@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using TrendAudioFromSpotify.Service.Spotify;
 using TrendAudioFromSpotify.UI.Collections;
 using TrendAudioFromSpotify.UI.Enum;
+using TrendAudioFromSpotify.UI.Extensions;
 using TrendAudioFromSpotify.UI.Messaging;
 using TrendAudioFromSpotify.UI.Model;
 using TrendAudioFromSpotify.UI.Service;
@@ -116,11 +117,28 @@ namespace TrendAudioFromSpotify.UI.ViewModel
         }
 
         #region private methods
-        private void StartDailyMonitoringMessageRecieved(StartDailyMonitoringMessage obj)
+        private async void StartDailyMonitoringMessageRecieved(StartDailyMonitoringMessage obj)
         {
             try
             {
-                //blocking queue
+                var dailyMonitoringItems = _monitoringItems;
+
+                dailyMonitoringItems.ForEach(x => x.IsDailyMonitoring = true);
+
+                foreach(var monitoringItem in dailyMonitoringItems)
+                {
+                    monitoringItem.IsReady = true;
+
+                    var success = await _monitoringService.ProcessAsync(monitoringItem);
+
+                    if (success)
+                    {
+                        monitoringItem.UpdatedAt = DateTime.UtcNow.ToLocalTime();
+                        await _dataService.UpdateMonitoringAsync(monitoringItem);
+                    }
+                }
+
+                dailyMonitoringItems.ForEach(x => x.IsDailyMonitoring = false);
             }
             catch (Exception ex)
             {
