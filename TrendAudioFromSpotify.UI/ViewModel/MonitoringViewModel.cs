@@ -123,13 +123,11 @@ namespace TrendAudioFromSpotify.UI.ViewModel
             {
                 var dailyMonitoringItems = _monitoringItems.Where(x => x.IsDailyMonitoring).ToList();
 
-                dailyMonitoringItems.ForEach(x => x.IsDailyMonitoring = true);
-
                 foreach (var monitoringItem in dailyMonitoringItems)
                 {
                     monitoringItem.IsReady = true;
 
-                    var success = await _monitoringService.ProcessAsync(monitoringItem);
+                    var success = await _monitoringService.DailyMonitoring(monitoringItem);
 
                     if (success)
                     {
@@ -137,8 +135,6 @@ namespace TrendAudioFromSpotify.UI.ViewModel
                         await _dataService.UpdateMonitoringAsync(monitoringItem);
                     }
                 }
-
-                dailyMonitoringItems.ForEach(x => x.IsDailyMonitoring = false);
             }
             catch (Exception ex)
             {

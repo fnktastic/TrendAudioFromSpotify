@@ -18,6 +18,7 @@ namespace TrendAudioFromSpotify.UI.Service
         MonitoringItem Initiate(Group group, MonitoringItem monitoringItem, PlaylistCollection playlists);
         Task<bool> ProcessAsync(MonitoringItem monitoringItem);
         List<Audio> MixTrends(TrendsSortingEnum trendsSorting, List<Audio> trends);
+        Task<bool> DailyMonitoring(MonitoringItem monitoringItem);
     }
 
     public class MonitoringService : IMonitoringService
@@ -61,6 +62,7 @@ namespace TrendAudioFromSpotify.UI.Service
                 _monitoringItem.TrendsSorting = monitoringItem.TrendsSorting;
                 _monitoringItem.IsOverridePlaylists = monitoringItem.IsOverridePlaylists;
                 _monitoringItem.IsDailyTrends = monitoringItem.IsDailyTrends;
+                _monitoringItem.IsDailyMonitoring = monitoringItem.IsDailyTrends;
                 _monitoringItem.IsRandomizeGroup = monitoringItem.IsRandomizeGroup;
 
                 _monitoringItem.Group.Playlists = new PlaylistCollection(playlists);
@@ -81,133 +83,152 @@ namespace TrendAudioFromSpotify.UI.Service
             }
         }
 
-        public async Task<bool> ProcessAsync(MonitoringItem monitoringItem)
+        public async Task<bool> DailyMonitoring(MonitoringItem monitoringItem)
         {
-            if (monitoringItem.IsReady)
+            if (monitoringItem.IsReady == false) return await Task.FromResult(false);
+
+            monitoringItem.Group = _dataService.GetFreshGroup(monitoringItem.Group);
+
+            if (monitoringItem.IsDailyTrends)
             {
-                monitoringItem.Group = _dataService.GetFreshGroup(monitoringItem.Group);
-
-                await GetTrends(monitoringItem);
-
-                if (monitoringItem.Schedule.RepeatOn == true)
-                    await StartSchedulingTimer(monitoringItem);
-
-                return true;
+                //groupedAudios = groupedAudios.ExceptBy(existedAudiosOfGroup, x => x.Uri).ToList();
+                switch (monitoringItem.PlaylistType)
+                {
+                    case PlaylistTypeEnum.Fifo:
+                        //add to existedAudiosOfGroup to top
+                        break;
+                    case PlaylistTypeEnum.Standard:
+                        //add to existedAudiosOfGroup to end
+                        break;
+                }
             }
 
-            return false;
+            return true;
+        }
+
+        public async Task<bool> ProcessAsync(MonitoringItem monitoringItem)
+        {
+            if (monitoringItem.IsReady == false) return false;
+
+            monitoringItem.Group = _dataService.GetFreshGroup(monitoringItem.Group);
+
+            await GetTrends(monitoringItem);
+
+            if (monitoringItem.Schedule.RepeatOn == true)
+                await StartSchedulingTimer(monitoringItem);
+
+            return true;
         }
 
         private async Task GetTrends(MonitoringItem monitoringItem)
         {
-            if (monitoringItem.IsReady)
+            if (monitoringItem.IsReady == false) return;
+
+            await Task.Run(async () =>
             {
-                await Task.Run(async () =>
+                try
                 {
-                    try
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
+                        monitoringItem.ProcessingInProgress = true;
+                    });
+
+                    var audiosOfPlaylists = new Dictionary<string, List<Audio>>();
+
+                    if (monitoringItem.IsRandomizeGroup)
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            monitoringItem.ProcessingInProgress = true;
+                            monitoringItem.Group.Playlists.Shuffle();
                         });
 
-                        var audiosOfPlaylists = new Dictionary<string, List<Audio>>();
 
-                        if (monitoringItem.IsRandomizeGroup)
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                monitoringItem.Group.Playlists.Shuffle();
-                            });
+                    foreach (var playlist in monitoringItem.Group.Playlists)
+                    {
+                        var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.SpotifyId))
+                        .Where(x => x != null && x.Track != null)
+                        .Select(x => new Audio(x.Track))
+                        .Where(x => x.IsFilled)
+                        .ToList();
 
+                        playlist.Audios = new AudioCollection(audiosOfPlaylist);
+
+                        if (audiosOfPlaylists.ContainsKey(playlist.SpotifyId))
+                            continue;
+
+                        audiosOfPlaylists.Add(playlist.SpotifyId, audiosOfPlaylist);
+
+                        await Task.Delay(TimeSpan.FromSeconds(1));
+                    }
+
+                    var trendAudios = new Dictionary<Audio, int>();
+
+                    var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList();
+
+                    var groupedAudios = audioBunch
+                    .GroupBy(x => x.Id)
+                    .Select(y =>
+                    {
+                        var audio = audioBunch.FirstOrDefault(z => z.Id == y.Key);
+
+                        if (audio == null) return null;
+
+                        audio.Hits = y.Count();
+
+                        audio.Playlists = new PlaylistCollection();
 
                         foreach (var playlist in monitoringItem.Group.Playlists)
                         {
-                            var audiosOfPlaylist = (await _spotifyServices.GetPlaylistSongs(playlist.SpotifyId))
-                            .Where(x => x != null && x.Track != null)
-                            .Select(x => new Audio(x.Track))
-                            .Where(x => x.IsFilled)
-                            .ToList();
-
-                            playlist.Audios = new AudioCollection(audiosOfPlaylist);
-
-                            if (audiosOfPlaylists.ContainsKey(playlist.SpotifyId))
-                                continue;
-
-                            audiosOfPlaylists.Add(playlist.SpotifyId, audiosOfPlaylist);
-
-                            await Task.Delay(TimeSpan.FromSeconds(1));
+                            if (playlist.Audios.Any(x => string.Equals(x.Id, audio.Id, StringComparison.OrdinalIgnoreCase)))
+                                audio.Playlists.Add(playlist);
                         }
 
-                        var trendAudios = new Dictionary<Audio, int>();
+                        return audio;
+                    })
+                    .Where(x => x != null)
+                    .Where(x => x.Id != null)
+                    .ToList();
 
-                        var audioBunch = audiosOfPlaylists.Values.SelectMany(x => x).Where(x => x.IsFilled).ToList();
-
-                        var groupedAudios = audioBunch
-                        .GroupBy(x => x.Id)
-                        .Select(y =>
-                        {
-                            var audio = audioBunch.FirstOrDefault(z => z.Id == y.Key);
-
-                            if (audio == null) return null;
-
-                            audio.Hits = y.Count();
-
-                            audio.Playlists = new PlaylistCollection();
-
-                            foreach (var playlist in monitoringItem.Group.Playlists)
-                            {
-                                if (playlist.Audios.Any(x => string.Equals(x.Id, audio.Id, StringComparison.OrdinalIgnoreCase)))
-                                    audio.Playlists.Add(playlist);
-                            }
-
-                            return audio;
-                        })
-                        .Where(x => x != null)
-                        .Where(x => x.Id != null)
-                        .ToList();
-
-                        if (monitoringItem.Comparison == ComparisonEnum.Equals)
-                        {
-                            groupedAudios = groupedAudios
-                            .Where(x => x.Hits == int.Parse(monitoringItem.HitTreshold))
-                            .Take(MAX_SIZE)
-                            .ToList();
-                        }
-
-                        if (monitoringItem.Comparison == ComparisonEnum.More)
-                        {
-                            groupedAudios = groupedAudios
-                            .Where(x => x.Hits >= int.Parse(monitoringItem.HitTreshold))
-                            .Take(MAX_SIZE)
-                            .ToList();
-                        }
-
-                        if (monitoringItem.Comparison == ComparisonEnum.Less)
-                        {
-                            groupedAudios = groupedAudios
-                            .Where(x => x.Hits <= int.Parse(monitoringItem.HitTreshold))
-                            .Take(MAX_SIZE)
-                            .ToList();
-                        }
-
-                        groupedAudios = MixTrends(monitoringItem.TrendsSorting, groupedAudios);
-
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            monitoringItem.Trends = new AudioCollection(groupedAudios);
-                        });
-
-                        await SaveTrends(monitoringItem.Group.Playlists, monitoringItem);
-                    }
-                    finally
+                    if (monitoringItem.Comparison == ComparisonEnum.Equals)
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            monitoringItem.ProcessingInProgress = false;
-                        });
+                        groupedAudios = groupedAudios
+                        .Where(x => x.Hits == int.Parse(monitoringItem.HitTreshold))
+                        .Take(MAX_SIZE)
+                        .ToList();
                     }
-                });
-            }
+
+                    if (monitoringItem.Comparison == ComparisonEnum.More)
+                    {
+                        groupedAudios = groupedAudios
+                        .Where(x => x.Hits >= int.Parse(monitoringItem.HitTreshold))
+                        .Take(MAX_SIZE)
+                        .ToList();
+                    }
+
+                    if (monitoringItem.Comparison == ComparisonEnum.Less)
+                    {
+                        groupedAudios = groupedAudios
+                        .Where(x => x.Hits <= int.Parse(monitoringItem.HitTreshold))
+                        .Take(MAX_SIZE)
+                        .ToList();
+                    }
+
+                    groupedAudios = MixTrends(monitoringItem.TrendsSorting, groupedAudios);
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        monitoringItem.Trends = new AudioCollection(groupedAudios);
+                    });
+
+                    await SaveTrends(monitoringItem.Group.Playlists, monitoringItem);
+                }
+                finally
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        monitoringItem.ProcessingInProgress = false;
+                    });
+                }
+            });
         }
 
         public List<Audio> MixTrends(TrendsSortingEnum trendsSorting, List<Audio> trends)
